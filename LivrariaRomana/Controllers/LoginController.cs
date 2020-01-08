@@ -27,7 +27,7 @@ namespace LivrariaRomana.Controllers
         {
             try
             {
-                var service = new UserService(_context);
+                var service = new LoginService(_context);
                 _logger.LogInfo($"[POST]Usuário: { login.Username } tentando fazer login.");
                 var user = service.Authenticate(login.Username, login.Password);
 

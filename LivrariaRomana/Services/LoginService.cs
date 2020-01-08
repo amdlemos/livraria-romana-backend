@@ -9,11 +9,11 @@ using System.Text;
 
 namespace LivrariaRomana.Services
 {
-    public class UserService
+    public class LoginService
     {
         private readonly DataBaseContext _dbContext;
 
-        public UserService(DataBaseContext dbContext)
+        public LoginService(DataBaseContext dbContext)
         {
             _dbContext = dbContext;
         }
@@ -40,7 +40,7 @@ namespace LivrariaRomana.Services
                     new Claim(ClaimTypes.Name, user.Username),
                     //new Claim(ClaimTypes.Role, user.Role)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain
 {
-    public interface IBookRepository : IDomainRepository<User>
+    public interface IBookRepository : IDomainRepository<Book>
     {
-        Task<IEnumerable<User>> GetAllIncludingTasksAsync();
-        Task<User> GetByIdIncludingTasksAsync(int id);
+        Task<IEnumerable<Book>> GetAllIncludingBooksAsync();
+        Task<Book> GetByIdIncludingBooksAsync(int id);
     }
 }

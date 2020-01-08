@@ -13,6 +13,11 @@ namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.EFCore
                                                 Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
                                                 params string[] includeProperties);
 
+        protected abstract IQueryable<TEntity> GenerateQueryableWhereExpression(IQueryable<TEntity> query,
+                                                Expression<Func<TEntity, bool>> filter);
+
+        protected abstract IQueryable<TEntity> GenerateIncludeProperties(IQueryable<TEntity> query, params string[] includeProperties);
+
         protected abstract IEnumerable<TEntity> GetYieldManipulated(IEnumerable<TEntity> entities, Func<TEntity, TEntity> DoAction);
         #endregion ProtectedMethods
     }
