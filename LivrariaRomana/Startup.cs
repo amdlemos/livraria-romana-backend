@@ -14,6 +14,10 @@ using System.Text;
 using System.IO;
 using LivrariaRomana.Logger;
 using LivrariaRomana.Infrastructure.DBConfiguration;
+using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
+using LivrariaRomana.Infrastructure.Repositories.Standard;
 
 namespace LivrariaRomana
 {
@@ -35,6 +39,12 @@ namespace LivrariaRomana
         {
             // Configura o serviço de log
             services.AddSingleton<ILoggerManager, LoggerManager>();
+
+            // Injeção Dependencia
+            services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
+            services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
+            services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
+            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             
             // 
             services.AddMvc(config =>
