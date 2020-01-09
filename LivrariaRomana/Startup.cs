@@ -36,6 +36,7 @@ namespace LivrariaRomana
             // Configura o serviço de log
             services.AddSingleton<ILoggerManager, LoggerManager>();
             
+            // 
             services.AddMvc(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -45,6 +46,7 @@ namespace LivrariaRomana
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             
+            // 
             services.AddRouting(options =>
             {
                 options.LowercaseUrls = true;
@@ -58,6 +60,7 @@ namespace LivrariaRomana
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
+
             // Diz o formato do Token e como validar o mesmo   
             .AddJwtBearer(x =>
             {
@@ -79,8 +82,8 @@ namespace LivrariaRomana
                 options.AddPolicy("admin", policy => policy.RequireClaim("Livraria", "admin"));
             });
             
-            // Adiciono contexto
-            services.AddDbContext<DataBaseContext>(options => options.UseSqlServer(_configuration.GetConnectionString("DevConnection")));
+            // Adiciono DataBAsecontext
+            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(_configuration.GetConnectionString("DevConnection")));
 
             // Add cors para que a app aceite chamadas de outras portas ou dominios.
             services.AddCors(options =>

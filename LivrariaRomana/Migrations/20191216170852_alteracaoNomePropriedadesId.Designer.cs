@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LivrariaRomana.Migrations
 {
-    [DbContext(typeof(DataBaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20191216170852_alteracaoNomePropriedadesId")]
     partial class alteracaoNomePropriedadesId
     {

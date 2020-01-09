@@ -3,19 +3,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LivrariaRomana.Infrastructure.DBConfiguration
 {
-    public class DataBaseContext : DbContext
+    public class DatabaseContext : DbContext
     {
-        public DataBaseContext() { }
+        public DatabaseContext() { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {                
-                optionsBuilder.UseSqlServer(DataBaseConnection.ConnectionConfiguration.ToString());
+                optionsBuilder.UseSqlServer(DataBaseConnection.ConnectionConfiguration);
             }
         }
 
-        public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
      
         }      

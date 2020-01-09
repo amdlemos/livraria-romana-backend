@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace LivrariaRomana.Migrations
 {
-    [DbContext(typeof(DataBaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20191214232712_PrimeiraMigracao")]
     partial class PrimeiraMigracao
     {

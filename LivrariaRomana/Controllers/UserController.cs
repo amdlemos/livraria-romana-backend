@@ -15,9 +15,9 @@ namespace LivrariaRomana.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DataBaseContext _context;
+        private readonly DatabaseContext _context;
         private ILoggerManager _logger;
-        public UserController(DataBaseContext context, ILoggerManager logger)
+        public UserController(DatabaseContext context, ILoggerManager logger)
         {
             _logger = logger;
             _context = context;

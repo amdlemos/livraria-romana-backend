@@ -17,10 +17,10 @@ namespace LivrariaRomana.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly DataBaseContext _context;
+        private readonly DatabaseContext _context;
         private ILoggerManager _logger;
 
-        public BookController(DataBaseContext context, ILoggerManager logger)
+        public BookController(DatabaseContext context, ILoggerManager logger)
         {
             _context = context;
             _logger = logger;

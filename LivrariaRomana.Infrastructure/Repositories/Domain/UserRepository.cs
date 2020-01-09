@@ -10,25 +10,9 @@ namespace LivrariaRomana.Infrastructure.Repositories.Domain
 {
     public class UserRepository : DomainRepository<User>, IUserRepository
     {
-        public UserRepository(DataBaseContext dbContext) : base(dbContext)
+        public UserRepository(DatabaseContext dbContext) : base(dbContext)
         {
 
-        }
-
-        public async Task<IEnumerable<User>> GetAllIncludingUserAsync()
-        {
-            IQueryable<User> query = await Task.FromResult(GenerateQuery(filter: null,
-                                                                     orderBy: null,
-                                                                     includeProperties: nameof(User.Username)));
-            return query.AsEnumerable();
-        }
-
-        public async Task<User> GetByIdIncludingUserAsync(int id)
-        {
-            IQueryable<User> query = await Task.FromResult(GenerateQuery(filter: (user => user.Id == id),
-                                                                     orderBy: null,
-                                                                     includeProperties: nameof(User.Username)));
-            return query.SingleOrDefault();
         }
     }
 }

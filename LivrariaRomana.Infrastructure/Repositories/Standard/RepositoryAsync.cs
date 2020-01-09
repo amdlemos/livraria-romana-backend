@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Repositories.Standard
@@ -23,58 +22,61 @@ namespace LivrariaRomana.Infrastructure.Repositories.Standard
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            dbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
 
-        public Task<TEntity> AddAsync(TEntity obj)
+        #region ADD
+        public virtual async Task<TEntity> AddAsync(TEntity obj)
         {
-            throw new NotImplementedException();
-        }
+            var async = await dbSet.AddAsync(obj);            
+            await CommitAsync();            
 
-        public Task<int> AddRangAsync(IEnumerable<TEntity> entities)
-        {
-            throw new NotImplementedException();
+            return async.Entity;
         }       
-
-        public Task<IEnumerable<TEntity>> GetAllAsync()
+        #endregion
+       
+        #region GET
+        public virtual async Task<TEntity> GetByIdAsync(object id)
         {
-            throw new NotImplementedException();
+            return await dbSet.FindAsync(id);            
         }
-
-        public Task<TEntity> GetByIdAsync(object id)
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(dbSet);
         }
+        #endregion
 
-        public Task<bool> RemoveAsync(object id)
+        #region UPDATE
+        public virtual async Task<int> UpdateAsync(TEntity obj)
         {
-            throw new NotImplementedException();
-        }
+            var avoidingAttachedEntity = await GetByIdAsync(obj.Id);
+            dbContext.Entry(avoidingAttachedEntity).State = EntityState.Detached;
 
-        public Task<int> RemoveAsync(TEntity obj)
-        {
-            throw new NotImplementedException();
-        }
+            var entry = dbContext.Entry(obj);
+            if (entry.State == EntityState.Detached) dbContext.Attach(obj);
 
-        public Task<int> RemoveRangeAsync(IEnumerable<TEntity> entities)
-        {
-            throw new NotImplementedException();
+            dbContext.Entry(obj).State = EntityState.Modified;
+            return await CommitAsync();           
         }
+        #endregion
 
-        public Task<int> UpdateAsync(TEntity obj)
+        #region REMOVE
+        public virtual async Task<bool> RemoveAsync(object id)
         {
-            throw new NotImplementedException();
-        }
+            TEntity entity = await GetByIdAsync(id);
+            if (entity == null) return false;
 
-        public Task<int> UpdateRangeAsync(IEnumerable<TEntity> entities)
-        {
-            throw new NotImplementedException();
+            return await RemoveAsync(entity) > 0 ? true : false;
         }
+        
+        public virtual async Task<int> RemoveAsync(TEntity obj)
+        {
+            dbSet.Remove(obj);
+            return await CommitAsync();
 
-        private async Task<int> CommitAsync()
-        {
-            return await dbContext.SaveChangesAsync();
         }
+        #endregion     
 
         #region ProtectedMethods
         protected override IQueryable<TEntity> GenerateQuery(Expression<Func<TEntity, bool>> filter = null,
@@ -115,6 +117,18 @@ namespace LivrariaRomana.Infrastructure.Repositories.Standard
             }
         }
         #endregion
+
+        private async Task<int> CommitAsync()
+        {
+            return await dbContext.SaveChangesAsync();
+        }
+
+        private int Commit()
+        {
+            return dbContext.SaveChanges();
+        }
+
+
     }
 }
 

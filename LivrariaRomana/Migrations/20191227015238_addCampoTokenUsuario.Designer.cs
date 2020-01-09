@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LivrariaRomana.Migrations
 {
-    [DbContext(typeof(DataBaseContext))]
+    [DbContext(typeof(DatabaseContext))]
     [Migration("20191227015238_addCampoTokenUsuario")]
     partial class addCampoTokenUsuario
     {

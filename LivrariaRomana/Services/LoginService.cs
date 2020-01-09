@@ -11,9 +11,9 @@ namespace LivrariaRomana.Services
 {
     public class LoginService
     {
-        private readonly DataBaseContext _dbContext;
+        private readonly DatabaseContext _dbContext;
 
-        public LoginService(DataBaseContext dbContext)
+        public LoginService(DatabaseContext dbContext)
         {
             _dbContext = dbContext;
         }
