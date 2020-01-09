@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using LivrariaRomana.Logger;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
+using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 
 namespace LivrariaRomana.Controllers
 {
@@ -18,12 +18,14 @@ namespace LivrariaRomana.Controllers
     public class BookController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly IBookRepository _bookRepository;
         private ILoggerManager _logger;
 
-        public BookController(DatabaseContext context, ILoggerManager logger)
+        public BookController(DatabaseContext context, IBookRepository bookRepository, ILoggerManager logger)
         {
             _context = context;
             _logger = logger;
+            _bookRepository = bookRepository;
         }
 
         // GET: api/Livro
@@ -34,10 +36,12 @@ namespace LivrariaRomana.Controllers
             try
             {
                 _logger.LogInfo("[GET]Buscando todos os livros.");
-                var books = _context.Livros.OrderBy(x => x.Title).ToListAsync();
+                var books = await _bookRepository.GetAllAsync();
 
-                _logger.LogInfo($"Retornando { books.Result.Count } usuários.");
-                return await books;
+                var result = books.ToList();
+
+                _logger.LogInfo($"Retornando { result.Count } usuários.");
+                return result;
             }
             catch (Exception ex)
             {
@@ -53,35 +57,35 @@ namespace LivrariaRomana.Controllers
         public async Task<ActionResult<Book>> GetLivro(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando livro de ID: { id }.");
-            var livro = await _context.Livros.FindAsync(id);
+            var book = await _bookRepository.GetByIdAsync(id);
 
-            if (livro == null)
+            if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não foi encontrado.");
                 return StatusCode(500, "Internal server error");
             }
 
-            _logger.LogInfo($"Retornado livro: { livro.Title }.");
-            return livro;
+            _logger.LogInfo($"Retornado livro: { book.Title }.");
+            return book;
         }
 
         // PUT: api/Livro/5
         // [Authorize("Admin")]
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> PutLivro(int id, Book livro)
+        public async Task<IActionResult> PutLivro(int id, Book book)
         {
-            if (id != livro.Id)
+            if (id != book.Id)
             {
                 _logger.LogError($"[PUT-BOOK]Parâmetros incorretos.");
                 return BadRequest();                
             }
             _logger.LogInfo($"[PUT]Buscando livro de ID: { id }.");
-            _context.Entry(livro).State = EntityState.Modified;
+            await _bookRepository.UpdateAsync(book);
 
             try
             {
-                _logger.LogInfo($"Editando livro: { livro.Title }, ID: { livro.Id }.");
+                _logger.LogInfo($"Editando livro: { book.Title }, ID: { book.Id }.");
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -98,7 +102,7 @@ namespace LivrariaRomana.Controllers
                 }
             }
 
-            _logger.LogInfo($"Livro: { livro.Title }, ID: { livro.Id } editado com sucesso.");
+            _logger.LogInfo($"Livro: { book.Title }, ID: { book.Id } editado com sucesso.");
             return NoContent();
         }
 
@@ -106,15 +110,14 @@ namespace LivrariaRomana.Controllers
         // [Authorize("Admin")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<Book>> PostLivro(Book livro)
+        public async Task<ActionResult<Book>> PostLivro(Book book)
         {
-            if (livro != null)
+            if (book != null)
             {
                 try
                 {
-                    _logger.LogInfo($"[POST]Adicionando novo livro: { livro.Title }.");
-                    await _context.SaveChangesAsync();
-                    _context.Livros.Add(livro);
+                    _logger.LogInfo($"[POST]Adicionando novo livro: { book.Title }.");
+                    await _bookRepository.AddAsync(book);                    
                 }
                 catch (Exception ex)
                 {
@@ -128,8 +131,8 @@ namespace LivrariaRomana.Controllers
                 return BadRequest();
             }
 
-            _logger.LogInfo($"Livro { livro.Title }, ID: { livro.Id } adicionado com sucesso.");
-            return CreatedAtAction("GetLivro", new { id = livro.Id }, livro);
+            _logger.LogInfo($"Livro { book.Title }, ID: { book.Id } adicionado com sucesso.");
+            return CreatedAtAction("GetLivro", new { id = book.Id }, book);
         }
 
         // DELETE: api/Livro/5
@@ -139,8 +142,8 @@ namespace LivrariaRomana.Controllers
         public async Task<ActionResult<Book>> DeleteLivro(int id)
         {
             _logger.LogInfo($"[DELETE]Buscando livro de ID: { id }.");
-            var livro = await _context.Livros.FindAsync(id);
-            if (livro == null)
+            var book = await _bookRepository.GetByIdAsync(id);
+            if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não encontrado.");
                 return NotFound();
@@ -148,8 +151,8 @@ namespace LivrariaRomana.Controllers
 
             try
             {
-                _logger.LogInfo($"Deletando livro: { livro.Title }, ID: { livro.Id }.");
-                _context.Livros.Remove(livro);
+                _logger.LogInfo($"Deletando livro: { book.Title }, ID: { book.Id }.");
+                await _bookRepository.RemoveAsync(book);
             }
             catch (Exception ex)
             {
@@ -160,7 +163,7 @@ namespace LivrariaRomana.Controllers
             _logger.LogInfo($"Usuário excluido com sucesso.");
             await _context.SaveChangesAsync();
 
-            return livro;
+            return book;
         }
 
         private bool LivroExists(int id)

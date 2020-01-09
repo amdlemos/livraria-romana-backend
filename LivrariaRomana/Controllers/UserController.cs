@@ -40,7 +40,6 @@ namespace LivrariaRomana.Controllers
                 var result = allUsers.ToList();                
 
                 _logger.LogInfo($"Retornando { result.Count } usuários.");                                
-
                 return  result;
             }
             catch (Exception ex)
@@ -56,25 +55,25 @@ namespace LivrariaRomana.Controllers
         public async Task<ActionResult<User>> GetUsuario(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando usuário de ID: { id }.");
-            var usuario = await _userRepository.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
 
-            if (usuario == null)
+            if (user == null)
             {
                 _logger.LogError($"Usuário de ID: { id } não foi encontrado.");
                 return StatusCode(500, "Internal server error");
             }
 
-            _logger.LogInfo($"Retornado usuário: { usuario.Username }.");
-            return usuario;
+            _logger.LogInfo($"Retornado usuário: { user.Username }.");
+            return user;
         }
 
         // PUT: api/Usuario/5        
         //[Authorize("Admin")]
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> PutUsuario(int id, User usuario)
+        public async Task<IActionResult> PutUsuario(int id, User user)
         {            
-            if (id != usuario.Id)
+            if (id != user.Id)
             {
                 _logger.LogError($"[PUT-USER]Parâmetros incorretos.");
                 return BadRequest();
@@ -83,7 +82,7 @@ namespace LivrariaRomana.Controllers
             try
             {
                 _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
-                await _userRepository.UpdateAsync(usuario);
+                await _userRepository.UpdateAsync(user);
 
             }
             catch (DbUpdateConcurrencyException ex)
@@ -100,7 +99,7 @@ namespace LivrariaRomana.Controllers
                 }
             }
            
-            _logger.LogInfo($"Usuário: { usuario.Username }, ID: { usuario.Id } editado com sucesso.");
+            _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
             return NoContent();
         }
 
