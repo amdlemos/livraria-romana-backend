@@ -1,49 +1,81 @@
 ﻿using Xunit;
-using System.Linq.Expressions;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
+using LivrariaRomana.Test.DataBuilder;
+using System.Linq;
+using System;
 
 namespace LivrariaRomana.Test.Repositorios
 {
     public class BookRepositoryTest
     {
-        private readonly IBookRepository _bookRepository;
         private readonly DatabaseContext _dbContext;
+        private readonly IBookRepository _bookRepository;
+
+        private readonly BookBuilder _bookBuilder;
+        
 
         public BookRepositoryTest()
         {
             _dbContext = new DatabaseContext();
             _bookRepository = new BookRepository(_dbContext);
+            _bookBuilder = new BookBuilder();
         }        
 
         [Fact]
-        public void AddBookTest()
+        public void AddBookAsyncTest()
+        {            
+            var result = _bookRepository.AddAsync(_bookBuilder.CreateBook());
+
+            Assert.NotEqual(0, result.Id);
+        }
+
+        [Fact]
+        public async Task GetByIdAsyncTest()
         {
-            Book book = new Book()
-            {
-                Id = 0,
-                Author = "Primeiro test",
-                Title = "Primeiro titulo",
-                ISBN = null,
-                OriginalTitle = null,
-                PublicationYear = null,
-                PublishingCompany = null
-            };
-            var result = _bookRepository.AddAsync(book);            
-            
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var result = await _bookRepository.GetByIdAsync(entity.Id);
+
+            Assert.Equal(entity.Id, result.Id);
+        }
+
+        [Fact]
+        public async Task GetAllAsyncTest()
+        {
+            var result = await _bookRepository.GetAllAsync();
+
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void GetByIdAsync()
+        public async Task RemoveAsync()
         {
-            var result = _bookRepository.GetByIdAsync(1);
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var result = await _bookRepository.RemoveAsync(entity.Id);
+            Assert.True(result);
+        }
 
-            Assert.NotNull(result);
+        [Fact]
+        public async Task RemoveAsyncObjTest()
+        {
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var result = await _bookRepository.RemoveAsync(entity);
+            Assert.Equal(1, result);
+        }
+
+        [Fact]
+        public async Task UpdateAscyncTest()
+        {
+            var allBooks = await _bookRepository.GetAllAsync();
+            var entity = allBooks.FirstOrDefault();
+            var newTitle = $"Title Editado: + { DateTime.Now }";
+            entity.Title = newTitle;
+
+            var result = await _bookRepository.UpdateAsync(entity);
+            Assert.Equal(newTitle, entity.Title);
+            Assert.Equal(1, result);
         }
     }
 }

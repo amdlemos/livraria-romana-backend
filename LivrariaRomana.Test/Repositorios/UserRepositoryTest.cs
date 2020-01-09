@@ -1,13 +1,10 @@
-﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.DBConfiguration;
+﻿using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using Xunit;
-using Microsoft.EntityFrameworkCore;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using System.Threading.Tasks;
 using LivrariaRomana.Test.DataBuilder;
 using System.Linq;
-using System.Collections.Generic;
 using System;
 
 namespace LivrariaRomana.Test.Repositorios
