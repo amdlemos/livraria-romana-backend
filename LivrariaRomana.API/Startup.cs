@@ -18,6 +18,8 @@ using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
 using LivrariaRomana.Infrastructure.Repositories.Standard;
+using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using LivrariaRomana.Infrastructure.IoC;
 
 namespace LivrariaRomana.API
 {
@@ -40,13 +42,8 @@ namespace LivrariaRomana.API
             //
             // Injeta as dependências necessárias
             //
-            #region INJEÇÃO DE DEPENDÊNCIA            
-            services.AddSingleton<ILoggerManager, LoggerManager>();
-
-            services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
-            services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
-            services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
-            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            #region INJEÇÃO DE DEPENDÊNCIA (Inclusive DBContext)        
+            services.Injection(_configuration);           
             #endregion
 
             //
@@ -101,14 +98,7 @@ namespace LivrariaRomana.API
                 o.LowercaseUrls = true;
                 o.LowercaseQueryStrings = true;                
             });
-            #endregion
-
-            //
-            // Adiciona DataBAsecontext
-            //
-            #region DATABASE CONTEXT
-            services.AddDbContext<DatabaseContext>(o => o.UseSqlServer(_configuration.GetConnectionString("DevConnection")));
-            #endregion
+            #endregion           
 
             //
             // Adiciona Swagger

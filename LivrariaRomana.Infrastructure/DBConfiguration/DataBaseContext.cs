@@ -1,5 +1,6 @@
 ﻿using LivrariaRomana.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace LivrariaRomana.Infrastructure.DBConfiguration
 {
@@ -7,11 +8,11 @@ namespace LivrariaRomana.Infrastructure.DBConfiguration
     {
         public DatabaseContext() { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {                
-                optionsBuilder.UseSqlServer(DatabaseConnection.ConnectionConfiguration);
+            if (!dbContextOptionsBuilder.IsConfigured)
+            {
+                dbContextOptionsBuilder.UseSqlServer(DatabaseConnection.ConnectionConfiguration.GetConnectionString("DevConnection"));
             }
         }
 

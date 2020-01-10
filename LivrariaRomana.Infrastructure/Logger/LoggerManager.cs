@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using NLog;
 
 namespace LivrariaRomana.Infrastructure.Logger
 {

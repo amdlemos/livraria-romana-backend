@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivrariaRomana.Infrastructu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivrariaRomana.API", "LivrariaRomana.API\LivrariaRomana.API.csproj", "{64A566B8-002A-4D70-ACEA-105ACDCE2D5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaRomana.Infrastructure.IoC", "LivrariaRomana.Infrastructure.IoC\LivrariaRomana.Infrastructure.IoC.csproj", "{734B61B8-55EF-475B-BC2E-F31D70487A04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{64A566B8-002A-4D70-ACEA-105ACDCE2D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64A566B8-002A-4D70-ACEA-105ACDCE2D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64A566B8-002A-4D70-ACEA-105ACDCE2D5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734B61B8-55EF-475B-BC2E-F31D70487A04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734B61B8-55EF-475B-BC2E-F31D70487A04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734B61B8-55EF-475B-BC2E-F31D70487A04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734B61B8-55EF-475B-BC2E-F31D70487A04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

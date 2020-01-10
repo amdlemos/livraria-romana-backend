@@ -1,10 +1,10 @@
 ﻿using System;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Logger;
 using LivrariaRomana.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LivrariaRomana.Infrastructure.Interfaces.Logger;
 
 namespace LivrariaRomana.API.Controllers
 {

@@ -8,16 +8,15 @@ namespace LivrariaRomana.Infrastructure.DBConfiguration
 {
     public class DatabaseConnection
     {        
-        public static string ConnectionConfiguration
+        public static IConfiguration ConnectionConfiguration
         {
             get
             {
-                IConfiguration Configuration = new ConfigurationBuilder()
-                    .SetBasePath("E:\\alan\\projetos\\theos sistemas\\LivrariaRomana\\LivrariaRomana.Test")
+                IConfiguration configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")
                     .Build();
-                string connectionString = Configuration.GetConnectionString("DevConnection");
-                return connectionString;
+                return configuration;
             }
 
         }
