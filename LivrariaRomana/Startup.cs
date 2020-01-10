@@ -37,16 +37,22 @@ namespace LivrariaRomana
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Configura o serviço de log
+            //
+            // Injeta as dependências necessárias
+            //
+            #region INJEÇÃO DE DEPENDÊNCIA            
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
-            // Injeção Dependencia
             services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
             services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
             services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
-            
-            // Adiciona Authorização
+            #endregion
+
+            //
+            // Adiciona politicas de Autenticação e Autorização
+            //
+            #region AUTENICAÇÃO E AUTORIZAÇÃO            
             services.AddMvc(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -61,13 +67,6 @@ namespace LivrariaRomana
             {
                 options.AddPolicy("user", policy => policy.RequireClaim("Livraria", "user"));
                 options.AddPolicy("admin", policy => policy.RequireClaim("Livraria", "admin"));
-            });
-
-            // Rotas retornando minúsculo
-            services.AddRouting(options =>
-            {
-                options.LowercaseUrls = true;
-                options.LowercaseQueryStrings = true;                
             });
 
             // Diz que a aplicação tem uma autenticação e o default é o JwtBeater
@@ -91,11 +90,37 @@ namespace LivrariaRomana
                     ValidateAudience = false
                 };
             });
-            
-            // Adiciono DataBAsecontext
-            services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(_configuration.GetConnectionString("DevConnection")));
+            #endregion
 
-            // Add cors para que a app aceite chamadas de outras portas ou dominios.
+            //
+            // Define consultas e urls minúsculo
+            //
+            #region ROUTES
+            services.AddRouting(o =>
+            {
+                o.LowercaseUrls = true;
+                o.LowercaseQueryStrings = true;                
+            });
+            #endregion
+
+            //
+            // Adiciona DataBAsecontext
+            //
+            #region DATABASE CONTEXT
+            services.AddDbContext<DatabaseContext>(o => o.UseSqlServer(_configuration.GetConnectionString("DevConnection")));
+            #endregion
+
+            //
+            // Adiciona Swagger
+            //
+            #region SWAGGER            
+            services.AddSwaggerGen(x => { x.SwaggerDoc("v1", new OpenApiInfo { Title = "Livraria Romana", Version = "v1" }); });
+            #endregion
+
+            //
+            // Adiciona politicas do Cors
+            //
+            #region CORS            
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -107,9 +132,9 @@ namespace LivrariaRomana
                     .AllowCredentials();                    
                 });
             });
+            #endregion
 
-            // Registra o gerador Swagger
-            services.AddSwaggerGen(x => { x.SwaggerDoc("v1", new OpenApiInfo { Title = "Livraria Romana", Version = "v1" }); });
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -120,6 +145,7 @@ namespace LivrariaRomana
                 app.UseDeveloperExceptionPage();
             }
 
+            // 
             app.UseSwagger();
             app.UseSwaggerUI(s =>
             {
