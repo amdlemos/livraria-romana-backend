@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace LivrariaRomana.Services
+namespace LivrariaRomana.API.Services
 {
     public class LoginService
     {

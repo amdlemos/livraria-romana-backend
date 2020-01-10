@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LivrariaRomana
+namespace LivrariaRomana.API
 {
     public static class Settings
     {

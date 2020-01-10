@@ -1,6 +1,6 @@
 ﻿using NLog;
 
-namespace LivrariaRomana.Logger
+namespace LivrariaRomana.Infrastructure.Logger
 {
     public class LoggerManager : ILoggerManager
     {

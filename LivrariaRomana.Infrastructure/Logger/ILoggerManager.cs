@@ -1,4 +1,4 @@
-﻿namespace LivrariaRomana.Logger
+﻿namespace LivrariaRomana.Infrastructure.Logger
 {
     public interface ILoggerManager
     {

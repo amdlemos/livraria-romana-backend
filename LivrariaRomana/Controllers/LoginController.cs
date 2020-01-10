@@ -1,12 +1,12 @@
 ﻿using System;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Logger;
-using LivrariaRomana.Services;
+using LivrariaRomana.Infrastructure.Logger;
+using LivrariaRomana.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LivrariaRomana.Controllers
+namespace LivrariaRomana.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
