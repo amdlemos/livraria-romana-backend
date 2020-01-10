@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LivrariaRomana.Infrastructure.DBConfiguration
 {
-    public class DataBaseConnection
+    public class DatabaseConnection
     {        
         public static string ConnectionConfiguration
         {

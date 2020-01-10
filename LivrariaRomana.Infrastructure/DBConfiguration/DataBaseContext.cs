@@ -11,7 +11,7 @@ namespace LivrariaRomana.Infrastructure.DBConfiguration
         {
             if (!optionsBuilder.IsConfigured)
             {                
-                optionsBuilder.UseSqlServer(DataBaseConnection.ConnectionConfiguration);
+                optionsBuilder.UseSqlServer(DatabaseConnection.ConnectionConfiguration);
             }
         }
 
