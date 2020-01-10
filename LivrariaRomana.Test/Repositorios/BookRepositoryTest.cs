@@ -1,11 +1,11 @@
-﻿using Xunit;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.DBConfiguration;
-using System.Threading.Tasks;
+﻿using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Test.DataBuilder;
-using System.Linq;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace LivrariaRomana.Test.Repositorios
 {
@@ -15,18 +15,18 @@ namespace LivrariaRomana.Test.Repositorios
         private readonly IBookRepository _bookRepository;
 
         private readonly BookBuilder _bookBuilder;
-        
+
 
         public BookRepositoryTest()
         {
             _dbContext = new DatabaseContext();
             _bookRepository = new BookRepository(_dbContext);
             _bookBuilder = new BookBuilder();
-        }        
+        }
 
         [Fact]
         public void AddBookAsyncTest()
-        {            
+        {
             var result = _bookRepository.AddAsync(_bookBuilder.CreateBook());
 
             Assert.NotEqual(0, result.Id);

@@ -1,11 +1,11 @@
 ﻿using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using Xunit;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using System.Threading.Tasks;
+using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Test.DataBuilder;
-using System.Linq;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace LivrariaRomana.Test.Repositorios
 {
@@ -15,7 +15,7 @@ namespace LivrariaRomana.Test.Repositorios
         private readonly IUserRepository _userRepository;
 
         private readonly UserBuilder _userBuilder;
-        
+
 
         public UserRepositoryTest()
         {
@@ -26,7 +26,7 @@ namespace LivrariaRomana.Test.Repositorios
 
         [Fact]
         public async Task AddUserAsyncTest()
-        {           
+        {
             var result = await _userRepository.AddAsync(_userBuilder.CreateUser());
 
             Assert.NotEqual(0, result.Id);
@@ -44,8 +44,8 @@ namespace LivrariaRomana.Test.Repositorios
         [Fact]
         public async Task GetAllAsyncTest()
         {
-            var result = await _userRepository.GetAllAsync();            
-            
+            var result = await _userRepository.GetAllAsync();
+
             Assert.NotNull(result);
 
         }

@@ -38,9 +38,9 @@ namespace LivrariaRomana.Controllers
                 _logger.LogInfo("[GET]Buscando todos os livros.");
                 var books = await _bookRepository.GetAllAsync();
 
-                var result = books.ToList();
+                var result = books.OrderBy(x => x.Title).ToList();
 
-                _logger.LogInfo($"Retornando { result.Count } usuários.");
+                _logger.LogInfo($"Retornando { result.Count() } usuários.");
                 return result;
             }
             catch (Exception ex)

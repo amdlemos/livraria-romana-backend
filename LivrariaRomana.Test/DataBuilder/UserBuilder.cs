@@ -1,7 +1,5 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace LivrariaRomana.Test.DataBuilder
 {
@@ -9,10 +7,11 @@ namespace LivrariaRomana.Test.DataBuilder
     {
         private User user;
         private List<User> userList;
-       
+
         public User CreateUser()
         {
-            user = new User() { 
+            user = new User()
+            {
                 Username = "User from Builder",
                 Email = "user@builder.com",
                 Password = "123"

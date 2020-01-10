@@ -46,7 +46,7 @@ namespace LivrariaRomana
             services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
             
-            // 
+            // Adiciona Authorização
             services.AddMvc(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -55,8 +55,15 @@ namespace LivrariaRomana
                 config.Filters.Add(new AuthorizeFilter(policy));
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
-            // 
+
+            // Adiciono dois níveis de permissão    
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("user", policy => policy.RequireClaim("Livraria", "user"));
+                options.AddPolicy("admin", policy => policy.RequireClaim("Livraria", "admin"));
+            });
+
+            // Rotas retornando minúsculo
             services.AddRouting(options =>
             {
                 options.LowercaseUrls = true;
@@ -83,13 +90,6 @@ namespace LivrariaRomana
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-            });
-
-            // Adiciono dois níveis de permissão    
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("user", policy => policy.RequireClaim("Livraria", "user"));
-                options.AddPolicy("admin", policy => policy.RequireClaim("Livraria", "admin"));
             });
             
             // Adiciono DataBAsecontext

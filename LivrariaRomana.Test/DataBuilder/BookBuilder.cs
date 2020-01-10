@@ -1,7 +1,5 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace LivrariaRomana.Test.DataBuilder
 {
@@ -9,11 +7,12 @@ namespace LivrariaRomana.Test.DataBuilder
     {
         private Book book;
         private List<Book> bookList;
-       
+
         public Book CreateBook()
         {
-            book = new Book() { 
-                Author = "Author from Builder",                
+            book = new Book()
+            {
+                Author = "Author from Builder",
                 OriginalTitle = "Original Title from Builder",
                 Title = "TiTile from builder",
                 PublicationYear = 2005,
