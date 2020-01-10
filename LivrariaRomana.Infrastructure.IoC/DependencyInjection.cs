@@ -2,9 +2,11 @@
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Infrastructure.Logger;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Standard;
+using LivrariaRomana.Infrastructure.Services.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,10 +26,15 @@ namespace LivrariaRomana.Infrastructure.IoC
 
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
+            // Repositories
             services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
             services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
             services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
             services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+
+            // Services
+            services.AddScoped(typeof(IUserService), typeof(UserService));
+            services.AddScoped(typeof(IBookService), typeof(BookService));
 
         }
     }

@@ -1,10 +1,11 @@
 ﻿using System;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
+using System.Threading.Tasks;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -14,22 +15,23 @@ namespace LivrariaRomana.API.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly ILoggerManager _logger;
+        private readonly IUserService _userService;
 
-        public LoginController(DatabaseContext context, ILoggerManager logger)
+        public LoginController(DatabaseContext context, ILoggerManager logger, IUserService userService)
         {
             _context = context;
             _logger = logger;
+            _userService = userService;
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public IActionResult PostLogin(Login login)
+        public async Task<ActionResult<User>> PostLogin(Login login)
         {
             try
-            {
-                var service = new LoginService(_context);
+            {                
                 _logger.LogInfo($"[POST]Usuário: { login.Username } tentando fazer login.");
-                var user = service.Authenticate(login.Username, login.Password);
+                var user = await _userService.Authenticate(login.Username, login.Password);                
 
                 if (user == null)
                 {
@@ -38,7 +40,7 @@ namespace LivrariaRomana.API.Controllers
                 }
 
                 _logger.LogInfo($"USUÁRIO: { login.Username } logado.");
-                return Ok(user);
+                return user;
             }
             catch (Exception ex)
             {

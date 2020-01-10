@@ -14,5 +14,12 @@ namespace LivrariaRomana.Infrastructure.Repositories.Domain
         {
 
         }
+
+        public virtual async Task<User> GetByUsernamePassword(string username, string password)
+        {            
+            var allUsers = await this.GetAllAsync();
+            var user = allUsers.Where(x => x.Username == username && x.Password == password).FirstOrDefault();
+            return user;
+        }
     }
 }
