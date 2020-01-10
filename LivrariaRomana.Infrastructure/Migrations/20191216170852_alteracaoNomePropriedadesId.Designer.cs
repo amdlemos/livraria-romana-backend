@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20191229153750_refatorandoClasses")]
-    partial class refatorandoClasses
+    [Migration("20191216170852_alteracaoNomePropriedadesId")]
+    partial class alteracaoNomePropriedadesId
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -19,28 +19,28 @@ namespace LivrariaRomana.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("LivrariaRomana.Models.Book", b =>
+            modelBuilder.Entity("LivrariaRomana.Models.Livro", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Author")
+                    b.Property<int>("AnoPublicacao");
+
+                    b.Property<string>("Autor")
                         .IsRequired()
+                        .HasMaxLength(150);
+
+                    b.Property<string>("Editora")
                         .HasMaxLength(150);
 
                     b.Property<string>("ISBN");
 
-                    b.Property<string>("OriginalTitle")
-                        .HasMaxLength(150);
-
-                    b.Property<int?>("PublicationYear");
-
-                    b.Property<string>("PublishingCompany")
-                        .HasMaxLength(150);
-
-                    b.Property<string>("Title")
+                    b.Property<string>("Titulo")
                         .IsRequired()
+                        .HasMaxLength(150);
+
+                    b.Property<string>("TituloOriginal")
                         .HasMaxLength(150);
 
                     b.HasKey("Id");
@@ -48,7 +48,7 @@ namespace LivrariaRomana.Migrations
                     b.ToTable("Livros");
                 });
 
-            modelBuilder.Entity("LivrariaRomana.Models.User", b =>
+            modelBuilder.Entity("LivrariaRomana.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,14 +58,13 @@ namespace LivrariaRomana.Migrations
                         .IsRequired()
                         .HasMaxLength(30);
 
-                    b.Property<string>("Password")
-                        .IsRequired();
-
-                    b.Property<string>("Token");
-
-                    b.Property<string>("UserName")
+                    b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(50);
+
+                    b.Property<string>("Senha")
+                        .IsRequired()
+                        .HasMaxLength(30);
 
                     b.HasKey("Id");
 

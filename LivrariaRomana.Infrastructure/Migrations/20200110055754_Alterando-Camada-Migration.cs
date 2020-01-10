@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
-    public partial class PrimeiraMigracao : Migration
+    public partial class AlterandoCamadaMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,33 +11,34 @@ namespace LivrariaRomana.Migrations
                 name: "Livros",
                 columns: table => new
                 {
-                    LivroID = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Titulo = table.Column<string>(maxLength: 150, nullable: false),
-                    TituloOriginal = table.Column<string>(maxLength: 150, nullable: true),
-                    Autor = table.Column<string>(maxLength: 150, nullable: false),
-                    Editora = table.Column<string>(maxLength: 150, nullable: true),
+                    Title = table.Column<string>(maxLength: 150, nullable: false),
+                    OriginalTitle = table.Column<string>(maxLength: 150, nullable: true),
+                    Author = table.Column<string>(maxLength: 150, nullable: false),
+                    PublishingCompany = table.Column<string>(maxLength: 150, nullable: true),
                     ISBN = table.Column<string>(nullable: true),
-                    AnoPublicacao = table.Column<int>(nullable: false)
+                    PublicationYear = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Livros", x => x.LivroID);
+                    table.PrimaryKey("PK_Livros", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Usuarios",
                 columns: table => new
                 {
-                    UsuarioId = table.Column<int>(nullable: false)
+                    Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(maxLength: 50, nullable: false),
-                    Senha = table.Column<string>(maxLength: 30, nullable: false),
-                    Email = table.Column<string>(maxLength: 30, nullable: false)
+                    Username = table.Column<string>(maxLength: 50, nullable: false),
+                    Password = table.Column<string>(nullable: false),
+                    Email = table.Column<string>(maxLength: 30, nullable: false),
+                    Token = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Usuarios", x => x.UsuarioId);
+                    table.PrimaryKey("PK_Usuarios", x => x.Id);
                 });
         }
 

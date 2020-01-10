@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
     public partial class alteracaoNomePropriedadesId : Migration
     {

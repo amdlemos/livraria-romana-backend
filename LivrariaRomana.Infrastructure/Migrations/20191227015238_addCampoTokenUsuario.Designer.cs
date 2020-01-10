@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20191223180803_correcaoEntidadeLivro")]
-    partial class correcaoEntidadeLivro
+    [Migration("20191227015238_addCampoTokenUsuario")]
+    partial class addCampoTokenUsuario
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -63,8 +63,9 @@ namespace LivrariaRomana.Migrations
                         .HasMaxLength(50);
 
                     b.Property<string>("Senha")
-                        .IsRequired()
-                        .HasMaxLength(30);
+                        .IsRequired();
+
+                    b.Property<string>("Token");
 
                     b.HasKey("Id");
 

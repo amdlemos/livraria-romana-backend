@@ -5,20 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20191214232015_PrimeiraMigracao.cs" />
-    <Compile Remove="Migrations\20191214232015_PrimeiraMigracao.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="nlog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="nlog.config" />
   </ItemGroup>
 
   <ItemGroup>

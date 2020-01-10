@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -12,13 +11,6 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using System.Text;
 using System.IO;
-using LivrariaRomana.Infrastructure.Logger;
-using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
-using LivrariaRomana.Infrastructure.Repositories.Standard;
-using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.IoC;
 
 namespace LivrariaRomana.API

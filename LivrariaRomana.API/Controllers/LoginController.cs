@@ -26,7 +26,7 @@ namespace LivrariaRomana.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> PostLogin(Login login)
+        public async Task<ActionResult<User>> PostAuthenticate(Login login)
         {
             try
             {                

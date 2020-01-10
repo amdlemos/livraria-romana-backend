@@ -3,13 +3,15 @@ using LivrariaRomana.Infrastructure.DBConfiguration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class BancoDadosContextModelSnapshot : ModelSnapshot
+    [Migration("20191229153750_refatorandoClasses")]
+    partial class refatorandoClasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

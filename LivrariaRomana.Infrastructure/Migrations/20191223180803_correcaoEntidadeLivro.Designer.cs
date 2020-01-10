@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LivrariaRomana.Migrations
+namespace LivrariaRomana.Infrastructure.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20191216170852_alteracaoNomePropriedadesId")]
-    partial class alteracaoNomePropriedadesId
+    [Migration("20191223180803_correcaoEntidadeLivro")]
+    partial class correcaoEntidadeLivro
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,7 +25,7 @@ namespace LivrariaRomana.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AnoPublicacao");
+                    b.Property<int?>("AnoPublicacao");
 
                     b.Property<string>("Autor")
                         .IsRequired()
