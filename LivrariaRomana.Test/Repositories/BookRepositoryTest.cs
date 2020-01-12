@@ -2,6 +2,7 @@
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Test.DataBuilder;
+using LivrariaRomana.Test.DBConfiguration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace LivrariaRomana.Test.Repositories
 
         public BookRepositoryTest()
         {
-            _dbContext = new DatabaseContext();
+            _dbContext = new Connection().DatabaseConfiguration();
             _bookRepository = new BookRepository(_dbContext);
             _bookBuilder = new BookBuilder();
         }

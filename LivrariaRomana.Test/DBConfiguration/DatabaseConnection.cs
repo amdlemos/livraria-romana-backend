@@ -13,9 +13,9 @@ namespace LivrariaRomana.Test.DBConfiguration
         {
             get
             {
-                var gambiarra = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.ToString()).FullName.ToString();                
+                var path = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.ToString()).FullName.ToString();                
                 IConfigurationRoot configuration = new ConfigurationBuilder()
-                    .SetBasePath(gambiarra)
+                    .SetBasePath(path)
                     .AddJsonFile("appsettings.test.json")
                     .Build();
                 return configuration;// Options.Create(Configuration.GetSection("ConnectionStrings").Get<DataOptionFactory>());
