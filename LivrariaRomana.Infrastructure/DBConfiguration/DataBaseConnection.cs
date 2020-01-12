@@ -11,7 +11,7 @@ namespace LivrariaRomana.Infrastructure.DBConfiguration
         public static IConfiguration ConnectionConfiguration
         {
             get
-            {
+            {                
                 IConfiguration configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json")

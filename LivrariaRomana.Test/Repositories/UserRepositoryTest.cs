@@ -2,6 +2,7 @@
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Test.DataBuilder;
+using LivrariaRomana.Test.DBConfiguration;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,14 +13,14 @@ namespace LivrariaRomana.Test.Repositories
     public class UserRepositoryTest
     {
         private readonly DatabaseContext _dbContext;
+        
         private readonly IUserRepository _userRepository;
-
         private readonly UserBuilder _userBuilder;
 
 
         public UserRepositoryTest()
         {
-            _dbContext = new DatabaseContext();
+            _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
             _userBuilder = new UserBuilder();
         }
