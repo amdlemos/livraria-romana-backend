@@ -29,7 +29,7 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_not_have_error_when_author_is_specified()
         {
-            var book = _bookBuilder.CreateBook();
+            var book = _bookBuilder.CreateValidBook();
             _bookValidator.ShouldNotHaveValidationErrorFor(x => x.Author, book);
         }
         #endregion
@@ -45,7 +45,7 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_not_have_error_when_title_is_specified()
         {
-            var book = _bookBuilder.CreateBook();
+            var book = _bookBuilder.CreateValidBook();
             _bookValidator.ShouldNotHaveValidationErrorFor(x => x.Title, book);
         }
         #endregion
@@ -54,7 +54,7 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_have_error_when_isbn_is_not_valid()
         {
-            var book = _bookBuilder.CreateBook();
+            var book = _bookBuilder.CreateValidBook();
             var result = _bookValidator.Validate(book);
             Assert.False(result.IsValid && result.Errors[0].PropertyName == "ISBN");
         }
@@ -62,7 +62,7 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_not_have_error_when_isbn_is_valid()
         {
-            var book = _bookBuilder.CreateBook();
+            var book = _bookBuilder.CreateValidBook();
             var result = _bookValidator.Validate(book);
             Assert.True(result.IsValid);
         }
@@ -79,7 +79,7 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_not_have_error_when_amount_is_greater_than_or_equal_0()
         {
-            var book = _bookBuilder.CreateBook();
+            var book = _bookBuilder.CreateValidBook();
             _bookValidator.ShouldNotHaveValidationErrorFor(x => x.Amount, book);
         }
         #endregion

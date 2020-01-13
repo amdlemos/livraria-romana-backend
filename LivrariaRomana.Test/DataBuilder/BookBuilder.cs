@@ -9,7 +9,7 @@ namespace LivrariaRomana.Test.DataBuilder
         private Book book;
         private List<Book> bookList;
 
-        public Book CreateBook()
+        public Book CreateValidBook()
         {
             book = new Book(
                 "TiTile from builder",
@@ -17,7 +17,7 @@ namespace LivrariaRomana.Test.DataBuilder
                 "Original Title from Builder", 
                 "Publising Company from Builder",
                 "978-85-333-0227-3", 
-                new DateTime(), 
+                new DateTime(2005,1,1), 
                 0);
             return book;
         }
@@ -61,7 +61,7 @@ namespace LivrariaRomana.Test.DataBuilder
             return book;
         }
 
-         public Book CreateBookWithSmallerAmount0()
+        public Book CreateBookWithSmallerAmount0()
         {
             book = new Book(
                 "TiTile from builder",
@@ -74,12 +74,40 @@ namespace LivrariaRomana.Test.DataBuilder
             return book;
         }
 
+        public Book CreateBookWithId()
+        {
+            book = new Book(                
+                "TiTile from builder",
+                "Author from Builder",
+                "Original Title from Builder",
+                "Publising Company from Builder",
+                "978-85-333-0227-3",
+                new DateTime(2005, 1, 1),
+                0, 
+                4);
+            return book;
+        }
+
+        public Book CreateBookWithNonexistentId()
+        {
+            book = new Book(
+                "TiTile from builder",
+                "Author from Builder",
+                "Original Title from Builder",
+                "Publising Company from Builder",
+                "978-85-333-0227-3",
+                new DateTime(2005, 1, 1),
+                0,
+                9999999);
+            return book;
+        }
+
         public List<Book> CreateBookList(int amount)
         {
             bookList = new List<Book>();
             for (int i = 0; i < amount; i++)
             {
-                bookList.Add(CreateBook());
+                bookList.Add(CreateValidBook());
             }
 
             return bookList;

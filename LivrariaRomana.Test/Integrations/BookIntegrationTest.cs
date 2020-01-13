@@ -8,18 +8,31 @@ using Xunit;
 using LivrariaRomana.API;
 using LivrariaRomana.Test.DataBuilder;
 using Utf8Json;
+using System.Linq;
 using LivrariaRomana.Domain.DTO;
 using System.Net.Http.Headers;
+using System.Text;
+using LivrariaRomana.Domain.Entities;
+using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Repositories.Domain;
+using LivrariaRomana.Infrastructure.DBConfiguration;
+using LivrariaRomana.Test.DBConfiguration;
 
 namespace LivrariaRomana.Test.Integrations
 {
     public class BookIntegrationTest
     {
+        private readonly DatabaseContext _dbContext;
+        private readonly IBookRepository _bookRepository;
+        private readonly BookBuilder _bookBuilder;
         private readonly TestServer _server;
         public HttpClient Client;
 
         public BookIntegrationTest()
         {
+            _dbContext = new Connection().DatabaseConfiguration();
+            _bookRepository = new BookRepository(_dbContext);
+            _bookBuilder = new BookBuilder();
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             Client = _server.CreateClient();
         }
@@ -35,7 +48,7 @@ namespace LivrariaRomana.Test.Integrations
         [Fact]
         public async Task Book_GetByIdAsync_ReturnsOkResponse()
         {
-            var response = await Client.GetAsync("api/book/1");
+            var response = await Client.GetAsync("api/book/4");
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -57,20 +70,99 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_UpdateAsync_Returns500()
+        public async Task Book_UpdateAsync_Return_BadRequest()
         {            
-            var book = new BookBuilder().CreateBook();
-            byte[] result = Utf8Json.JsonSerializer.Serialize(book);
-            var p2 = JsonSerializer.Deserialize<BookDTO>(result);
-            var json = JsonSerializer.ToJsonString(p2);
-            var url = $"api/book/1/{ json }";
-            Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json-patch+json"));            
-            //cl.DefaultRequestHeaders.Add("Authorization", String.Format("Bearer {0}", token));
-            //var userAgent = "d-fens HttpClient";
-            //cl.DefaultRequestHeaders.Add("User-Agent", userAgent);
-            var response = await Client.GetAsync(url);
+            var book = _bookBuilder.CreateValidBook();
+            var jsonSerialized = Serialize(book);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");                                    
+            var response = await Client.PutAsync("api/book/1/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Book_UpdateAsync_Return_OkResponse()
+        {
+            var book = _bookBuilder.CreateBookWithId();
+            var jsonSerialized = Serialize(book);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await Client.PutAsync("api/book/4/", contentString);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task Book_UpdateAsync_Return_NotFound()
+        {
+            var book = _bookBuilder.CreateBookWithNonexistentId();
+            var jsonSerialized = Serialize(book);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await Client.PutAsync("api/book/9999999/", contentString);
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task Book_AddAsync_Return_OkResponse()
+        {
+            var book = _bookBuilder.CreateValidBook();
+            var jsonSerialized = Serialize(book);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await Client.PostAsync("api/book/", contentString);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        [Fact]
+        public async Task Book_AddAsync_Return_500()
+        {
+            var book = new Book();
+            var jsonSerialized = Serialize(book);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await Client.PostAsync("api/book/", contentString);
+
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
+
+        [Fact]
+        public async Task Book_AddAsync_Return_UnsupportedMediaType_with_null_parameters()
+        {            
+            var response = await Client.PostAsync("api/book/", null);
+
+            response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
+        }
+
+        [Fact]
+        public async Task Book_RemoveAsync_Return_Ok()
+        {
+            var book  = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            var allBook = await _bookRepository.GetAllAsync();
+            var bookToDelete = allBook.LastOrDefault();
+            var response = await Client.DeleteAsync($"api/book/{ bookToDelete.Id }");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task Book_RemoveAsync_Return_NotFound()
+        {          
+            var response = await Client.DeleteAsync($"api/book/999999");
+
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+
+
+        public string Serialize(object obj)
+        {
+            byte[] result = Utf8Json.JsonSerializer.Serialize(obj);
+            var p2 = JsonSerializer.Deserialize<object>(result);
+            var json = JsonSerializer.ToJsonString(p2);
+            return json;
         }
 
     }

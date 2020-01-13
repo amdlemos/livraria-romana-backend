@@ -28,7 +28,7 @@ namespace LivrariaRomana.Test.Repositories
         [Fact]
         public async Task AddBookAsyncTest()
         {
-            var result = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var result = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
 
             Assert.NotEqual(0, result.Id);
         }
@@ -36,7 +36,7 @@ namespace LivrariaRomana.Test.Repositories
         [Fact]
         public async Task GetByIdAsyncTest()
         {
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             var result = await _bookRepository.GetByIdAsync(entity.Id);
 
             Assert.Equal(entity.Id, result.Id);
@@ -53,7 +53,7 @@ namespace LivrariaRomana.Test.Repositories
         [Fact]
         public async Task RemoveAsync()
         {
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             var result = await _bookRepository.RemoveAsync(entity.Id);
             Assert.True(result);
         }
@@ -61,7 +61,7 @@ namespace LivrariaRomana.Test.Repositories
         [Fact]
         public async Task RemoveAsyncObjTest()
         {
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             var result = await _bookRepository.RemoveAsync(entity);
             Assert.Equal(1, result);
         }

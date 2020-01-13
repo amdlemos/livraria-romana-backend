@@ -26,8 +26,9 @@ namespace LivrariaRomana.Domain.Entities
             Validate(this, new BookValidator());
         }
 
-        public Book(string title, string author, string originalTitle,  string publisingCompany, string isbn, DateTime publicationYear, int amount)
+        public Book(string title, string author, string originalTitle,  string publisingCompany, string isbn, DateTime publicationYear, int amount, int id = 0)
         {
+            Id = id;
             Title = title;
             OriginalTitle = originalTitle;
             Author = author;

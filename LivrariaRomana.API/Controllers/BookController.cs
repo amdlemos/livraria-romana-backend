@@ -79,24 +79,34 @@ namespace LivrariaRomana.API.Controllers
             if (id != bookDTO.id)
             {
                 _logger.LogError($"[PUT-BOOK]Parâmetros incorretos.");
-                return BadRequest();                
+                return BadRequest();               
             }
-            _logger.LogInfo($"[PUT]Buscando livro de ID: { id }.");
-            await _bookRepository.UpdateAsync(new Book(
-                bookDTO.title, 
-                bookDTO.author, 
-                bookDTO.originalTitle, 
-                bookDTO.publishingCompany,
-                bookDTO.isbn, 
-                bookDTO.publicationYear, 
-                bookDTO.amount));
 
             try
             {
-                _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
-                await _context.SaveChangesAsync();
+                _logger.LogInfo($"[PUT]Buscando livro de ID: { id }.");
+                var book = new Book(
+                    bookDTO.title,
+                    bookDTO.author,
+                    bookDTO.originalTitle,
+                    bookDTO.publishingCompany,
+                    bookDTO.isbn,
+                    bookDTO.publicationYear,
+                    bookDTO.amount,
+                    bookDTO.id);
+                if (book.Valid)
+                {
+                    await _bookRepository.UpdateAsync(book);
+                    _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    return StatusCode(500, book.ValidationResult.Errors);
+                }
+
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (Exception ex)
             {
                 if (!LivroExists(id))
                 {
@@ -111,21 +121,38 @@ namespace LivrariaRomana.API.Controllers
             }
 
             _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Livro
         // [Authorize("Admin")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<Book>> PostLivro(Book book)
+        public async Task<ActionResult<Book>> PostLivro(BookDTO bookDTO)
         {
-            if (book != null)
+            if (bookDTO != null)
             {
                 try
                 {
-                    _logger.LogInfo($"[POST]Adicionando novo livro: { book.Title }.");
-                    await _bookRepository.AddAsync(book);                    
+                    _logger.LogInfo($"[POST]Adicionando novo livro: { bookDTO.title }.");
+                    var book = new Book(
+                    bookDTO.title,
+                    bookDTO.author,
+                    bookDTO.originalTitle,
+                    bookDTO.publishingCompany,
+                    bookDTO.isbn,
+                    bookDTO.publicationYear,
+                    bookDTO.amount,
+                    bookDTO.id);
+                    if (book.Valid)
+                    {
+                        await _bookRepository.AddAsync(book);
+                    }
+                    else
+                    {
+                        return StatusCode(500, book.ValidationResult.Errors);
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -139,8 +166,8 @@ namespace LivrariaRomana.API.Controllers
                 return BadRequest();
             }
 
-            _logger.LogInfo($"Livro { book.Title }, ID: { book.Id } adicionado com sucesso.");
-            return CreatedAtAction("GetLivro", new { id = book.Id }, book);
+            _logger.LogInfo($"Livro { bookDTO.title }, ID: { bookDTO.id } adicionado com sucesso.");
+            return CreatedAtAction("GetLivro", new { id = bookDTO.id }, bookDTO);
         }
 
         // DELETE: api/Livro/5
@@ -156,22 +183,21 @@ namespace LivrariaRomana.API.Controllers
                 _logger.LogError($"Livro de ID: { id } não encontrado.");
                 return NotFound();
             }
-
             try
             {
                 _logger.LogInfo($"Deletando livro: { book.Title }, ID: { book.Id }.");
                 await _bookRepository.RemoveAsync(book);
+
+                _logger.LogInfo($"Usuário excluido com sucesso.");
+                await _context.SaveChangesAsync();
+
+                return Ok();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 return StatusCode(500, "Internal server error");                
-            }
-
-            _logger.LogInfo($"Usuário excluido com sucesso.");
-            await _context.SaveChangesAsync();
-
-            return book;
+            }            
         }
 
         private bool LivroExists(int id)
