@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LivrariaRomana.Infrastructure.Migrations
 {
-    public partial class AlterandoCamadaMigration : Migration
+    public partial class Migracao_Inicial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,12 +14,13 @@ namespace LivrariaRomana.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(maxLength: 150, nullable: false),
-                    OriginalTitle = table.Column<string>(maxLength: 150, nullable: true),
-                    Author = table.Column<string>(maxLength: 150, nullable: false),
-                    PublishingCompany = table.Column<string>(maxLength: 150, nullable: true),
+                    Title = table.Column<string>(nullable: true),
+                    OriginalTitle = table.Column<string>(nullable: true),
+                    Author = table.Column<string>(nullable: true),
+                    PublishingCompany = table.Column<string>(nullable: true),
                     ISBN = table.Column<string>(nullable: true),
-                    PublicationYear = table.Column<int>(nullable: true)
+                    PublicationYear = table.Column<DateTime>(nullable: false),
+                    Amount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

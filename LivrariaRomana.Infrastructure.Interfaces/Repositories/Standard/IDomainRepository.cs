@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard
 {
-    public interface IDomainRepository<TEntity> : IRepositoryAsync<TEntity> where TEntity: class, IIdentityEntity
+    public interface IDomainRepository<TEntity> : IRepositoryAsync<TEntity> where TEntity: class, IEntity
     {
     }
 }

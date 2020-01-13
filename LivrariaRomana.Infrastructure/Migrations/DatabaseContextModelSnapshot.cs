@@ -25,23 +25,19 @@ namespace LivrariaRomana.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Author")
-                        .IsRequired()
-                        .HasMaxLength(150);
+                    b.Property<int>("Amount");
+
+                    b.Property<string>("Author");
 
                     b.Property<string>("ISBN");
 
-                    b.Property<string>("OriginalTitle")
-                        .HasMaxLength(150);
+                    b.Property<string>("OriginalTitle");
 
-                    b.Property<int?>("PublicationYear");
+                    b.Property<DateTime>("PublicationYear");
 
-                    b.Property<string>("PublishingCompany")
-                        .HasMaxLength(150);
+                    b.Property<string>("PublishingCompany");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(150);
+                    b.Property<string>("Title");
 
                     b.HasKey("Id");
 

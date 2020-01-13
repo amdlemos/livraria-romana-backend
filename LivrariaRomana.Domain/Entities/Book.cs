@@ -1,32 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using System;
 
 namespace LivrariaRomana.Domain.Entities
 {
-    public class Book : IIdentityEntity
+    public class Book : Entity, IEntity
     {
-        [Required]
-        public int Id { get; set; }
-
-        [Required(ErrorMessage ="Campo obrigatório.")]
-        [StringLength(maximumLength: 150, MinimumLength = 1, ErrorMessage = "Máximo 150 caractéres.")]
         public string Title { get; set; }
-
-        [StringLength(maximumLength: 150)]
         public string OriginalTitle { get; set; }
-
-        [Required(ErrorMessage = "Campo obrigatório.")]
-        [StringLength(maximumLength: 150)]
         public string Author { get; set; }
-
-        [StringLength(maximumLength: 150)]
         public string PublishingCompany { get; set; }
-        
         public string ISBN { get; set; }
+        public DateTime PublicationYear { get; set; }
+        public int Amount { get; set; }
 
-        public int? PublicationYear{ get; set; }
+        public Book()
+        {
+            Validate(this, new BookValidator());
+        }
+
+        public Book(string title, string author)
+        {
+            Title = title;
+            Author = author;
+
+            Validate(this, new BookValidator());
+        }
+
+        public Book(string title, string author, string originalTitle,  string publisingCompany, string isbn, DateTime publicationYear, int amount)
+        {
+            Title = title;
+            OriginalTitle = originalTitle;
+            Author = author;
+            PublishingCompany = publisingCompany;
+            PublicationYear = publicationYear;
+            ISBN = isbn;
+            Amount = amount;
+
+            Validate(this, new BookValidator());
+        }
+
+        public class BookValidator : AbstractValidator<Book>
+        {
+            public BookValidator()
+            {
+                RuleFor(a => a.Title).NotNull().NotEmpty().WithMessage("Título é obrigatório.");
+                RuleFor(a => a.Author).NotNull().NotEmpty().WithMessage("Autor é obrigatório.");
+                RuleFor(a => a.Amount).NotNull().GreaterThanOrEqualTo(0).WithMessage("A quantidade de livros deve ser maior ou igual a 0.");
+                RuleFor(a => a.ISBN).Matches(@"(\d{10,13}).*?_(\d{3})|(\d{3}).*?_(\d{10,13})|(\d{10,13})(?=[^\d])");                    
+            }
+        }
     }
 }

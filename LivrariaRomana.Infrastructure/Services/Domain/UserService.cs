@@ -44,7 +44,8 @@ namespace LivrariaRomana.Infrastructure.Services.Domain
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
+            user.AddToken(tokenHandler.WriteToken(token));
+            //user.Token = tokenHandler.WriteToken(token);
             user.Password = "";
 
             return user;

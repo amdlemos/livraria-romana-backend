@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard
 {
-    public interface IRepositoryAsync<TEntity> : IDisposable where TEntity : class, IIdentityEntity
+    public interface IRepositoryAsync<TEntity> : IDisposable where TEntity : class, IEntity
     {
         // ADD
         Task<TEntity> AddAsync(TEntity obj);       

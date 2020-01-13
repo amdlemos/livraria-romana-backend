@@ -26,9 +26,9 @@ namespace LivrariaRomana.Test.Repositories
         }
 
         [Fact]
-        public void AddBookAsyncTest()
+        public async Task AddBookAsyncTest()
         {
-            var result = _bookRepository.AddAsync(_bookBuilder.CreateBook());
+            var result = await _bookRepository.AddAsync(_bookBuilder.CreateBook());
 
             Assert.NotEqual(0, result.Id);
         }

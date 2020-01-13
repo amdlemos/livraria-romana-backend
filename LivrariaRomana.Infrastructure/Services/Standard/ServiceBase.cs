@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Services.Standard
 {
-    public class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity : class, IIdentityEntity
+    public class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity : class, IEntity
     {
         protected readonly IRepositoryAsync<TEntity> _repository;
 

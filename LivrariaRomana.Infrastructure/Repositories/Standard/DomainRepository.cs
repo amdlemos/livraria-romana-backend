@@ -8,7 +8,7 @@ using System.Text;
 namespace LivrariaRomana.Infrastructure.Repositories.Standard
 {
     public class DomainRepository<TEntity> : RepositoryAsync<TEntity>,
-                                         IDomainRepository<TEntity> where TEntity : class, IIdentityEntity
+                                         IDomainRepository<TEntity> where TEntity : class, IEntity
     {
         protected DomainRepository(DbContext dbContext) : base(dbContext)
         {

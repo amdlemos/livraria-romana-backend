@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.EFCore
 {
-    public abstract class SpecifcMethods<TEntity> where TEntity : class, IIdentityEntity
+    public abstract class SpecifcMethods<TEntity> where TEntity : class, IEntity
     {
         #region ProtectedMethods
         protected abstract IQueryable<TEntity> GenerateQuery(Expression<Func<TEntity, bool>> filter = null,

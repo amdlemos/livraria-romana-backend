@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Repositories.Standard
 {
-    public class RepositoryAsync<TEntity> : SpecifcMethods<TEntity>, IRepositoryAsync<TEntity> where TEntity : class, IIdentityEntity
+    public class RepositoryAsync<TEntity> : SpecifcMethods<TEntity>, IRepositoryAsync<TEntity> where TEntity : class, IEntity
     {
         protected readonly DbContext dbContext;
         protected readonly DbSet<TEntity> dbSet;

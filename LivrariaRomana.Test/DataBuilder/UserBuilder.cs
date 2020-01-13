@@ -1,4 +1,5 @@
 ﻿using LivrariaRomana.Domain.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace LivrariaRomana.Test.DataBuilder
@@ -10,12 +11,50 @@ namespace LivrariaRomana.Test.DataBuilder
 
         public User CreateUser()
         {
-            user = new User()
-            {
-                Username = "User from Builder",
-                Email = "user@builder.com",
-                Password = "123"
-            };
+            user = new User("User from Builder", "123", "user@builder.com");            
+            return user;
+        }
+
+        public User CreateUserWithEmptyUsername()
+        {
+            user = new User("", "123", "user@builder.com");
+            return user;
+        }
+
+        public User CreateUserWithNullUsername()
+        {
+            user = new User(null, "123", "user@builder.com");
+            return user;
+        }
+
+
+        public User CreateUserWithNullPassword()
+        {
+            user = new User("User from Builder", null, "user@builder.com");
+            return user;
+        }
+
+        public User CreateUserWithEmptyPassword()
+        {
+            user = new User("User from Builder", "", "user@builder.com");
+            return user;
+        }
+
+        public User CreateUserWithNullEmail()
+        {
+            user = new User("User from Builder","123" , null);
+            return user;
+        }
+
+        public User CreateUserWithEmptyEmail()
+        {
+            user = new User("User from Builder", "123", "");
+            return user;
+        }
+
+        public User CreateUserWithInvalidEmail()
+        {
+            user = new User("User from Builder", "123", "aaaa");
             return user;
         }
 

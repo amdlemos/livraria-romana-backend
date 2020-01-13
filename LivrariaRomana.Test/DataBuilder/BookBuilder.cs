@@ -1,4 +1,5 @@
 ﻿using LivrariaRomana.Domain.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace LivrariaRomana.Test.DataBuilder
@@ -10,15 +11,66 @@ namespace LivrariaRomana.Test.DataBuilder
 
         public Book CreateBook()
         {
-            book = new Book()
-            {
-                Author = "Author from Builder",
-                OriginalTitle = "Original Title from Builder",
-                Title = "TiTile from builder",
-                PublicationYear = 2005,
-                PublishingCompany = "Publising Company from Builder"
+            book = new Book(
+                "TiTile from builder",
+                "Author from Builder",
+                "Original Title from Builder", 
+                "Publising Company from Builder",
+                "978-85-333-0227-3", 
+                new DateTime(), 
+                0);
+            return book;
+        }
 
-            };
+        public Book CreateAuthorlessBook()
+        {
+            book = new Book(
+                "TiTile from builder",
+                "",
+                "Original Title from Builder",
+                "Publising Company from Builder",
+                "",
+                new DateTime(),
+                0);
+            return book;
+        }
+
+        public Book CreateUntitledBook()
+        {
+            book = new Book(
+                "",
+                "Original Title from Builder",
+                "Author from Builder",
+                "Publising Company from Builder",
+                "",
+                new DateTime(),
+                0);
+            return book;
+        }
+
+        public Book CreateBookWithValidISBN()
+        {
+            book = new Book(
+                "",
+                "Original Title from Builder",
+                "Author from Builder",
+                "Publising Company from Builder",
+                "9788533302273",
+                new DateTime(),
+                0);
+            return book;
+        }
+
+         public Book CreateBookWithSmallerAmount0()
+        {
+            book = new Book(
+                "TiTile from builder",
+                "Author from Builder",
+                "Original Title from Builder", 
+                "Publising Company from Builder", 
+                "", 
+                new DateTime(), 
+                -1);
             return book;
         }
 

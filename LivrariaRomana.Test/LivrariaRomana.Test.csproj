@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LivrariaRomana.Domain\LivrariaRomana.Domain.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Infrastructure\LivrariaRomana.Infrastructure.csproj" />
   </ItemGroup>
 

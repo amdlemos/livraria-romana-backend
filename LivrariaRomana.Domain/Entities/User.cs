@@ -1,24 +1,38 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FluentValidation;
+using System.ComponentModel.DataAnnotations;
 
 namespace LivrariaRomana.Domain.Entities
 {
-    public class User : IIdentityEntity
-    {
-        [Required]
-        public int Id { get; set; }
-        
-        [Required(ErrorMessage = "Campo obrigatório.")]
-        [StringLength(maximumLength:50, MinimumLength = 3, ErrorMessage ="Nome deve conter entre {0} e {1} caractéres.")]
+    public class User : Entity, IEntity
+    { 
+       
         public string Username { get; set; }
-        
-        [Required(ErrorMessage = "Campo obrigatório.")]        
         public string Password { get; set; }
-        
-        [Required(ErrorMessage = "Campo obrigatório.")]
-        [StringLength(maximumLength: 30, ErrorMessage = "Email deve conter nó máximo 30 caractéres.")]               
-        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        public string Token { get; private set; }
+        public void AddToken(string token)
+        {
+            Token = token;
+        }
 
-        public string Token { get; set; }        
+        public User(string username, string password, string email)
+        {
+            Username = username;
+            Password = password;
+            Email = email;            
+        }        
+
+        public class UserValidator : AbstractValidator<User>
+        {
+            public UserValidator()
+            {
+                RuleFor(a => a.Username).NotEmpty().WithMessage("Username é obrigatório.");
+                RuleFor(a => a.Password).NotEmpty().WithMessage("Password é obrigatório.");
+                RuleFor(a => a.Email).NotNull().NotEmpty().WithMessage("Email é obrigatório.");
+                RuleFor(a => a.Email).EmailAddress().WithMessage("Email inválido.");
+            }
+        }
+
+
     }
 }

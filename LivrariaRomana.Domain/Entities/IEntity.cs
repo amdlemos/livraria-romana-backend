@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Domain.Entities
 {
-    public interface IIdentityEntity
+    public interface IEntity
     {
         int Id { get; set; }
     }
