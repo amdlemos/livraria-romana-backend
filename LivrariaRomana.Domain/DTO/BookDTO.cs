@@ -8,10 +8,10 @@ namespace LivrariaRomana.Domain.DTO
     {
         public int id { get; set; }
         public string title { get; set; }
-        public string OriginalTitle { get; set; }
-        public string Author { get; set; }
+        public string originalTitle { get; set; }
+        public string author { get; set; }
         public string publishingCompany { get; set; }
-        public string publicationYear { get; set; }
+        public DateTime publicationYear { get; set; }
         public string isbn { get; set; }
         public int amount { get; set; }
     }

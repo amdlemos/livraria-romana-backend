@@ -9,6 +9,7 @@ using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -73,19 +74,26 @@ namespace LivrariaRomana.API.Controllers
         // [Authorize("Admin")]
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> PutLivro(int id, Book book)
+        public async Task<IActionResult> PutLivro(int id, BookDTO bookDTO)
         {
-            if (id != book.Id)
+            if (id != bookDTO.id)
             {
                 _logger.LogError($"[PUT-BOOK]Parâmetros incorretos.");
                 return BadRequest();                
             }
             _logger.LogInfo($"[PUT]Buscando livro de ID: { id }.");
-            await _bookRepository.UpdateAsync(book);
+            await _bookRepository.UpdateAsync(new Book(
+                bookDTO.title, 
+                bookDTO.author, 
+                bookDTO.originalTitle, 
+                bookDTO.publishingCompany,
+                bookDTO.isbn, 
+                bookDTO.publicationYear, 
+                bookDTO.amount));
 
             try
             {
-                _logger.LogInfo($"Editando livro: { book.Title }, ID: { book.Id }.");
+                _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException ex)
@@ -102,7 +110,7 @@ namespace LivrariaRomana.API.Controllers
                 }
             }
 
-            _logger.LogInfo($"Livro: { book.Title }, ID: { book.Id } editado com sucesso.");
+            _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
             return NoContent();
         }
 

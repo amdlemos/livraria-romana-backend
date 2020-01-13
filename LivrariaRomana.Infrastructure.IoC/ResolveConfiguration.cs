@@ -10,7 +10,14 @@ namespace LivrariaRomana.Infrastructure.IoC
     {
         public static IConfiguration GetConnectionSettings(IConfiguration configuration)
         {
-            return configuration ?? DatabaseConnection.ConnectionConfiguration;
+            var conString = configuration.GetConnectionString("DevConnection");
+            var db_cc = DatabaseConnection.ConnectionConfiguration;
+
+            if (conString == null)
+                return DatabaseConnection.ConnectionConfiguration;
+            else
+                return configuration;
+            //return configuration ?? DatabaseConnection.ConnectionConfiguration;
         }
     }
 }
