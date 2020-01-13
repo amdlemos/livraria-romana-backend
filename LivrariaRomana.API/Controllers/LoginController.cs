@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using System.Threading.Tasks;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -26,20 +27,20 @@ namespace LivrariaRomana.API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> PostAuthenticate(Login login)
+        public async Task<ActionResult<User>> PostAuthenticate(LoginDTO login)
         {
             try
             {                
-                _logger.LogInfo($"[POST]Usuário: { login.Username } tentando fazer login.");
-                var user = await _userService.Authenticate(login.Username, login.Password);                
+                _logger.LogInfo($"[POST]Usuário: { login.username } tentando fazer login.");
+                var user = await _userService.Authenticate(login.username, login.password);                
 
                 if (user == null)
                 {
-                    _logger.LogError($"USUÁRIO: { login.Username } não foi encontrado.");                    
+                    _logger.LogError($"USUÁRIO: { login.username } não foi encontrado.");                    
                     return BadRequest(new { message = "Usuário ou senha inválidos" });
                 }
 
-                _logger.LogInfo($"USUÁRIO: { login.Username } logado.");
+                _logger.LogInfo($"USUÁRIO: { login.username } logado.");
                 return user;
             }
             catch (Exception ex)
