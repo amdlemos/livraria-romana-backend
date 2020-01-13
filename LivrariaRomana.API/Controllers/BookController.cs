@@ -83,8 +83,7 @@ namespace LivrariaRomana.API.Controllers
             }
 
             try
-            {
-                _logger.LogInfo($"[PUT]Buscando livro de ID: { id }.");
+            {                
                 var book = new Book(
                     bookDTO.title,
                     bookDTO.author,
@@ -94,9 +93,11 @@ namespace LivrariaRomana.API.Controllers
                     bookDTO.publicationYear,
                     bookDTO.amount,
                     bookDTO.id);
+
                 if (book.Valid)
-                {
+                {                    
                     await _bookRepository.UpdateAsync(book);
+
                     _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
                     await _context.SaveChangesAsync();
                 }

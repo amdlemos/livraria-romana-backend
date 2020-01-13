@@ -58,6 +58,19 @@ namespace LivrariaRomana.Test.DataBuilder
             return user;
         }
 
+        public User CreateUserWithNonexistentId()
+        {
+            user = new User("User from Builder", "123", "aaaa@gmail.com", 9999999);
+            return user;
+        }
+
+
+        public User CreateUserWithId()
+        {
+            user = new User("User from Builder", "123", "aaaa@gmail.com", 1);
+            return user;
+        }
+
         public List<User> CreateUserList(int amount)
         {
             userList = new List<User>();

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using LivrariaRomana.Test.DBConfiguration;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace LivrariaRomana.Test.Controllers
 {
@@ -33,8 +34,8 @@ namespace LivrariaRomana.Test.Controllers
         public async Task CreateBookControllerTest()
         {
             var controller = new BookController(_dbContext, _bookRepository, _logger);
-            var books = await controller.GetLivros();
-            Assert.True(false);
+            var countBooks = await controller.GetLivros().ToAsyncEnumerable().Count();
+            Assert.True(countBooks > 0);
         }
     }
 }

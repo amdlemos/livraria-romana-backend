@@ -9,6 +9,7 @@ using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -71,9 +72,9 @@ namespace LivrariaRomana.API.Controllers
         //[Authorize("Admin")]
         [HttpPut("{id}")]
         [AllowAnonymous]
-        public async Task<IActionResult> PutUsuario(int id, User user)
+        public async Task<IActionResult> PutUsuario(int id, UserDTO userDTO)
         {            
-            if (id != user.Id)
+            if (id != userDTO.id)
             {
                 _logger.LogError($"[PUT-USER]Parâmetros incorretos.");
                 return BadRequest();
@@ -81,11 +82,20 @@ namespace LivrariaRomana.API.Controllers
 
             try
             {
-                _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
-                await _userRepository.UpdateAsync(user);
+                var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.id);
+
+                if(user.Valid)
+                {
+                    _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
+                    await _userRepository.UpdateAsync(user);
+                }
+                else
+                {
+                    return StatusCode(500, user.ValidationResult.Errors);
+                }
 
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (Exception ex)
             {
                 if (!UsuarioExists(id))
                 {
@@ -99,8 +109,8 @@ namespace LivrariaRomana.API.Controllers
                 }
             }
            
-            _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
-            return NoContent();
+            _logger.LogInfo($"Usuário: { userDTO.username }, ID: { userDTO.id } editado com sucesso.");
+            return Ok();
         }
 
         // POST: api/Usuario        

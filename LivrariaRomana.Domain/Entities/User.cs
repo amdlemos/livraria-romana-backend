@@ -15,11 +15,18 @@ namespace LivrariaRomana.Domain.Entities
             Token = token;
         }
 
-        public User(string username, string password, string email)
+        public User()
+        {
+            Validate(this, new UserValidator());
+        }
+        public User(string username, string password, string email, int id = 0)
         {
             Username = username;
             Password = password;
-            Email = email;            
+            Email = email;
+            Id = id;
+
+            Validate(this, new UserValidator());
         }        
 
         public class UserValidator : AbstractValidator<User>

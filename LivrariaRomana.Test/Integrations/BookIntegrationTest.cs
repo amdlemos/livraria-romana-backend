@@ -9,7 +9,6 @@ using LivrariaRomana.API;
 using LivrariaRomana.Test.DataBuilder;
 using Utf8Json;
 using System.Linq;
-using LivrariaRomana.Domain.DTO;
 using System.Net.Http.Headers;
 using System.Text;
 using LivrariaRomana.Domain.Entities;
@@ -17,6 +16,7 @@ using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Test.DBConfiguration;
+using System;
 
 namespace LivrariaRomana.Test.Integrations
 {
@@ -30,14 +30,14 @@ namespace LivrariaRomana.Test.Integrations
 
         public BookIntegrationTest()
         {
-            _dbContext = new Connection().DatabaseConfiguration();
+            _dbContext = new Connection().DatabaseConfiguration();            
             _bookRepository = new BookRepository(_dbContext);
             _bookBuilder = new BookBuilder();
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             Client = _server.CreateClient();
         }
 
-        [Fact]
+        [Fact]       
         public async Task Book_GetAllAsync_ReturnsOkResponse()
         {
             var response = await Client.GetAsync("api/book");
@@ -73,7 +73,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task Book_UpdateAsync_Return_BadRequest()
         {            
             var book = _bookBuilder.CreateValidBook();
-            var jsonSerialized = Serialize(book);
+            var jsonSerialized = JsonSerialize.Serialize(book);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");                                    
             var response = await Client.PutAsync("api/book/1/", contentString);
@@ -85,7 +85,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task Book_UpdateAsync_Return_OkResponse()
         {
             var book = _bookBuilder.CreateBookWithId();
-            var jsonSerialized = Serialize(book);
+            var jsonSerialized = JsonSerialize.Serialize(book);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PutAsync("api/book/4/", contentString);
@@ -97,7 +97,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task Book_UpdateAsync_Return_NotFound()
         {
             var book = _bookBuilder.CreateBookWithNonexistentId();
-            var jsonSerialized = Serialize(book);
+            var jsonSerialized = JsonSerialize.Serialize(book);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PutAsync("api/book/9999999/", contentString);
@@ -109,7 +109,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task Book_AddAsync_Return_OkResponse()
         {
             var book = _bookBuilder.CreateValidBook();
-            var jsonSerialized = Serialize(book);
+            var jsonSerialized = JsonSerialize.Serialize(book);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PostAsync("api/book/", contentString);
@@ -121,7 +121,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task Book_AddAsync_Return_500()
         {
             var book = new Book();
-            var jsonSerialized = Serialize(book);
+            var jsonSerialized = JsonSerialize.Serialize(book);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PostAsync("api/book/", contentString);
@@ -155,16 +155,6 @@ namespace LivrariaRomana.Test.Integrations
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
-
-
-        public string Serialize(object obj)
-        {
-            byte[] result = Utf8Json.JsonSerializer.Serialize(obj);
-            var p2 = JsonSerializer.Deserialize<object>(result);
-            var json = JsonSerializer.ToJsonString(p2);
-            return json;
-        }
-
     }
 }
 
