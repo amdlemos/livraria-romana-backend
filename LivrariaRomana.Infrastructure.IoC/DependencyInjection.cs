@@ -30,10 +30,10 @@ namespace LivrariaRomana.Infrastructure.IoC
             services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
             services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
             services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
-            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+            services.AddScoped(typeof(Interfaces.Repositories.Domain.IUserService), typeof(UserRepository));
 
             // Services
-            services.AddScoped(typeof(IUserService), typeof(UserService));
+            services.AddScoped(typeof(Interfaces.Services.Domain.IUserService), typeof(UserService));
             services.AddScoped(typeof(IBookService), typeof(BookService));
 
         }

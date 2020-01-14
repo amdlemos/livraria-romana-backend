@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Repositories.Domain
 {
-    public class UserRepository : DomainRepository<User>, IUserRepository
+    public class UserRepository : DomainRepository<User>, IUserService
     {
         public UserRepository(DatabaseContext dbContext) : base(dbContext)
         {

@@ -11,6 +11,7 @@ using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Domain.DTO;
 
+
 namespace LivrariaRomana.API.Controllers
 {
     [Route("api/[controller]")]
@@ -18,13 +19,14 @@ namespace LivrariaRomana.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly DatabaseContext _context;
-        private readonly IUserRepository _userRepository;
-        private ILoggerManager _logger;
-        public UserController(DatabaseContext context, IUserRepository userRepository, ILoggerManager logger)
+        private readonly IUserService _userService;
+        private ILoggerManager _logger;        
+
+        public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger)
         {
-            _logger = logger;
+            _logger = logger;            
             _context = context;
-            _userRepository = userRepository;
+            _userService = userService;
 
         }
 
@@ -36,7 +38,7 @@ namespace LivrariaRomana.API.Controllers
             try
             {
                 _logger.LogInfo("[GET]Buscando todos os usuários.");
-                var allUsers = await _userRepository.GetAllAsync();
+                var allUsers = await _userService.GetAllAsync();
                 
                 var result = allUsers.ToList();                
 
@@ -56,7 +58,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<User>> GetUsuario(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando usuário de ID: { id }.");
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(id);
 
             if (user == null)
             {
@@ -87,7 +89,7 @@ namespace LivrariaRomana.API.Controllers
                 if(user.Valid)
                 {
                     _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
-                    await _userRepository.UpdateAsync(user);
+                    await _userService.UpdateAsync(user);
                 }
                 else
                 {
@@ -118,14 +120,13 @@ namespace LivrariaRomana.API.Controllers
         [HttpPost]
         [AllowAnonymous]
         public async Task<ActionResult<User>> PostUsuario(User user)
-        {
-
+        { 
             if (user != null)
             {
                 try
                 {
                     _logger.LogInfo($"[POST]Adicionando novo usuário: { user.Username }.");
-                    await _userRepository.AddAsync(user);
+                    await _userService.AddAsync(user);
                 }
                 catch (Exception ex)
                 {
@@ -151,7 +152,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<User>> DeleteUsuario(int id)
         {
             _logger.LogInfo($"[DELETE]Buscando usuário de ID: { id }.");
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userService.GetByIdAsync(id);
             if (user == null)
             {
                 _logger.LogError($"Usuário de ID: { id } não encontrado.");
@@ -161,7 +162,7 @@ namespace LivrariaRomana.API.Controllers
             try
             {
                 _logger.LogInfo($"Deletando usuário: { user.Username }, ID: { user.Id }.");
-                await _userRepository.RemoveAsync(user);                
+                await _userService.RemoveAsync(user);                
             }
             catch (Exception ex)
             {

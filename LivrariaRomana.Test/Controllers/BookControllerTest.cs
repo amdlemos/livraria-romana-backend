@@ -5,11 +5,12 @@ using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Logger;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
 using System.Net.Http;
-using Microsoft.AspNetCore.TestHost;
 using Xunit;
 using LivrariaRomana.Test.DBConfiguration;
 using System.Threading.Tasks;
 using System.Linq;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
+using LivrariaRomana.Infrastructure.Services.Domain;
 
 namespace LivrariaRomana.Test.Controllers
 {
@@ -17,8 +18,8 @@ namespace LivrariaRomana.Test.Controllers
     {
         private readonly DatabaseContext _dbContext;
         private readonly IBookRepository _bookRepository;
-        private readonly ILoggerManager _logger;
-        private readonly TestServer _server;
+        private readonly IBookService _bookService;
+        private readonly ILoggerManager _logger;        
         
         public HttpClient Client;
         
@@ -27,13 +28,14 @@ namespace LivrariaRomana.Test.Controllers
         {
             _dbContext = new Connection().DatabaseConfiguration();        
             _bookRepository = new BookRepository(_dbContext);
+            _bookService = new BookService(_bookRepository);
             _logger = new LoggerManager();          
         }
 
         [Fact]
         public async Task CreateBookControllerTest()
         {
-            var controller = new BookController(_dbContext, _bookRepository, _logger);
+            var controller = new BookController(_dbContext, _bookService, _logger);
             var countBooks = await controller.GetLivros().ToAsyncEnumerable().Count();
             Assert.True(countBooks > 0);
         }

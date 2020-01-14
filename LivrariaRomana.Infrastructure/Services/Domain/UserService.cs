@@ -14,18 +14,18 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Services.Domain
 {
-    public class UserService : ServiceBase<User>, IUserService
+    public class UserService : ServiceBase<User>, Interfaces.Services.Domain.IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private readonly Interfaces.Repositories.Domain.IUserService _userRepository;
 
-        public UserService(IUserRepository repository) : base(repository)
+        public UserService(Interfaces.Repositories.Domain.IUserService repository) : base(repository)
         {
             _userRepository = repository;
         }
 
         public virtual async Task<User> Authenticate(string username, string password)
         {
-            var user = await _userRepository.GetByUsernamePassword(username, password);            
+            var user = await _userRepository.GetByUsernamePassword(username, password);
 
             if (user == null)
                 return null;
@@ -49,6 +49,14 @@ namespace LivrariaRomana.Infrastructure.Services.Domain
             user.Password = "";
 
             return user;
+        }
+
+        public override async Task<User> AddAsync(User obj)
+        {
+            if (obj.Valid)
+                return await base.AddAsync(obj);
+            else
+                throw new Exception("obj.ValidationResult.Errors");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace LivrariaRomana.Test.Integrations
     public class UserIntegrationTest
     {
         private readonly DatabaseContext _dbContext;
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userRepository;
         private readonly UserBuilder _userBuilder;
         private readonly TestServer _server;
         public HttpClient Client;

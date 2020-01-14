@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain
 {
-    public interface IUserRepository : IDomainRepository<User>
+    public interface IUserService : IDomainRepository<User>
     {
         Task<User> GetByUsernamePassword(string username, string password);
     }

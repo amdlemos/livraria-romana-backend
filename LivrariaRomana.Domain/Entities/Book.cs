@@ -47,7 +47,7 @@ namespace LivrariaRomana.Domain.Entities
                 RuleFor(a => a.Title).NotNull().NotEmpty().WithMessage("Título é obrigatório.");
                 RuleFor(a => a.Author).NotNull().NotEmpty().WithMessage("Autor é obrigatório.");
                 RuleFor(a => a.Amount).NotNull().GreaterThanOrEqualTo(0).WithMessage("A quantidade de livros deve ser maior ou igual a 0.");
-                //RuleFor(a => a.ISBN).Matches(@"(\d{10,13}).*?_(\d{3})|(\d{3}).*?_(\d{10,13})|(\d{10,13})(?=[^\d])");                    
+                RuleFor(a => a.ISBN).Matches(@"(\d{10,13}).*?_(\d{3})|(\d{3}).*?_(\d{10,13})|(\d{10,13})(?=[^\d])");                    
             }
         }
     }

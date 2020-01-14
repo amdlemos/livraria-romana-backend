@@ -10,6 +10,7 @@ using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -19,14 +20,14 @@ namespace LivrariaRomana.API.Controllers
     public class BookController : ControllerBase
     {
         private readonly DatabaseContext _context;
-        private readonly IBookRepository _bookRepository;
+        private readonly IBookService _bookService;
         private ILoggerManager _logger;
 
-        public BookController(DatabaseContext context, IBookRepository bookRepository, ILoggerManager logger)
+        public BookController(DatabaseContext context, IBookService bookService, ILoggerManager logger)
         {
             _context = context;
             _logger = logger;
-            _bookRepository = bookRepository;
+            _bookService = bookService;
         }
 
         // GET: api/Livro
@@ -37,7 +38,7 @@ namespace LivrariaRomana.API.Controllers
             try
             {
                 _logger.LogInfo("[GET]Buscando todos os livros.");
-                var books = await _bookRepository.GetAllAsync();
+                var books = await _bookService.GetAllAsync();
 
                 var result = books.OrderBy(x => x.Title).ToList();
 
@@ -58,7 +59,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<Book>> GetLivro(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando livro de ID: { id }.");
-            var book = await _bookRepository.GetByIdAsync(id);
+            var book = await _bookService.GetByIdAsync(id);
 
             if (book == null)
             {
@@ -96,7 +97,7 @@ namespace LivrariaRomana.API.Controllers
 
                 if (book.Valid)
                 {                    
-                    await _bookRepository.UpdateAsync(book);
+                    await _bookService.UpdateAsync(book);
 
                     _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
                     await _context.SaveChangesAsync();
@@ -145,9 +146,10 @@ namespace LivrariaRomana.API.Controllers
                     bookDTO.publicationYear,
                     bookDTO.amount,
                     bookDTO.id);
+
                     if (book.Valid)
                     {
-                        await _bookRepository.AddAsync(book);
+                        await _bookService.AddAsync(book);
                     }
                     else
                     {
@@ -178,7 +180,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<Book>> DeleteLivro(int id)
         {
             _logger.LogInfo($"[DELETE]Buscando livro de ID: { id }.");
-            var book = await _bookRepository.GetByIdAsync(id);
+            var book = await _bookService.GetByIdAsync(id);
             if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não encontrado.");
@@ -187,7 +189,7 @@ namespace LivrariaRomana.API.Controllers
             try
             {
                 _logger.LogInfo($"Deletando livro: { book.Title }, ID: { book.Id }.");
-                await _bookRepository.RemoveAsync(book);
+                await _bookService.RemoveAsync(book);
 
                 _logger.LogInfo($"Usuário excluido com sucesso.");
                 await _context.SaveChangesAsync();
