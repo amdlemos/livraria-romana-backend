@@ -119,15 +119,23 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_AddAsync_Return_500()
+        public async Task User_AddAsync_Return_BadRequest()
         {
             var user = new User();
             var jsonSerialized = JsonSerialize.Serialize(user);
             var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PostAsync("api/user/", contentString);
+            
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
 
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        [Fact]
+        public async Task User_AddAsync_Return_UnsupportedMediaType_with_null_parameters()
+        {
+            var response = await Client.PostAsync("api/user/", null);
+
+            response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
 
         [Fact]

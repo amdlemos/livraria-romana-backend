@@ -16,7 +16,7 @@ namespace LivrariaRomana.Test.DataBuilder
                 "Author from Builder",
                 "Original Title from Builder", 
                 "Publising Company from Builder",
-                "978-85-333-0227-3", 
+                "ISBN 978-85-333-0227-3", 
                 new DateTime(2005,1,1), 
                 0);
             return book;
@@ -48,14 +48,14 @@ namespace LivrariaRomana.Test.DataBuilder
             return book;
         }
 
-        public Book CreateBookWithValidISBN()
+        public Book CreateBookWithInvalidISBN()
         {
             book = new Book(
-                "",
+                "Title from builder",
                 "Original Title from Builder",
                 "Author from Builder",
                 "Publising Company from Builder",
-                "9788533302273",
+                "123",
                 new DateTime(),
                 0);
             return book;
@@ -81,7 +81,7 @@ namespace LivrariaRomana.Test.DataBuilder
                 "Author from Builder",
                 "Original Title from Builder",
                 "Publising Company from Builder",
-                "978-85-333-0227-3",
+                "ISBN 1-56389-668-0",
                 new DateTime(2005, 1, 1),
                 0, 
                 4);

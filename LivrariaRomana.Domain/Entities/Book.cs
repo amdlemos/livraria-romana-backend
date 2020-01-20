@@ -15,7 +15,7 @@ namespace LivrariaRomana.Domain.Entities
 
         public Book()
         {
-            Validate(this, new BookValidator());
+            Validate(this, new BookValidator(null));
         }
 
         public Book(string title, string author)
@@ -23,7 +23,7 @@ namespace LivrariaRomana.Domain.Entities
             Title = title;
             Author = author;
 
-            Validate(this, new BookValidator());
+            Validate(this, new BookValidator(null));
         }
 
         public Book(string title, string author, string originalTitle,  string publisingCompany, string isbn, DateTime publicationYear, int amount, int id = 0)
@@ -37,17 +37,18 @@ namespace LivrariaRomana.Domain.Entities
             ISBN = isbn;
             Amount = amount;
 
-            Validate(this, new BookValidator());
+            Validate(this, new BookValidator(isbn));
         }
 
         public class BookValidator : AbstractValidator<Book>
         {
-            public BookValidator()
+            public BookValidator(string isbn)
             {
                 RuleFor(a => a.Title).NotNull().NotEmpty().WithMessage("Título é obrigatório.");
                 RuleFor(a => a.Author).NotNull().NotEmpty().WithMessage("Autor é obrigatório.");
-                RuleFor(a => a.Amount).NotNull().GreaterThanOrEqualTo(0).WithMessage("A quantidade de livros deve ser maior ou igual a 0.");
-                RuleFor(a => a.ISBN).Matches(@"(\d{10,13}).*?_(\d{3})|(\d{3}).*?_(\d{10,13})|(\d{10,13})(?=[^\d])");                    
+                RuleFor(a => a.Amount).NotNull().GreaterThanOrEqualTo(0).WithMessage("A quantidade de livros deve ser maior ou igual a 0.");  
+                if(isbn != null)
+                    RuleFor(a => a.ISBN).Matches(@"ISBN(-1(?:(0)|3))?:?\x20(\s)*[0-9]+[- ][0-9]+[- ][0-9]+[- ][0-9]*[- ]*[xX0-9]");                    
             }
         }
     }

@@ -144,7 +144,7 @@ namespace LivrariaRomana.API.Controllers
                     _logger.LogError($"Erro: { erro.ErrorMessage }.");
                 }
 
-                return StatusCode(500, errors);
+                return BadRequest(errors);
             }
         }
 
@@ -175,11 +175,6 @@ namespace LivrariaRomana.API.Controllers
 
             _logger.LogInfo($"Usuário excluido com sucesso.");
             return user;
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuarios.Any(e => e.Id == id);
         }
     }
 }

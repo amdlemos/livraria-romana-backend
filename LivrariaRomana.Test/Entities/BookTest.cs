@@ -14,7 +14,7 @@ namespace LivrariaRomana.Test.Entities
 
         public BookTest()
         {
-            _bookValidator = new BookValidator();
+            _bookValidator = new BookValidator(null);
             _bookBuilder = new BookBuilder();
         }
 
@@ -54,17 +54,18 @@ namespace LivrariaRomana.Test.Entities
         [Fact]
         public void Should_have_error_when_isbn_is_not_valid()
         {
-            var book = _bookBuilder.CreateValidBook();
-            var result = _bookValidator.Validate(book);
-            Assert.False(result.IsValid && result.Errors[0].PropertyName == "ISBN");
+            var book = _bookBuilder.CreateBookWithInvalidISBN();
+            //var result = _bookValidator.Validate(book);
+            Assert.True(book.Invalid);
+            Assert.True(book.ValidationResult.Errors[0].PropertyName == "ISBN");
         }
 
         [Fact]
         public void Should_not_have_error_when_isbn_is_valid()
         {
             var book = _bookBuilder.CreateValidBook();
-            var result = _bookValidator.Validate(book);
-            Assert.True(result.IsValid);
+            //var result = _bookValidator.Validate(book);
+            Assert.True(book.Valid);
         }
         #endregion
 

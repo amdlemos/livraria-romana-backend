@@ -118,7 +118,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_AddAsync_Return_500()
+        public async Task Book_AddAsync_Return_BadRequest()
         {
             var book = new Book();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -126,7 +126,7 @@ namespace LivrariaRomana.Test.Integrations
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PostAsync("api/book/", contentString);
 
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]

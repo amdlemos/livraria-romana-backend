@@ -40,7 +40,7 @@ namespace LivrariaRomana.API.Controllers
 
                 var result = books.OrderBy(x => x.Title).ToList();
 
-                _logger.LogInfo($"Retornando { result.Count() } usuários.");
+                _logger.LogInfo($"Retornando { result.Count() } livros.");
                 return result;
             }
             catch (Exception ex)
@@ -143,7 +143,7 @@ namespace LivrariaRomana.API.Controllers
                     _logger.LogError($"Erro: { erro.ErrorMessage }.");
                 }
 
-                return StatusCode(500, errors);
+                return BadRequest(errors);
             }
         }
 
@@ -165,7 +165,7 @@ namespace LivrariaRomana.API.Controllers
                 _logger.LogInfo($"Deletando livro: { book.Title }, ID: { book.Id }.");
                 await _bookService.RemoveAsync(book);
 
-                _logger.LogInfo($"Usuário excluido com sucesso.");
+                _logger.LogInfo($"Livro excluido com sucesso.");
                 await _context.SaveChangesAsync();
 
                 return Ok();
@@ -175,11 +175,6 @@ namespace LivrariaRomana.API.Controllers
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 return StatusCode(500, "Internal server error");
             }
-        }
-
-        private bool LivroExists(int id)
-        {
-            return _context.Livros.Any(e => e.Id == id);
         }
     }
 }
