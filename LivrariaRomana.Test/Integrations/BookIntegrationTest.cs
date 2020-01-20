@@ -94,7 +94,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_UpdateAsync_Return_NotFound()
+        public async Task Book_UpdateAsync_Return_InternalServerError()
         {
             var book = _bookBuilder.CreateBookWithNonexistentId();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -102,7 +102,7 @@ namespace LivrariaRomana.Test.Integrations
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PutAsync("api/book/9999999/", contentString);
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
 
         [Fact]

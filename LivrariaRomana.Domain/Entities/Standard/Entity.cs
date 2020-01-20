@@ -22,5 +22,6 @@ namespace LivrariaRomana.Domain.Entities
             ValidationResult = validator.Validate(model);
             return Valid = ValidationResult.IsValid;
         }
+
     }
 }

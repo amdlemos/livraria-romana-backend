@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
-using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -50,7 +48,7 @@ namespace LivrariaRomana.API.Controllers
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 return StatusCode(500, "Internal server error");
             }
-            
+
         }
 
         // GET: api/Livro/5
@@ -79,51 +77,38 @@ namespace LivrariaRomana.API.Controllers
         {
             if (id != bookDTO.id)
             {
-                _logger.LogError($"[PUT-BOOK]Parâmetros incorretos.");
-                return BadRequest();               
+                _logger.LogError($"[PUT]Parâmetros incorretos.");
+                return BadRequest();
             }
 
-            try
-            {                
-                var book = new Book(
-                    bookDTO.title,
-                    bookDTO.author,
-                    bookDTO.originalTitle,
-                    bookDTO.publishingCompany,
-                    bookDTO.isbn,
-                    bookDTO.publicationYear,
-                    bookDTO.amount,
-                    bookDTO.id);
+            var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount, bookDTO.id);
 
-                if (book.Valid)
-                {                    
+            if (book.Valid)
+            {
+                try
+                {
+                    _logger.LogInfo($"[PUT]Editando livro de ID: { id }");
                     await _bookService.UpdateAsync(book);
 
-                    _logger.LogInfo($"Editando livro: { bookDTO.title }, ID: { bookDTO.id }.");
-                    await _context.SaveChangesAsync();
+                    _logger.LogInfo($"Livro: { book.Title }, ID: { book.Id } editado com sucesso.");
+                    return Ok();
                 }
-                else
+                catch (Exception ex)
                 {
-                    return StatusCode(500, book.ValidationResult.Errors);
+                    _logger.LogError($"Erro: { ex.Message }.");
+                    return StatusCode(500, ex.Message);
                 }
-
             }
-            catch (Exception ex)
+            else
             {
-                if (!LivroExists(id))
+                var errors = book.ValidationResult.Errors;
+                foreach (var erro in errors)
                 {
-                    _logger.LogError($"Usuário não encontrado.");
-                    return NotFound();
+                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
                 }
-                else
-                {
-                    _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Internal server error");
-                }
-            }
 
-            _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
-            return Ok();
+                return StatusCode(500, errors);
+            }
         }
 
         // POST: api/Livro
@@ -132,30 +117,17 @@ namespace LivrariaRomana.API.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Book>> PostLivro(BookDTO bookDTO)
         {
-            if (bookDTO != null)
+            var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount);
+
+            if (book.Valid)
             {
                 try
                 {
-                    _logger.LogInfo($"[POST]Adicionando novo livro: { bookDTO.title }.");
-                    var book = new Book(
-                    bookDTO.title,
-                    bookDTO.author,
-                    bookDTO.originalTitle,
-                    bookDTO.publishingCompany,
-                    bookDTO.isbn,
-                    bookDTO.publicationYear,
-                    bookDTO.amount,
-                    bookDTO.id);
+                    _logger.LogInfo($"[POST]Adicionando novo livro: { book.Title}.");
+                    await _bookService.AddAsync(book);
 
-                    if (book.Valid)
-                    {
-                        await _bookService.AddAsync(book);
-                    }
-                    else
-                    {
-                        return StatusCode(500, book.ValidationResult.Errors);
-                    }
-                    
+                    _logger.LogInfo($"Livro { book.Title }, ID: { book.Id } adicionado com sucesso.");
+                    return CreatedAtAction("GetLivro", new { id = book.Id }, book);
                 }
                 catch (Exception ex)
                 {
@@ -165,12 +137,14 @@ namespace LivrariaRomana.API.Controllers
             }
             else
             {
-                _logger.LogError("[POST]Parâmetros incorretos.");
-                return BadRequest();
-            }
+                var errors = book.ValidationResult.Errors;
+                foreach (var erro in errors)
+                {
+                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
+                }
 
-            _logger.LogInfo($"Livro { bookDTO.title }, ID: { bookDTO.id } adicionado com sucesso.");
-            return CreatedAtAction("GetLivro", new { id = bookDTO.id }, bookDTO);
+                return StatusCode(500, errors);
+            }
         }
 
         // DELETE: api/Livro/5
@@ -199,8 +173,8 @@ namespace LivrariaRomana.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
-                return StatusCode(500, "Internal server error");                
-            }            
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         private bool LivroExists(int id)

@@ -9,8 +9,8 @@ using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
+using static LivrariaRomana.Domain.Entities.User;
 using LivrariaRomana.Domain.DTO;
-
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -20,11 +20,11 @@ namespace LivrariaRomana.API.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly IUserService _userService;
-        private ILoggerManager _logger;        
+        private ILoggerManager _logger;
 
         public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger)
         {
-            _logger = logger;            
+            _logger = logger;
             _context = context;
             _userService = userService;
 
@@ -39,17 +39,17 @@ namespace LivrariaRomana.API.Controllers
             {
                 _logger.LogInfo("[GET]Buscando todos os usuários.");
                 var allUsers = await _userService.GetAllAsync();
-                
-                var result = allUsers.ToList();                
 
-                _logger.LogInfo($"Retornando { result.Count } usuários.");                                
-                return  result;
+                var result = allUsers.ToList();
+
+                _logger.LogInfo($"Retornando { result.Count } usuários.");
+                return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 return StatusCode(500, "Internal server error");
-            }            
+            }
         }
 
         // GET: api/Usuario/5
@@ -75,58 +75,60 @@ namespace LivrariaRomana.API.Controllers
         [HttpPut("{id}")]
         [AllowAnonymous]
         public async Task<IActionResult> PutUsuario(int id, UserDTO userDTO)
-        {            
+        {   
             if (id != userDTO.id)
             {
-                _logger.LogError($"[PUT-USER]Parâmetros incorretos.");
+                _logger.LogError($"[PUT]Parâmetros incorretos.");
                 return BadRequest();
             }
 
-            try
-            {
-                var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.id);
+            var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.id);
 
-                if(user.Valid)
+            if (user.Valid)
+            {
+                try
                 {
                     _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
                     await _userService.UpdateAsync(user);
+                    
+                    _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
+                    return Ok();
                 }
-                else
-                {
-                    return StatusCode(500, user.ValidationResult.Errors);
-                }
-
-            }
-            catch (Exception ex)
-            {
-                if (!UsuarioExists(id))
-                {
-                    _logger.LogError($"Usuário não encontrado.");
-                    return NotFound();
-                }
-                else
+                catch (Exception ex)
                 {
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Internal server error");
+                    return StatusCode(500, "Algo deu errado, verifique o log.");
                 }
             }
-           
-            _logger.LogInfo($"Usuário: { userDTO.username }, ID: { userDTO.id } editado com sucesso.");
-            return Ok();
+            else
+            {
+                var errors = user.ValidationResult.Errors;
+                foreach (var erro in errors)
+                {
+                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
+                }
+
+                return StatusCode(500, errors);
+            }
         }
 
         // POST: api/Usuario        
         // [Authorize("Admin")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> PostUsuario(User user)
-        { 
-            if (user != null)
+        public async Task<ActionResult<User>> PostUsuario(UserDTO userDTO)
+        {
+            var user = new User(userDTO.username, userDTO.password, userDTO.email);
+
+            if (user.Valid)
             {
                 try
                 {
                     _logger.LogInfo($"[POST]Adicionando novo usuário: { user.Username }.");
                     await _userService.AddAsync(user);
+
+                    _logger.LogInfo($"Usuário { user.Username}, ID: { user.Id } adicionado com sucesso.");
+                    return CreatedAtAction("GetUsuario", new { id = user.Id }, user);
                 }
                 catch (Exception ex)
                 {
@@ -136,13 +138,14 @@ namespace LivrariaRomana.API.Controllers
             }
             else
             {
-                _logger.LogError("[POST]Parâmetros incorretos.");
-                return BadRequest();
-            }
-                
+                var errors = user.ValidationResult.Errors;
+                foreach (var erro in errors)
+                {
+                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
+                }
 
-            _logger.LogInfo($"Usuário { user.Username}, ID: { user.Id } adicionado com sucesso.");
-            return CreatedAtAction("GetUsuario", new { id = user.Id }, user);
+                return StatusCode(500, errors);
+            }
         }
 
         // DELETE: api/Usuario/5
@@ -162,7 +165,7 @@ namespace LivrariaRomana.API.Controllers
             try
             {
                 _logger.LogInfo($"Deletando usuário: { user.Username }, ID: { user.Id }.");
-                await _userService.RemoveAsync(user);                
+                await _userService.RemoveAsync(user);
             }
             catch (Exception ex)
             {

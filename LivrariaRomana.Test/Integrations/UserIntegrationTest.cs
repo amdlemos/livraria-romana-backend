@@ -83,6 +83,18 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
+        public async Task User_UpdateAsync_Return_InternalServerError()
+        {
+            var user = _userBuilder.CreateUserWithNonexistentId();
+            var jsonSerialized = JsonSerialize.Serialize(user);
+            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
+            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await Client.PutAsync("api/user/9999999/", contentString);
+
+            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        }
+
+        [Fact]
         public async Task User_UpdateAsync_Return_OkResponse()
         {
             var user = _userBuilder.CreateUserWithId();
@@ -92,19 +104,7 @@ namespace LivrariaRomana.Test.Integrations
             var response = await Client.PutAsync("api/user/1/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task User_UpdateAsync_Return_NotFound()
-        {
-            var user = _userBuilder.CreateUserWithNonexistentId();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await Client.PutAsync("api/user/9999999/", contentString);
-
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        }
+        }     
 
         [Fact]
         public async Task User_AddAsync_Return_OkResponse()
@@ -119,7 +119,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task user_AddAsync_Return_500()
+        public async Task User_AddAsync_Return_500()
         {
             var user = new User();
             var jsonSerialized = JsonSerialize.Serialize(user);
@@ -131,7 +131,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task user_RemoveAsync_Return_Ok()
+        public async Task User_RemoveAsync_Return_Ok()
         {
             var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
             var allUser = await _userRepository.GetAllAsync();
@@ -142,7 +142,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task user_RemoveAsync_Return_NotFound()
+        public async Task User_RemoveAsync_Return_NotFound()
         {
             var response = await Client.DeleteAsync($"api/user/999999");
 
