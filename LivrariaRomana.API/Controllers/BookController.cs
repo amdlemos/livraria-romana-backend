@@ -10,6 +10,7 @@ using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Notifications;
+using AutoMapper;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -20,21 +21,23 @@ namespace LivrariaRomana.API.Controllers
     {
         private readonly DatabaseContext _context;        
         private readonly IBookService _bookService;
+        IMapper _mapper;
         private ILoggerManager _logger;
         private NotificationContext _notification;
 
-        public BookController(DatabaseContext context, IBookService bookService, ILoggerManager logger)
+        public BookController(DatabaseContext context, IBookService bookService, ILoggerManager logger, IMapper mapper)
         {
             _context = context;
             _logger = logger;
             _bookService = bookService;
+            _mapper = mapper;
             _notification = new NotificationContext();
         }
 
         // GET: api/Livro
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<Book>>> GetLivros()
+        public async Task<ActionResult<IEnumerable<BookDTO>>> GetLivros()
         {
             try
             {
@@ -43,13 +46,15 @@ namespace LivrariaRomana.API.Controllers
 
                 var result = books.OrderBy(x => x.Title).ToList();
 
-                _logger.LogInfo($"Retornando { result.Count() } livros.");
-                return result;
+                _logger.LogInfo($"Retornando { result.Count} livros.");
+                var bookDTOs = result.Select(_mapper.Map<Book, BookDTO>).ToList();
+                return bookDTOs;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
-                return StatusCode(500, "Internal server error");
+                _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                return StatusCode(500, _notification);
             }
 
         }
@@ -57,7 +62,7 @@ namespace LivrariaRomana.API.Controllers
         // GET: api/Livro/5
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Book>> GetLivro(int id)
+        public async Task<ActionResult<BookDTO>> GetLivro(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando livro de ID: { id }.");
             var book = await _bookService.GetByIdAsync(id);
@@ -65,11 +70,14 @@ namespace LivrariaRomana.API.Controllers
             if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não foi encontrado.");
-                return BadRequest("Livro não encontrado.");
+                _notification.AddNotification("", "Livro não encontrado");
+                return BadRequest(_notification);
             }
 
+            var bookDTO = _mapper.Map<BookDTO>(book);
+
             _logger.LogInfo($"Retornado livro: { book.Title }.");
-            return book;
+            return bookDTO;
         }
 
         // PUT: api/Livro/5
@@ -81,7 +89,8 @@ namespace LivrariaRomana.API.Controllers
             if (id != bookDTO.id)
             {
                 _logger.LogError($"[PUT]Parâmetros incorretos.");
-                return BadRequest("Parâmetros incorretos.");
+                _notification.AddNotification("", "Parâmetros incorretos.");
+                return BadRequest(_notification);
             }
 
             var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount, bookDTO.id);
@@ -99,7 +108,8 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Erro: { ex.Message }.");
-                    return StatusCode(500, "Algo deu errado, verifique o LOG para mais informações.");
+                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                    return StatusCode(500, _notification);
                 }
             }
             else
@@ -131,7 +141,8 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Algo deu errado, verifique o LOG para mais informações.");
+                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                    return StatusCode(500, _notification);
                 }
             }
             else
@@ -146,14 +157,15 @@ namespace LivrariaRomana.API.Controllers
         // [Authorize("Admin")]
         [HttpDelete("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<Book>> DeleteLivro(int id)
+        public async Task<ActionResult<BookDTO>> DeleteLivro(int id)
         {
             _logger.LogInfo($"[DELETE]Buscando livro de ID: { id }.");
             var book = await _bookService.GetByIdAsync(id);
             if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não encontrado.");
-                return BadRequest("Livro não encontrado.");
+                _notification.AddNotification("", "Livro não encontrado.");
+                return BadRequest(_notification);
             }
             try
             {
@@ -168,7 +180,8 @@ namespace LivrariaRomana.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
-                return StatusCode(500, "Internal server error");
+                _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                return StatusCode(500, _notification);
             }
         }
     }

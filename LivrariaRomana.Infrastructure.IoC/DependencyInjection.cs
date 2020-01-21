@@ -1,4 +1,7 @@
-﻿using LivrariaRomana.Infrastructure.DBConfiguration;
+﻿using AutoMapper;
+using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.Domain.Entities;
+using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
@@ -20,11 +23,24 @@ namespace LivrariaRomana.Infrastructure.IoC
     {
         public static void Injection(this IServiceCollection services, IConfiguration configuration)
         {
+            // DBContext
             IConfiguration dbConnectionSettings = ResolveConfiguration.GetConnectionSettings(configuration);
             string conn = dbConnectionSettings.GetConnectionString("DevConnection");
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(conn));
-
+            
+            // Logger
             services.AddSingleton<ILoggerManager, LoggerManager>();
+
+            // AutoMapper
+            var config = new AutoMapper.MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<User, UserDTO>();
+                cfg.CreateMap<Book, BookDTO>();
+                cfg.CreateMap<UserDTO, User>();
+                cfg.CreateMap<BookDTO, Book>();
+            });
+            IMapper mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
 
             // Repositories
             services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));

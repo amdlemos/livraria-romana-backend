@@ -12,6 +12,9 @@ using NLog;
 using System.Text;
 using System.IO;
 using LivrariaRomana.Infrastructure.IoC;
+using LivrariaRomana.Domain.Entities;
+using LivrariaRomana.Domain.DTO;
+using AutoMapper;
 
 namespace LivrariaRomana.API
 {
@@ -127,24 +130,18 @@ namespace LivrariaRomana.API
                 app.UseDeveloperExceptionPage();
             }
 
-            // 
+            // Swagger
             app.UseSwagger();
             app.UseSwaggerUI(s =>
             {
-                s.SwaggerEndpoint("/swagger/v1/swagger.json", "Livraria Romana V1");
-                // Deixa a interface do usuário Swagger na raiz do aplicativo.
+                s.SwaggerEndpoint("/swagger/v1/swagger.json", "Livraria Romana V1");                
                 s.RoutePrefix = string.Empty;
             });
-
-            // Dá permição para minha app Angular
+            
             app.UseCors("CorsPolicy");
-
             app.UseAuthentication();
-
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
-
             app.UseMvc();
         }
     }

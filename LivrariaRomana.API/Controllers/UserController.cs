@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
-using static LivrariaRomana.Domain.Entities.User;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Notifications;
+using AutoMapper;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -21,12 +20,14 @@ namespace LivrariaRomana.API.Controllers
     {
         private readonly DatabaseContext _context;
         private readonly IUserService _userService;
-        private ILoggerManager _logger;
-        private NotificationContext _notification;
+        private readonly ILoggerManager _logger;
+        private readonly IMapper _mapper;
+        private readonly NotificationContext _notification;
 
-        public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger)
+        public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger, IMapper mapper)
         {
             _logger = logger;
+            _mapper = mapper;
             _context = context;
             _userService = userService;
             _notification = new NotificationContext();
@@ -36,17 +37,18 @@ namespace LivrariaRomana.API.Controllers
         // GET: api/Usuario
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsuarios()
         {
             try
             {
                 _logger.LogInfo("[GET]Buscando todos os usuários.");
-                var allUsers = await _userService.GetAllAsync();
+                var users = await _userService.GetAllAsync();
 
-                var result = allUsers.ToList();
+                var result = users.ToList();
 
                 _logger.LogInfo($"Retornando { result.Count } usuários.");
-                return result;
+                var usersDTO = result.Select(_mapper.Map<User, UserDTO>).ToList();
+                return usersDTO;
             }
             catch (Exception ex)
             {
@@ -59,7 +61,7 @@ namespace LivrariaRomana.API.Controllers
         // GET: api/Usuario/5
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> GetUsuario(int id)
+        public async Task<ActionResult<UserDTO>> GetUsuario(int id)
         {
             _logger.LogInfo($"[GETbyID]Buscando usuário de ID: { id }.");
             var user = await _userService.GetByIdAsync(id);
@@ -71,8 +73,10 @@ namespace LivrariaRomana.API.Controllers
                 return BadRequest(_notification);
             }
 
-            _logger.LogInfo($"Retornado usuário: { user.Username }.");
-            return user;
+            var userDTO = _mapper.Map<UserDTO>(user);
+
+            _logger.LogInfo($"Retornado usuário: { userDTO.username }.");
+            return userDTO;
         }
 
         // PUT: api/Usuario/5        
@@ -119,7 +123,7 @@ namespace LivrariaRomana.API.Controllers
         // [Authorize("Admin")]
         [HttpPost]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> PostUsuario(UserDTO userDTO)
+        public async Task<ActionResult<UserDTO>> PostUsuario(UserDTO userDTO)
         {
             var user = new User(userDTO.username, userDTO.password, userDTO.email);
 
@@ -152,7 +156,7 @@ namespace LivrariaRomana.API.Controllers
         // [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<User>> DeleteUsuario(int id)
+        public async Task<ActionResult<UserDTO>> DeleteUsuario(int id)
         {
             _logger.LogInfo($"[DELETE]Buscando usuário de ID: { id }.");
             var user = await _userService.GetByIdAsync(id);
@@ -167,6 +171,9 @@ namespace LivrariaRomana.API.Controllers
             {
                 _logger.LogInfo($"Deletando usuário: { user.Username }, ID: { user.Id }.");
                 await _userService.RemoveAsync(user);
+                
+                _logger.LogInfo($"Usuário excluido com sucesso.");
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -174,9 +181,6 @@ namespace LivrariaRomana.API.Controllers
                 _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
                 return StatusCode(500, _notification);
             }
-
-            _logger.LogInfo($"Usuário excluido com sucesso.");
-            return user;
         }
     }
 }

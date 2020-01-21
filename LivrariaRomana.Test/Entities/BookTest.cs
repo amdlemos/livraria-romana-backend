@@ -1,9 +1,7 @@
 ﻿using Xunit;
-using FluentValidation;
 using FluentValidation.TestHelper;
-using LivrariaRomana.Domain.Entities;
-using static LivrariaRomana.Domain.Entities.Book;
 using LivrariaRomana.Test.DataBuilder;
+using LivrariaRomana.Domain.Validators;
 
 namespace LivrariaRomana.Test.Entities
 {
