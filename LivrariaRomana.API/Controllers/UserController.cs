@@ -11,6 +11,7 @@ using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using static LivrariaRomana.Domain.Entities.User;
 using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.Infrastructure.Notifications;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -21,12 +22,14 @@ namespace LivrariaRomana.API.Controllers
         private readonly DatabaseContext _context;
         private readonly IUserService _userService;
         private ILoggerManager _logger;
+        private NotificationContext _notification;
 
         public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger)
         {
             _logger = logger;
             _context = context;
             _userService = userService;
+            _notification = new NotificationContext();
 
         }
 
@@ -48,7 +51,8 @@ namespace LivrariaRomana.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
-                return StatusCode(500, "Internal server error");
+                _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                return StatusCode(500, _notification);
             }
         }
 
@@ -62,8 +66,9 @@ namespace LivrariaRomana.API.Controllers
 
             if (user == null)
             {
-                _logger.LogError($"Usuário de ID: { id } não foi encontrado.");
-                return StatusCode(500, "Internal server error");
+                _logger.LogError($"Usuário { id } não foi encontrado ou não existe.");
+                _notification.AddNotification("", "Usuário não encontrado");
+                return BadRequest(_notification);
             }
 
             _logger.LogInfo($"Retornado usuário: { user.Username }.");
@@ -79,7 +84,8 @@ namespace LivrariaRomana.API.Controllers
             if (id != userDTO.id)
             {
                 _logger.LogError($"[PUT]Parâmetros incorretos.");
-                return BadRequest();
+                _notification.AddNotification("", "Parâmetros incorretos.");
+                return BadRequest(_notification);
             }
 
             var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.id);
@@ -97,18 +103,15 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Algo deu errado, verifique o log.");
+                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                    return StatusCode(500, _notification);
                 }
             }
             else
             {
-                var errors = user.ValidationResult.Errors;
-                foreach (var erro in errors)
-                {
-                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
-                }
+                _notification.AddNotifications(user.ValidationResult);
 
-                return StatusCode(500, errors);
+                return BadRequest(_notification);
             }
         }
 
@@ -133,18 +136,15 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Internal server error");
+                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                    return StatusCode(500, _notification);
                 }
             }
             else
             {
-                var errors = user.ValidationResult.Errors;
-                foreach (var erro in errors)
-                {
-                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
-                }
+                _notification.AddNotifications(user.ValidationResult);
 
-                return BadRequest(errors);
+                return BadRequest(_notification);
             }
         }
 
@@ -159,7 +159,8 @@ namespace LivrariaRomana.API.Controllers
             if (user == null)
             {
                 _logger.LogError($"Usuário de ID: { id } não encontrado.");
-                return NotFound();
+                _notification.AddNotification("", "Usuário não encontrado.");
+                return NotFound(_notification);
             }
 
             try
@@ -170,7 +171,8 @@ namespace LivrariaRomana.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
-                return StatusCode(500, "Internal server error");
+                _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                return StatusCode(500, _notification);
             }
 
             _logger.LogInfo($"Usuário excluido com sucesso.");

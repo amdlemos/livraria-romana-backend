@@ -39,7 +39,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_GetAllAsync_ReturnsOkResponse()
+        public async Task User_GetAllAsync_Return_OK()
         {
             var response = await Client.GetAsync("api/user");
             response.EnsureSuccessStatusCode();
@@ -47,7 +47,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_GetByIdAsync_ReturnsOkResponse()
+        public async Task User_GetByIdAsync_Return_OK()
         {
             var response = await Client.GetAsync("api/user/1");
             response.EnsureSuccessStatusCode();
@@ -55,7 +55,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_GetByIdAsync_ReturnBadRequest()
+        public async Task User_GetByIdAsync_With_Invalid_Parameter_Return_BadRequest()
         {
             var response = await Client.GetAsync("api/user/dfd");
 
@@ -63,11 +63,11 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_GetByIdAsync_Returns500()
+        public async Task User_GetByIdAsync_Return_BadRequest()
         {
             var response = await Client.GetAsync("api/user/9999999");
 
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_UpdateAsync_Return_OkResponse()
+        public async Task User_UpdateAsync_Return_OK()
         {
             var user = _userBuilder.CreateUserWithId();
             var jsonSerialized = JsonSerialize.Serialize(user);
@@ -107,7 +107,7 @@ namespace LivrariaRomana.Test.Integrations
         }     
 
         [Fact]
-        public async Task User_AddAsync_Return_OkResponse()
+        public async Task User_AddAsync_Return_OK()
         {
             var user = _userBuilder.CreateUser();
             var jsonSerialized = JsonSerialize.Serialize(user);
@@ -131,7 +131,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_AddAsync_Return_UnsupportedMediaType_with_null_parameters()
+        public async Task User_AddAsync_With_Null_Parameters_Return_UnsupportedMediaType()
         {
             var response = await Client.PostAsync("api/user/", null);
 

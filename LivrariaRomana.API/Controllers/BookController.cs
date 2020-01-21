@@ -9,6 +9,7 @@ using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.Infrastructure.Notifications;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -17,15 +18,17 @@ namespace LivrariaRomana.API.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly DatabaseContext _context;
+        private readonly DatabaseContext _context;        
         private readonly IBookService _bookService;
         private ILoggerManager _logger;
+        private NotificationContext _notification;
 
         public BookController(DatabaseContext context, IBookService bookService, ILoggerManager logger)
         {
             _context = context;
             _logger = logger;
             _bookService = bookService;
+            _notification = new NotificationContext();
         }
 
         // GET: api/Livro
@@ -62,7 +65,7 @@ namespace LivrariaRomana.API.Controllers
             if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não foi encontrado.");
-                return StatusCode(500, "Internal server error");
+                return BadRequest("Livro não encontrado.");
             }
 
             _logger.LogInfo($"Retornado livro: { book.Title }.");
@@ -78,7 +81,7 @@ namespace LivrariaRomana.API.Controllers
             if (id != bookDTO.id)
             {
                 _logger.LogError($"[PUT]Parâmetros incorretos.");
-                return BadRequest();
+                return BadRequest("Parâmetros incorretos.");
             }
 
             var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount, bookDTO.id);
@@ -96,18 +99,14 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Erro: { ex.Message }.");
-                    return StatusCode(500, ex.Message);
+                    return StatusCode(500, "Algo deu errado, verifique o LOG para mais informações.");
                 }
             }
             else
             {
-                var errors = book.ValidationResult.Errors;
-                foreach (var erro in errors)
-                {
-                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
-                }
+                _notification.AddNotifications(book.ValidationResult);
 
-                return StatusCode(500, errors);
+                return BadRequest(_notification);                
             }
         }
 
@@ -132,18 +131,14 @@ namespace LivrariaRomana.API.Controllers
                 catch (Exception ex)
                 {
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
-                    return StatusCode(500, "Internal server error");
+                    return StatusCode(500, "Algo deu errado, verifique o LOG para mais informações.");
                 }
             }
             else
-            {
-                var errors = book.ValidationResult.Errors;
-                foreach (var erro in errors)
-                {
-                    _logger.LogError($"Erro: { erro.ErrorMessage }.");
-                }
+            {                
+                _notification.AddNotifications(book.ValidationResult);                            
 
-                return BadRequest(errors);
+                return BadRequest(_notification);
             }
         }
 
@@ -158,7 +153,7 @@ namespace LivrariaRomana.API.Controllers
             if (book == null)
             {
                 _logger.LogError($"Livro de ID: { id } não encontrado.");
-                return NotFound();
+                return BadRequest("Livro não encontrado.");
             }
             try
             {

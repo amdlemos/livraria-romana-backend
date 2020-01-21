@@ -38,7 +38,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]       
-        public async Task Book_GetAllAsync_ReturnsOkResponse()
+        public async Task Book_GetAllAsync_Return_OK()
         {
             var response = await Client.GetAsync("api/book");
             response.EnsureSuccessStatusCode();
@@ -46,7 +46,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_GetByIdAsync_ReturnsOkResponse()
+        public async Task Book_GetByIdAsync_Return_OK()
         {
             var response = await Client.GetAsync("api/book/4");
             response.EnsureSuccessStatusCode();
@@ -54,7 +54,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_GetByIdAsync_ReturnBadRequest()
+        public async Task Book_GetByIdAsync_With_InvalidParameter_Return_BadRequest()
         {
             var response = await Client.GetAsync("api/book/dfd");
             
@@ -62,15 +62,15 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_GetByIdAsync_Returns500()
+        public async Task Book_GetByIdAsync_Return_BadRequest()
         {
             var response = await Client.GetAsync("api/book/9999999");
-
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public async Task Book_UpdateAsync_Return_BadRequest()
+        public async Task Book_UpdateAsync_With_Invalid_Parameters_Return_BadRequest()
         {            
             var book = _bookBuilder.CreateValidBook();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -82,7 +82,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_UpdateAsync_Return_OkResponse()
+        public async Task Book_UpdateAsync_Return_OK()
         {
             var book = _bookBuilder.CreateBookWithId();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -94,7 +94,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_UpdateAsync_Return_InternalServerError()
+        public async Task Book_UpdateAsync_Return_BadRequest()
         {
             var book = _bookBuilder.CreateBookWithNonexistentId();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -102,11 +102,11 @@ namespace LivrariaRomana.Test.Integrations
             contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             var response = await Client.PutAsync("api/book/9999999/", contentString);
 
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public async Task Book_AddAsync_Return_OkResponse()
+        public async Task Book_AddAsync_Return_OK()
         {
             var book = _bookBuilder.CreateValidBook();
             var jsonSerialized = JsonSerialize.Serialize(book);
@@ -130,7 +130,7 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_AddAsync_Return_UnsupportedMediaType_with_null_parameters()
+        public async Task Book_AddAsync_With_Null_Parameters_Return_UnsupportedMediaType()
         {            
             var response = await Client.PostAsync("api/book/", null);
 
@@ -149,11 +149,11 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task Book_RemoveAsync_Return_NotFound()
+        public async Task Book_RemoveAsync_Return_BadRequest()
         {          
             var response = await Client.DeleteAsync($"api/book/999999");
 
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }
