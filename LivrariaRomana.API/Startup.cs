@@ -43,16 +43,7 @@ namespace LivrariaRomana.API
             // Adiciona Cors e MVC
             //
             #region CORS E MVC           
-            services.AddCors(corsOptions =>
-            {
-                //corsOptions.AddPolicy("CorsPolicy",
-                //corsPolicyBuilder =>
-                //{
-                //    corsPolicyBuilder.AllowAnyOrigin()
-                //    .AllowAnyMethod()
-                //    .AllowAnyHeader();
-                //});
-            });
+            services.AddCors();
             services.AddMvc(mvcOptions =>
             {
                 var authorizationPolice = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -68,8 +59,7 @@ namespace LivrariaRomana.API
             // Adiciono dois níveis de permissão    
             services.AddAuthorization(authorizationOptions =>
             {
-                authorizationOptions.AddPolicy("admin", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore","admin"));
-                authorizationOptions.AddPolicy("nutella", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore", "nutella"));
+                authorizationOptions.AddPolicy("admin", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore","admin"));                
             });
 
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
