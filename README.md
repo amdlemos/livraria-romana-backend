@@ -30,9 +30,13 @@ public Startup(IConfiguration configuration)
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/
 
 ## Utilizando a Aplicação
-  - Para utilizar a aplicação você necessita estar logado.
-  - No primeiro acesso você terá a opção de criar um usuário.
-  - Na tela de login digite um usuário e senha e aperte em "Entrar", o sistema irá criar um usuário "admin" para você.
-
-       
+- Para você utilizar a API necessida estar logado.
+- Faça um post em Login pelo Swagger com o usuário e senha desejados que o sistema ira criar um usuário "admin" para você. 
+- Na resposta vai ser lhe informado que seu usuário foi criado com sucesso.
+- Faça um novo post para obter o token, como o abaixo: 
+```json
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRoaWFnbyIsInN1YiI6IjEzIiwianRpIjoiZDBlMGFkZDItOTlkMC00NWY1LThlYzEtY2FiYzIwZjkxMGYyIiwiaWF0IjoxNTAwMDMzMjE0LCJKd3RWYWxpZGF0aW9uIjoiVXN1YXJpbyIsIm5iZiI6MTUwMDAzMzIxMywiZXhwIjoxNTAwMDMzMjczLCJpc3MiOiJJc3N1ZXIiLCJhdWQiOiJBdWRpZW5jZSJ9.SmjuyXgloA2RUhIlAEetrQwfC0EhBmhu-xOMzyY3Y_Q
+```
+- Na parte direita do Swagger há um botão Authorize, click e adicione ao campo a palavra Bearer + o token, desta forma você irá adicionar o token ao seu request.
+- Agora você já pode utilizar as outras rotas da API.       
 
