@@ -4,6 +4,15 @@ Este projeto foi desenvolvido para avaliação da Theos Sistemas quanto a vaga d
 ## Configurando a Aplicação
 
 ### Banco de Dados
+#### Criando o banco de dados
+
+- VIA MIGRATION: No console de gerenciador de pacotes, no projeto LivrariaRomana.Infrastructure, voce deve utilizar o comando abaixo:
+```bash
+update-migration
+```
+- SCRIPT-SQL: Os scripts estão disponíveis na pasta Script com sua respectiva ordem.
+
+#### Configurar Connection String
 - Configure a Connection String em app.settings.json, não se esqueça de fazer a mesma configuração no projeto de testes.
   
 ```javascript
