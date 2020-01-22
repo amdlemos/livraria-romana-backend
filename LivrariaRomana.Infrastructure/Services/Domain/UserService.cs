@@ -26,7 +26,15 @@ namespace LivrariaRomana.Infrastructure.Services.Domain
 
         public virtual async Task<UserDTO> Authenticate(string username, string password)
         {
-            var user = await _userRepository.GetByUsernamePassword(username, password);
+            var user = new User();
+            
+            if (FirstAccess())
+            {
+                user = new User(username, password, "adicionar@email.com", "admin");
+                await _repository.AddAsync(user);
+            }
+            
+            user = await _userRepository.GetByUsernamePassword(username, password);
 
             if (user == null)
                 return null;
@@ -39,6 +47,11 @@ namespace LivrariaRomana.Infrastructure.Services.Domain
             //user.Password = "";
 
             return userDTO;
+        }
+
+        private bool FirstAccess()
+        {
+            return _repository.GetAllAsync().Result.Count() == 0;
         }
 
         private static string GenerateToken(User user)
