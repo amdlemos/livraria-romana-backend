@@ -17,6 +17,8 @@ using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Test.DBConfiguration;
 using System;
+using LivrariaRomana.Infrastructure.Services.Domain;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 
 namespace LivrariaRomana.Test.Integrations
 {
@@ -24,6 +26,8 @@ namespace LivrariaRomana.Test.Integrations
     {
         private readonly DatabaseContext _dbContext;
         private readonly IBookRepository _bookRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly BookBuilder _bookBuilder;
         private readonly TestServer _server;
         public HttpClient Client;
@@ -32,9 +36,14 @@ namespace LivrariaRomana.Test.Integrations
         {
             _dbContext = new Connection().DatabaseConfiguration();            
             _bookRepository = new BookRepository(_dbContext);
+            _userRepository = new UserRepository(_dbContext);
+            _userService = new UserService(_userRepository);
             _bookBuilder = new BookBuilder();
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            Client = _server.CreateClient();
+            
+            var user = _userService.Authenticate("amdlemos", "123");
+            Client = _server.CreateClient();            
+            Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {user.Result.token}");
         }
 
         [Fact]       
@@ -55,7 +64,7 @@ namespace LivrariaRomana.Test.Integrations
 
         [Fact]
         public async Task Book_GetByIdAsync_With_InvalidParameter_Return_BadRequest()
-        {
+        {           
             var response = await Client.GetAsync("api/book/dfd");
             
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

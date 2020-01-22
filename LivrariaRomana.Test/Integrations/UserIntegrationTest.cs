@@ -3,7 +3,9 @@ using LivrariaRomana.API;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Domain;
+using LivrariaRomana.Infrastructure.Services.Domain;
 using LivrariaRomana.Test.DataBuilder;
 using LivrariaRomana.Test.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
@@ -24,7 +26,8 @@ namespace LivrariaRomana.Test.Integrations
     public class UserIntegrationTest
     {
         private readonly DatabaseContext _dbContext;
-        private readonly IUserService _userRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
         private readonly UserBuilder _userBuilder;
         private readonly TestServer _server;
         public HttpClient Client;
@@ -33,9 +36,13 @@ namespace LivrariaRomana.Test.Integrations
         {
             _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
+            _userService = new UserService(_userRepository);
             _userBuilder = new UserBuilder();
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            Client = _server.CreateClient();
+
+            var user = _userService.Authenticate("amdlemos", "123");
+            Client = _server.CreateClient();            
+            Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {user.Result.token }");
         }
 
         [Fact]

@@ -17,13 +17,13 @@ namespace LivrariaRomana.Test.DataBuilder
 
         public User CreateUserWithEmptyUsername()
         {
-            user = new User("", "123", "user@builder.com");
+            user = new User("", "123", "user@builder.com", "");
             return user;
         }
 
         public User CreateUserWithNullUsername()
         {
-            user = new User(null, "123", "user@builder.com");
+            user = new User(null, "123", "user@builder.com", "");
             return user;
         }
 
@@ -60,14 +60,14 @@ namespace LivrariaRomana.Test.DataBuilder
 
         public User CreateUserWithNonexistentId()
         {
-            user = new User("User from Builder", "123", "aaaa@gmail.com", 9999999);
+            user = new User("User from Builder", "123", "aaaa@gmail.com", "", 9999999);
             return user;
         }
 
 
         public User CreateUserWithId()
         {
-            user = new User("User from Builder", "123", "aaaa@gmail.com", 1);
+            user = new User("User from Builder", "123", "aaaa@gmail.com", "", 1);
             return user;
         }
 

@@ -11,25 +11,38 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.Infrastructure.Services.Domain
 {
-    public class UserService : ServiceBase<User>, Interfaces.Services.Domain.IUserService
+    public class UserService : ServiceBase<User>, IUserService
     {
-        private readonly Interfaces.Repositories.Domain.IUserService _userRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(Interfaces.Repositories.Domain.IUserService repository) : base(repository)
+        public UserService(IUserRepository repository) : base(repository)
         {
             _userRepository = repository;
         }
 
-        public virtual async Task<User> Authenticate(string username, string password)
+        public virtual async Task<UserDTO> Authenticate(string username, string password)
         {
             var user = await _userRepository.GetByUsernamePassword(username, password);
 
             if (user == null)
                 return null;
 
+            var userDTO = new UserDTO();
+            userDTO.username = user.Username;
+            userDTO.token = GenerateToken(user);
+            userDTO.role = user.Role;
+            //user.AddToken(GenerateToken(user));
+            //user.Password = "";
+
+            return userDTO;
+        }
+
+        private static string GenerateToken(User user)
+        {
             // Gera token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
@@ -38,25 +51,14 @@ namespace LivrariaRomana.Infrastructure.Services.Domain
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Username),
-                    //new Claim(ClaimTypes.Role, user.Role)
+                    new Claim("bookStore", user.Role)
                 }),
-                Expires = DateTime.UtcNow.AddHours(3),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.AddToken(tokenHandler.WriteToken(token));
-            //user.Token = tokenHandler.WriteToken(token);
-            user.Password = "";
 
-            return user;
-        }
-
-        public override async Task<User> AddAsync(User obj)
-        {
-            if (obj.Valid)
-                return await base.AddAsync(obj);
-            else
-                throw new Exception("obj.ValidationResult.Errors");
+            return tokenHandler.WriteToken(token);
         }
     }
 }

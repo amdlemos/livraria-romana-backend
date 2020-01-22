@@ -13,7 +13,7 @@ namespace LivrariaRomana.Test.Repositories
     public class UserRepositoryTest
     {
         private readonly DatabaseContext _dbContext;        
-        private readonly IUserService _userRepository;
+        private readonly IUserRepository _userRepository;
 
         private readonly UserBuilder _userBuilder;
 

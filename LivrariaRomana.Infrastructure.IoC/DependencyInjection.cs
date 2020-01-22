@@ -11,11 +11,18 @@ using LivrariaRomana.Infrastructure.Repositories.Domain;
 using LivrariaRomana.Infrastructure.Repositories.Standard;
 using LivrariaRomana.Infrastructure.Services.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 using System.Text;
+
+using Microsoft.IdentityModel.Tokens;
+
 
 namespace LivrariaRomana.Infrastructure.IoC
 {
@@ -27,7 +34,7 @@ namespace LivrariaRomana.Infrastructure.IoC
             IConfiguration dbConnectionSettings = ResolveConfiguration.GetConnectionSettings(configuration);
             string conn = dbConnectionSettings.GetConnectionString("DevConnection");
             services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(conn));
-            
+
             // Logger
             services.AddSingleton<ILoggerManager, LoggerManager>();
 
@@ -38,6 +45,7 @@ namespace LivrariaRomana.Infrastructure.IoC
                 cfg.CreateMap<Book, BookDTO>();
                 cfg.CreateMap<UserDTO, User>();
                 cfg.CreateMap<BookDTO, Book>();
+                cfg.CreateMap<User, UserDTO>();
             });
             IMapper mapper = config.CreateMapper();
             services.AddSingleton(mapper);
@@ -46,10 +54,10 @@ namespace LivrariaRomana.Infrastructure.IoC
             services.AddScoped(typeof(IRepositoryAsync<>), typeof(RepositoryAsync<>));
             services.AddScoped(typeof(IDomainRepository<>), typeof(DomainRepository<>));
             services.AddScoped(typeof(IBookRepository), typeof(BookRepository));
-            services.AddScoped(typeof(Interfaces.Repositories.Domain.IUserService), typeof(UserRepository));
+            services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
 
             // Services
-            services.AddScoped(typeof(Interfaces.Services.Domain.IUserService), typeof(UserService));
+            services.AddScoped(typeof(IUserService), typeof(UserService));
             services.AddScoped(typeof(IBookService), typeof(BookService));
 
         }

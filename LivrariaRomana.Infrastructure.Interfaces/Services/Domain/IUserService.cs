@@ -1,4 +1,5 @@
-﻿using LivrariaRomana.Domain.Entities;
+﻿using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.Interfaces.Services.Standard;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,6 @@ namespace LivrariaRomana.Infrastructure.Interfaces.Services.Domain
 {
     public interface IUserService : IServiceBase<User>
     {
-        Task<User> Authenticate(string username, string password);
+        Task<UserDTO> Authenticate(string username, string password);
     }
 }

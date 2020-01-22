@@ -11,6 +11,7 @@ using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Notifications;
 using AutoMapper;
+using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 
 namespace LivrariaRomana.API.Controllers
 {
@@ -36,12 +37,12 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Usuario
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsuarios()
         {
             try
             {
-                _logger.LogInfo("[GET]Buscando todos os usuários.");
+                _logger.LogInfo("[USER][GET]Buscando todos os usuários.");
                 var users = await _userService.GetAllAsync();
 
                 var result = users.ToList();
@@ -60,10 +61,10 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Usuario/5
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<ActionResult<UserDTO>> GetUsuario(int id)
         {
-            _logger.LogInfo($"[GETbyID]Buscando usuário de ID: { id }.");
+            _logger.LogInfo($"[USER][GETbyID]Buscando usuário de ID: { id }.");
             var user = await _userService.GetByIdAsync(id);
 
             if (user == null)
@@ -82,23 +83,23 @@ namespace LivrariaRomana.API.Controllers
         // PUT: api/Usuario/5        
         //[Authorize("Admin")]
         [HttpPut("{id}")]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<IActionResult> PutUsuario(int id, UserDTO userDTO)
         {   
             if (id != userDTO.id)
             {
-                _logger.LogError($"[PUT]Parâmetros incorretos.");
+                _logger.LogError($"[USER][PUT]Parâmetros incorretos.");
                 _notification.AddNotification("", "Parâmetros incorretos.");
                 return BadRequest(_notification);
             }
 
-            var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.id);
+            var user = new User(userDTO.username, userDTO.password, userDTO.email, userDTO.role, userDTO.id);
 
             if (user.Valid)
             {
                 try
                 {
-                    _logger.LogInfo($"[PUT]Editando usuário de ID: { id }.");
+                    _logger.LogInfo($"[USER][PUT]Editando usuário de ID: { id }.");
                     await _userService.UpdateAsync(user);
                     
                     _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
@@ -122,7 +123,7 @@ namespace LivrariaRomana.API.Controllers
         // POST: api/Usuario        
         // [Authorize("Admin")]
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<ActionResult<UserDTO>> PostUsuario(UserDTO userDTO)
         {
             var user = new User(userDTO.username, userDTO.password, userDTO.email);
@@ -131,7 +132,7 @@ namespace LivrariaRomana.API.Controllers
             {
                 try
                 {
-                    _logger.LogInfo($"[POST]Adicionando novo usuário: { user.Username }.");
+                    _logger.LogInfo($"[USER][POST]Adicionando novo usuário: { user.Username }.");
                     await _userService.AddAsync(user);
 
                     _logger.LogInfo($"Usuário { user.Username}, ID: { user.Id } adicionado com sucesso.");
@@ -155,10 +156,10 @@ namespace LivrariaRomana.API.Controllers
         // DELETE: api/Usuario/5
         // [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<ActionResult<UserDTO>> DeleteUsuario(int id)
         {
-            _logger.LogInfo($"[DELETE]Buscando usuário de ID: { id }.");
+            _logger.LogInfo($"[USER][DELETE]Buscando usuário de ID: { id }.");
             var user = await _userService.GetByIdAsync(id);
             if (user == null)
             {

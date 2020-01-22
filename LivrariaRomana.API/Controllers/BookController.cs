@@ -16,12 +16,12 @@ namespace LivrariaRomana.API.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController]    
     public class BookController : ControllerBase
     {
         private readonly DatabaseContext _context;        
         private readonly IBookService _bookService;
-        IMapper _mapper;
+        private readonly IMapper _mapper;
         private ILoggerManager _logger;
         private NotificationContext _notification;
 
@@ -36,12 +36,12 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Livro
         [HttpGet]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<BookDTO>>> GetLivros()
         {
             try
             {
-                _logger.LogInfo("[GET]Buscando todos os livros.");
+                _logger.LogInfo("[BOOK][GET]Buscando todos os livros.");
                 var books = await _bookService.GetAllAsync();
 
                 var result = books.OrderBy(x => x.Title).ToList();
@@ -61,10 +61,10 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Livro/5
         [HttpGet("{id}")]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult<BookDTO>> GetLivro(int id)
         {
-            _logger.LogInfo($"[GETbyID]Buscando livro de ID: { id }.");
+            _logger.LogInfo($"[BOOK][GETbyID]Buscando livro de ID: { id }.");
             var book = await _bookService.GetByIdAsync(id);
 
             if (book == null)
@@ -80,15 +80,14 @@ namespace LivrariaRomana.API.Controllers
             return bookDTO;
         }
 
-        // PUT: api/Livro/5
-        // [Authorize("Admin")]
+        // PUT: api/Livro/5        
         [HttpPut("{id}")]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<IActionResult> PutLivro(int id, BookDTO bookDTO)
         {
             if (id != bookDTO.id)
             {
-                _logger.LogError($"[PUT]Parâmetros incorretos.");
+                _logger.LogError($"[BOOK][PUT]Parâmetros incorretos.");
                 _notification.AddNotification("", "Parâmetros incorretos.");
                 return BadRequest(_notification);
             }
@@ -99,7 +98,7 @@ namespace LivrariaRomana.API.Controllers
             {
                 try
                 {
-                    _logger.LogInfo($"[PUT]Editando livro de ID: { id }");
+                    _logger.LogInfo($"[BOOK][PUT]Editando livro de ID: { id }");
                     await _bookService.UpdateAsync(book);
 
                     _logger.LogInfo($"Livro: { book.Title }, ID: { book.Id } editado com sucesso.");
@@ -123,8 +122,8 @@ namespace LivrariaRomana.API.Controllers
         // POST: api/Livro
         // [Authorize("Admin")]
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<ActionResult<Book>> PostLivro(BookDTO bookDTO)
+        [Authorize("admin")]
+        public async Task<ActionResult<BookDTO>> PostLivro(BookDTO bookDTO)
         {
             var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount);
 
@@ -132,11 +131,11 @@ namespace LivrariaRomana.API.Controllers
             {
                 try
                 {
-                    _logger.LogInfo($"[POST]Adicionando novo livro: { book.Title}.");
+                    _logger.LogInfo($"[BOOK][POST]Adicionando novo livro: { book.Title}.");
                     await _bookService.AddAsync(book);
 
                     _logger.LogInfo($"Livro { book.Title }, ID: { book.Id } adicionado com sucesso.");
-                    return CreatedAtAction("GetLivro", new { id = book.Id }, book);
+                    return CreatedAtAction("GetLivro", new { id = book.Id }, bookDTO);
                 }
                 catch (Exception ex)
                 {
@@ -153,13 +152,12 @@ namespace LivrariaRomana.API.Controllers
             }
         }
 
-        // DELETE: api/Livro/5
-        // [Authorize("Admin")]
+        // DELETE: api/Livro/5        
         [HttpDelete("{id}")]
-        [AllowAnonymous]
+        [Authorize("admin")]
         public async Task<ActionResult<BookDTO>> DeleteLivro(int id)
         {
-            _logger.LogInfo($"[DELETE]Buscando livro de ID: { id }.");
+            _logger.LogInfo($"[BOOK][DELETE]Buscando livro de ID: { id }.");
             var book = await _bookService.GetByIdAsync(id);
             if (book == null)
             {

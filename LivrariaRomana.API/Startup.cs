@@ -12,9 +12,8 @@ using NLog;
 using System.Text;
 using System.IO;
 using LivrariaRomana.Infrastructure.IoC;
-using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Domain.DTO;
-using AutoMapper;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
 
 namespace LivrariaRomana.API
 {
@@ -26,10 +25,9 @@ namespace LivrariaRomana.API
         {
             // Define onde os logs serão criados.
             LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
-            
-            // 
+
             _configuration = configuration;
-        }       
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -38,43 +36,54 @@ namespace LivrariaRomana.API
             // Injeta as dependências necessárias
             //
             #region INJEÇÃO DE DEPENDÊNCIA (Inclusive DBContext)        
-            services.Injection(_configuration);           
+            services.Injection(_configuration);
+            #endregion
+
+            //
+            // Adiciona Cors e MVC
+            //
+            #region CORS E MVC           
+            services.AddCors(corsOptions =>
+            {
+                //corsOptions.AddPolicy("CorsPolicy",
+                //corsPolicyBuilder =>
+                //{
+                //    corsPolicyBuilder.AllowAnyOrigin()
+                //    .AllowAnyMethod()
+                //    .AllowAnyHeader();
+                //});
+            });
+            services.AddMvc(mvcOptions =>
+            {
+                var authorizationPolice = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+                mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolice));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
             //
             // Adiciona politicas de Autenticação e Autorização
             //
-            #region AUTENICAÇÃO E AUTORIZAÇÃO            
-            services.AddMvc(config =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                                 .RequireAuthenticatedUser()
-                                 .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
+            #region AUTENICAÇÃO E AUTORIZAÇÃO
+            // Diz que a aplicação tem uma autenticação e o default é o JwtBeater
             // Adiciono dois níveis de permissão    
-            services.AddAuthorization(options =>
+            services.AddAuthorization(authorizationOptions =>
             {
-                options.AddPolicy("user", policy => policy.RequireClaim("Livraria", "user"));
-                options.AddPolicy("admin", policy => policy.RequireClaim("Livraria", "admin"));
+                authorizationOptions.AddPolicy("admin", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore","admin"));
+                authorizationOptions.AddPolicy("nutella", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore", "nutella"));
             });
 
-            // Diz que a aplicação tem uma autenticação e o default é o JwtBeater
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
-            services.AddAuthentication(x =>
+            services.AddAuthentication(authenticationOptions =>
             {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                authenticationOptions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                authenticationOptions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-
             // Diz o formato do Token e como validar o mesmo   
-            .AddJwtBearer(x =>
+            .AddJwtBearer(jwtBearerOptions =>
             {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
+                jwtBearerOptions.RequireHttpsMetadata = false;
+                jwtBearerOptions.SaveToken = true;
+                jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -82,16 +91,27 @@ namespace LivrariaRomana.API
                     ValidateAudience = false
                 };
             });
+           
+
+            services.AddMvc(mvcOptions =>
+            {
+                var authorizationPolicy = new AuthorizationPolicyBuilder()
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolicy));
+                mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolicy));
+            })
+           .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
             //
             // Define consultas e urls minúsculo
             //
             #region ROUTES
-            services.AddRouting(o =>
+            services.AddRouting(routeOptions =>
             {
-                o.LowercaseUrls = true;
-                o.LowercaseQueryStrings = true;                
+                routeOptions.LowercaseUrls = true;
+                routeOptions.LowercaseQueryStrings = true;
             });
             #endregion           
 
@@ -99,27 +119,42 @@ namespace LivrariaRomana.API
             // Adiciona Swagger
             //
             #region SWAGGER            
-            services.AddSwaggerGen(x => { x.SwaggerDoc("v1", new OpenApiInfo { Title = "Livraria Romana", Version = "v1" }); });
-            #endregion
-
-            //
-            // Adiciona politicas do Cors
-            //
-            #region CORS            
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy",
-                builder =>
+            services.AddSwaggerGen(swaggerGenOptions =>
                 {
-                    builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();                    
+                    swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "Livraria Romana", Version = "v1" });
+                    swaggerGenOptions.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+
+                        Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+                        Name = "Authorization",
+                        In = ParameterLocation.Header,
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer"
+                    });
+                    swaggerGenOptions.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+        new List<string>()
+                    }
                 });
-            });
+                });
             #endregion
 
-           
+
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -132,16 +167,23 @@ namespace LivrariaRomana.API
 
             // Swagger
             app.UseSwagger();
-            app.UseSwaggerUI(s =>
+            app.UseSwaggerUI(swaggerUIoptions =>
             {
-                s.SwaggerEndpoint("/swagger/v1/swagger.json", "Livraria Romana V1");                
-                s.RoutePrefix = string.Empty;
+                swaggerUIoptions.SwaggerEndpoint("/swagger/v1/swagger.json", "Livraria Romana V1");
+                swaggerUIoptions.RoutePrefix = string.Empty;
             });
+
+            app.UseCors(corsPolicyBuilder => corsPolicyBuilder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
             
-            app.UseCors("CorsPolicy");
             app.UseAuthentication();
+
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
+
             app.UseMvc();
         }
     }
