@@ -37,7 +37,7 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Usuario
         [HttpGet]
-        [Authorize("admin")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsuarios()
         {
             try
@@ -61,7 +61,7 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Usuario/5
         [HttpGet("{id}")]
-        [Authorize("admin")]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> GetUsuario(int id)
         {
             _logger.LogInfo($"[USER][GETbyID]Buscando usuário de ID: { id }.");
