@@ -1,4 +1,4 @@
-# Livraria Romana Backend
+# Livraria Romana Backend (ASP.NET CORE 2.2)
 Este projeto foi desenvolvido para avaliação da Theos Sistemas quanto a vaga de programador back-end. 
   
 ## Configurando a Aplicação
