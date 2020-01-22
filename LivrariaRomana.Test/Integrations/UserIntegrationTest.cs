@@ -29,8 +29,9 @@ namespace LivrariaRomana.Test.Integrations
         private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private readonly UserBuilder _userBuilder;
-        private readonly TestServer _server;
-        public HttpClient Client;
+        private readonly TestServer _testServer;
+        private readonly Authentication _authentication;
+        private readonly HttpClient Client;
 
         public UserIntegrationTest()
         {
@@ -38,11 +39,13 @@ namespace LivrariaRomana.Test.Integrations
             _userRepository = new UserRepository(_dbContext);
             _userService = new UserService(_userRepository);
             _userBuilder = new UserBuilder();
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            _authentication = new Authentication();
 
-            var user = _userService.Authenticate("amdlemos", "123");
-            Client = _server.CreateClient();            
-            Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {user.Result.token }");
+            // Autentica um usuário admin para poder realizar os testes.
+            var userDTO = _authentication.LoginAsAdmin(_userService);
+
+            Client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
         }
 
         [Fact]
@@ -81,9 +84,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_UpdateAsync_Return_BadRequest()
         {
             var user = _userBuilder.CreateUser();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+
             var response = await Client.PutAsync("api/user/1/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -93,9 +96,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_UpdateAsync_Return_InternalServerError()
         {
             var user = _userBuilder.CreateUserWithNonexistentId();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+            
             var response = await Client.PutAsync("api/user/9999999/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
@@ -105,9 +108,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_UpdateAsync_Return_OK()
         {
             var user = _userBuilder.CreateUserWithId();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+
             var response = await Client.PutAsync("api/user/1/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -117,9 +120,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_AddAsync_Return_OK()
         {
             var user = _userBuilder.CreateUser();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+
             var response = await Client.PostAsync("api/user/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -129,9 +132,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_AddAsync_Return_BadRequest()
         {
             var user = new User();
-            var jsonSerialized = JsonSerialize.Serialize(user);
-            var contentString = new StringContent(jsonSerialized, Encoding.UTF8, "application/json");
-            contentString.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+
             var response = await Client.PostAsync("api/user/", contentString);
             
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
