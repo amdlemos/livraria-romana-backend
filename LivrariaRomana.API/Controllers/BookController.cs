@@ -36,7 +36,7 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Livro
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<BookDTO>>> GetLivros()
         {
             try
@@ -61,7 +61,7 @@ namespace LivrariaRomana.API.Controllers
 
         // GET: api/Livro/5
         [HttpGet("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<BookDTO>> GetLivro(int id)
         {
             _logger.LogInfo($"[BOOK][GETbyID]Buscando livro de ID: { id }.");
