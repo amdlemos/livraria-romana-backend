@@ -1,6 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # livraria-romana-backend
 =======
+=======
+>>>>>>> develop
 # Livraria Romana Backend (ASP.NET CORE 2.2)
 Este projeto foi desenvolvido para avaliação da Theos Sistemas quanto a vaga de programador back-end. 
   
@@ -52,4 +55,8 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRoaWFnbyIsInN1YiI6IjE
 - Na parte direita do Swagger há um botão Authorize, click e adicione ao campo a palavra Bearer + o token, desta forma você irá adicionar o token ao seu request.
 - Agora você já pode utilizar as outras rotas da API.       
 
+<<<<<<< HEAD
 >>>>>>> 78ca26ee858d8ba60bf85ac75acabcec2712d14c
+=======
+
+>>>>>>> develop
