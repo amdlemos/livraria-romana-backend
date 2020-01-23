@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.EFCore
+namespace LivrariaRomana.IRepositories
 {
     public abstract class SpecifcMethods<TEntity> where TEntity : class, IEntity
     {

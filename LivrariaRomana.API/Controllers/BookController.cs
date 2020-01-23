@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Authorization;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Notifications;
 using AutoMapper;
+using LivrariaRomana.IServices;
 
 namespace LivrariaRomana.API.Controllers
 {

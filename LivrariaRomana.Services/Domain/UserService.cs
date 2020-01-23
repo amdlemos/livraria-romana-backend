@@ -1,19 +1,16 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
-using LivrariaRomana.Infrastructure.Services.Standard;
 using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Linq.Expressions;
 using System.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.IServices;
+using LivrariaRomana.IRepositories;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
-namespace LivrariaRomana.Infrastructure.Services.Domain
+namespace LivrariaRomana.Services
 {
     public class UserService : ServiceBase<User>, IUserService
     {

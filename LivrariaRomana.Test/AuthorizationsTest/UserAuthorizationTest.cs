@@ -1,19 +1,16 @@
 ﻿using FluentAssertions;
 using LivrariaRomana.API;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Services.Domain;
+using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
+using LivrariaRomana.Repositories;
+using LivrariaRomana.Services;
 using LivrariaRomana.Test.DataBuilder;
 using LivrariaRomana.Test.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -50,7 +47,7 @@ namespace LivrariaRomana.Test.AuthorizationsTest
         }
 
         [Fact]
-        public async Task User_GetById_Without_Authentication_Return_OK()
+        public async Task User_GetById_Without_Authentication_Return_Unauthorized()
         {
             var response = await Client.GetAsync("api/user/1");
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LivrariaRomana.Infrastructure.Interfaces.Services.Standard
+namespace LivrariaRomana.IServices
 {
     public interface IServiceBase<TEntity> where TEntity : class
     {

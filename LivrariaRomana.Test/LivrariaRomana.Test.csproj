@@ -22,6 +22,7 @@
     <ProjectReference Include="..\LivrariaRomana.API\LivrariaRomana.API.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Domain\LivrariaRomana.Domain.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Infrastructure\LivrariaRomana.Infrastructure.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.IRepositories\LivrariaRomana.IRepositories.csproj" />
   </ItemGroup>
 
 </Project>

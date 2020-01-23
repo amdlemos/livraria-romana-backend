@@ -1,6 +1,5 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.EFCore;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
+using LivrariaRomana.IRepositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace LivrariaRomana.Infrastructure.Repositories.Standard
+namespace LivrariaRomana.Repositories
 {
     public class RepositoryAsync<TEntity> : SpecifcMethods<TEntity>, IRepositoryAsync<TEntity> where TEntity : class, IEntity
     {

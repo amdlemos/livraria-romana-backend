@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard
+namespace LivrariaRomana.IRepositories
 {
     public interface IRepositoryAsync<TEntity> : IDisposable where TEntity : class, IEntity
     {

@@ -1,12 +1,10 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Standard;
-using System;
+using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace LivrariaRomana.Infrastructure.Services.Standard
+namespace LivrariaRomana.Services
 {
     public class ServiceBase<TEntity> : IServiceBase<TEntity> where TEntity : class, IEntity
     {

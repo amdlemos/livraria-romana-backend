@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard
+namespace LivrariaRomana.IRepositories
 {
     public interface IDomainRepository<TEntity> : IRepositoryAsync<TEntity> where TEntity: class, IEntity
     {

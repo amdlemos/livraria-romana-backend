@@ -1,15 +1,10 @@
-﻿using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Services.Domain;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
 using System.Net.Http;
 using Microsoft.AspNetCore.TestHost;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Domain.DTO;
+using LivrariaRomana.IServices;
 
 namespace LivrariaRomana.Test
 {
