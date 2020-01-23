@@ -3,11 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 
-namespace LivrariaRomana.Test.DBConfiguration
+namespace LivrariaRomana.TestingAssistent.DBConfiguration
 {
     public class Connection
     {

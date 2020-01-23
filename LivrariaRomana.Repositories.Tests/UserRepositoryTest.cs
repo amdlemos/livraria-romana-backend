@@ -1,12 +1,11 @@
-﻿using LivrariaRomana.Test.DataBuilder;
-using LivrariaRomana.Test.DBConfiguration;
-using LivrariaRomana.Infrastructure.DBConfiguration;
+﻿using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
-using LivrariaRomana.Repositories;
 using Xunit;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.TestingAssistent.DBConfiguration;
 
 namespace LivrariaRomana.Repositories.Test
 {

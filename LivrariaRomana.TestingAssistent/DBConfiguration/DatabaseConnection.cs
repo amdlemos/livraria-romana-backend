@@ -1,11 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
-namespace LivrariaRomana.Test.DBConfiguration
+namespace LivrariaRomana.TestingAssistent.DBConfiguration
 {
     public class DatabaseConnection
     {
@@ -16,7 +12,7 @@ namespace LivrariaRomana.Test.DBConfiguration
                 var path = Directory.GetParent(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.ToString()).FullName.ToString();                
                 IConfigurationRoot configuration = new ConfigurationBuilder()
                     .SetBasePath(path)
-                    .AddJsonFile("appsettings.test.json")
+                    .AddJsonFile("appsettings.json")
                     .Build();
                 return configuration;// Options.Create(Configuration.GetSection("ConnectionStrings").Get<DataOptionFactory>());
             }

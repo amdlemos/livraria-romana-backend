@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace LivrariaRomana.Test.DBConfiguration
+namespace LivrariaRomana.TestingAssistent.DBConfiguration
 {
     public class DataOptionFactory
     {
