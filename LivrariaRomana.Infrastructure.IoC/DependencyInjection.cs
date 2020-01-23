@@ -3,25 +3,14 @@ using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using LivrariaRomana.Infrastructure.Logger;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Repositories.Standard;
-using LivrariaRomana.Infrastructure.Services.Domain;
+using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
+using LivrariaRomana.Repositories;
+using LivrariaRomana.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text;
-
-using Microsoft.IdentityModel.Tokens;
 
 
 namespace LivrariaRomana.Infrastructure.IoC

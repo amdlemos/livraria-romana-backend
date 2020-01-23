@@ -1,12 +1,8 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
-using LivrariaRomana.Infrastructure.Services.Standard;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
 
-namespace LivrariaRomana.Infrastructure.Services.Domain
+namespace LivrariaRomana.Services
 {
     public class BookService : ServiceBase<Book>, IBookService
     {

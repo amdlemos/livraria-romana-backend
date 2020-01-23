@@ -1,12 +1,11 @@
 ﻿using FluentAssertions;
 using LivrariaRomana.API;
-using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
-using LivrariaRomana.Infrastructure.Repositories.Domain;
-using LivrariaRomana.Infrastructure.Services.Domain;
+using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
+using LivrariaRomana.Repositories;
+using LivrariaRomana.Services;
 using LivrariaRomana.Test.DataBuilder;
 using LivrariaRomana.Test.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;

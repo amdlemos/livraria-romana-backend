@@ -1,11 +1,8 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.Interfaces.Repositories.Standard;
+using LivrariaRomana.IRepositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace LivrariaRomana.Infrastructure.Repositories.Standard
+namespace LivrariaRomana.Repositories
 {
     public class DomainRepository<TEntity> : RepositoryAsync<TEntity>,
                                          IDomainRepository<TEntity> where TEntity : class, IEntity
