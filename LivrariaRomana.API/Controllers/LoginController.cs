@@ -1,14 +1,13 @@
 ﻿using System;
-using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
-using LivrariaRomana.Infrastructure.Interfaces.Services.Domain;
 using System.Threading.Tasks;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.Notifications;
 using AutoMapper;
+using LivrariaRomana.IServices;
 
 namespace LivrariaRomana.API.Controllers
 {

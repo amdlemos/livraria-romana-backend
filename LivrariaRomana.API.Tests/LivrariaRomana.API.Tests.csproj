@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.10.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="Utf8Json" Version="1.3.7" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+    <PackageReference Include="coverlet.collector" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LivrariaRomana.IRepositories\LivrariaRomana.IRepositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.IServices\LivrariaRomana.IServices.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.Repositories\LivrariaRomana.Repositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.Services\LivrariaRomana.Services.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.Test\LivrariaRomana.Test.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,14 +1,14 @@
 ﻿using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.Test.DataBuilder;
-using LivrariaRomana.Test.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using LivrariaRomana.Repositories;
+using LivrariaRomana.Test.DataBuilder;
+using LivrariaRomana.Test.DBConfiguration;
 
-namespace LivrariaRomana.Test.Repositories
+namespace LivrariaRomana.Repositories.Test
 {
     public class BookRepositoryTest
     {

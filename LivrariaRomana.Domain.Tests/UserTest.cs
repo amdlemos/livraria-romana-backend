@@ -3,7 +3,7 @@ using LivrariaRomana.Domain.Validators;
 using LivrariaRomana.Test.DataBuilder;
 using Xunit;
 
-namespace LivrariaRomana.Test.Entities
+namespace LivrariaRomana.Domain.Tests
 {
     public class UserTest
     {

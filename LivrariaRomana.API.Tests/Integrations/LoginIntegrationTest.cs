@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LivrariaRomana.Test.Integrations
+namespace LivrariaRomana.API.Tests
 {
     class LoginIntegrationTest
     {

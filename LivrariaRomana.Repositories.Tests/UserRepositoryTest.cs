@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 
-namespace LivrariaRomana.Test.Repositories
+namespace LivrariaRomana.Repositories.Test
 {
     public class UserRepositoryTest
     {

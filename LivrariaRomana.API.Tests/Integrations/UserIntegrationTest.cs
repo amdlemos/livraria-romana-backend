@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.API;
+using LivrariaRomana.API.Test;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
@@ -16,7 +16,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.Test.Integrations
+namespace LivrariaRomana.API.Tests
 {
     public class UserIntegrationTest
     {

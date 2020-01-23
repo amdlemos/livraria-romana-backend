@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.API;
+using LivrariaRomana.API.Test;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
@@ -14,116 +14,118 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.Test.AuthorizationsTest
+namespace LivrariaRomana.API.Tests
 {
-    public class UserAuthorizationTest
+    public class BookAuthorizationTest
     {
         private readonly DatabaseContext _dbContext;
         private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
-        private readonly UserBuilder _userBuilder;
+        private readonly BookBuilder _bookBuilder;
         private readonly TestServer _testServer;
         private readonly Authentication _authentication;
         private HttpClient Client;
 
-        public UserAuthorizationTest()
+        public BookAuthorizationTest()
         {
-            _userBuilder = new UserBuilder();
+            _bookBuilder = new BookBuilder();
             _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
             _userService = new UserService(_userRepository);
             _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _authentication = new Authentication();
-            
+
             Client = _testServer.CreateClient();
         }
 
         [Fact]
-        public async Task User_GetAll_Without_Authentication_Return_Unauthorized()
+        public async Task Book_GetAll_Without_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var response = await Client.GetAsync("api/user");
-            
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task User_GetById_Without_Authentication_Return_Unauthorized()
-        {
-            var response = await Client.GetAsync("api/user/1");
-
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task User_Update_Without_Authentication_Return_Unauthorized()
-        {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PutAsync("api/user/1/", contentString);
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task User_Update_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
-        {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PutAsync($"api/user/{ book.Id }/", contentString);
+            var response = await Client.GetAsync("api/book");
 
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task User_Post_Without_Authentication_Return_Unauthorized()
+        public async Task Book_GetById_Without_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PostAsync("api/user/", contentString);
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
-
-        [Fact]
-        public async Task User_Post_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
-        {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PostAsync($"api/user/", contentString);
+            var response = await Client.GetAsync("api/book/1");
 
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
 
         [Fact]
-        public async Task User_Remove_Without_Authentication_Return_Unauthorized()
+        public async Task Book_Update_Without_Authentication_Return_Unauthorized()
         {
-            var book = _userBuilder.CreateUser();
+            var book = _bookBuilder.CreateValidBook();
 
             StringContent contentString = JsonSerialize.GenerateStringContent(book);
 
-            var response = await Client.DeleteAsync("api/user/0");
+            var response = await Client.PutAsync("api/book/3/", contentString);
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
-        public async Task User_Remove_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
+        public async Task Book_Update_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _userBuilder.CreateUser();
+            var book = _bookBuilder.CreateValidBook();
 
             StringContent contentString = JsonSerialize.GenerateStringContent(book);
             var userDTO = _authentication.LoginAsAdmin(_userService);
             var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.DeleteAsync($"api/user/0");
+            var response = await client.PutAsync($"api/book/{ book.Id }/", contentString);
+
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Book_Post_Without_Authentication_Return_Unauthorized()
+        {
+            var book = _bookBuilder.CreateValidBook();
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(book);
+
+            var response = await Client.PostAsync("api/book/", contentString);
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Book_Post_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
+        {
+            var book = _bookBuilder.CreateValidBook();
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(book);
+            var userDTO = _authentication.LoginAsAdmin(_userService);
+            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
+            var response = await client.PostAsync($"api/book/", contentString);
+
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Book_Remove_Without_Authentication_Return_Unauthorized()
+        {
+            var book = _bookBuilder.CreateValidBook();
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(book);
+
+            var response = await Client.DeleteAsync("api/book/0");
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Book_Remove_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
+        {
+            var book = _bookBuilder.CreateValidBook();
+
+            StringContent contentString = JsonSerialize.GenerateStringContent(book);
+            var userDTO = _authentication.LoginAsAdmin(_userService);
+            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
+            var response = await client.DeleteAsync($"api/book/");
 
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);

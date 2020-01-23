@@ -6,7 +6,7 @@ using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.IServices;
 
-namespace LivrariaRomana.Test
+namespace LivrariaRomana.API.Test
 {
     /// <summary>
     /// Classe que auxilia na autenticação dos testes.
