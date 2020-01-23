@@ -7,7 +7,7 @@ using System.Linq;
 using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
 
-namespace LivrariaRomana.Repositories.Test
+namespace LivrariaRomana.Repositories.Tests
 {
     public class UserRepositoryTest
     {

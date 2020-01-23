@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.Repositories.Test
+namespace LivrariaRomana.Repositories.Tests
 {
     public class BookRepositoryTest
     {
