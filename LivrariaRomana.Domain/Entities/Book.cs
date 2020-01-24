@@ -10,12 +10,12 @@ namespace LivrariaRomana.Domain.Entities
         public string Author { get; set; }
         public string PublishingCompany { get; set; }
         public string ISBN { get; set; }
-        public DateTime PublicationYear { get; set; }
+        public string PublicationYear { get; set; }
         public int Amount { get; set; }
 
         public Book()
         {
-            Validate(this, new BookValidator(null));
+            Validate(this, new BookValidator());
         }
 
         public Book(string title, string author)
@@ -23,10 +23,10 @@ namespace LivrariaRomana.Domain.Entities
             Title = title;
             Author = author;
 
-            Validate(this, new BookValidator(null));
+            Validate(this, new BookValidator());
         }
 
-        public Book(string title, string author, string originalTitle,  string publisingCompany, string isbn, DateTime publicationYear, int amount, int id = 0)
+        public Book(string title, string author, string originalTitle, string publisingCompany, string isbn, string publicationYear = null, int amount = 0, int id = 0)
         {
             Id = id;
             Title = title;
@@ -37,7 +37,7 @@ namespace LivrariaRomana.Domain.Entities
             ISBN = isbn;
             Amount = amount;
 
-            Validate(this, new BookValidator(isbn));
+            Validate(this, new BookValidator());
         }
     }
 }

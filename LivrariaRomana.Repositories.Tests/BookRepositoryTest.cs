@@ -21,7 +21,7 @@ namespace LivrariaRomana.Repositories.Tests
             _dbContext = new Connection().DatabaseConfiguration();
             _bookRepository = new BookRepository(_dbContext);
             _bookBuilder = new BookBuilder();
-            _dbContext.Database.BeginTransactionAsync();
+            _dbContext.Database.BeginTransaction();
         }
 
         [Fact]

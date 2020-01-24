@@ -17,7 +17,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder", 
                 "Publising Company from Builder",
                 "ISBN 978-85-333-0227-3", 
-                new DateTime(2005,1,1), 
+                "2015", 
                 0);
             return book;
         }
@@ -30,7 +30,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder",
                 "Publising Company from Builder",
                 "",
-                new DateTime(),
+                "",
                 0);
             return book;
         }
@@ -43,10 +43,35 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Author from Builder",
                 "Publising Company from Builder",
                 "",
-                new DateTime(),
+                "",
                 0);
             return book;
         }
+
+        public Book CreateBookWithInvalidPublicationYear()
+        {
+            book = new Book(
+                "",
+                "Original Title from Builder",
+                "Author from Builder",
+                "Publising Company from Builder",
+                "","adsf",
+                0);
+            return book;
+        }
+
+        public Book CreateBookWithInvalidPatternPublicationYear()
+        {
+            book = new Book(
+                "",
+                "Original Title from Builder",
+                "Author from Builder",
+                "Publising Company from Builder",
+                "", "19877",
+                0);
+            return book;
+        }
+        
 
         public Book CreateBookWithInvalidISBN()
         {
@@ -55,8 +80,8 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder",
                 "Author from Builder",
                 "Publising Company from Builder",
-                "123",
-                new DateTime(),
+                "2017",
+                "",
                 0);
             return book;
         }
@@ -69,7 +94,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder", 
                 "Publising Company from Builder", 
                 "", 
-                new DateTime(), 
+                "2015", 
                 -1);
             return book;
         }
@@ -82,7 +107,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder",
                 "Publising Company from Builder",
                 "ISBN 1-56389-668-0",
-                new DateTime(2005, 1, 1),
+                "2005",
                 0, 
                 4);
             return book;
@@ -96,7 +121,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Original Title from Builder",
                 "Publising Company from Builder",
                 "978-85-333-0227-3",
-                new DateTime(2005, 1, 1),
+                "1998",
                 id,
                 9999999);
             return book;

@@ -12,7 +12,7 @@ namespace LivrariaRomana.Domain.Tests
 
         public BookTest()
         {
-            _bookValidator = new BookValidator(null);
+            _bookValidator = new BookValidator();
             _bookBuilder = new BookBuilder();
         }
 
@@ -80,6 +80,29 @@ namespace LivrariaRomana.Domain.Tests
         {
             var book = _bookBuilder.CreateValidBook();
             _bookValidator.ShouldNotHaveValidationErrorFor(x => x.Amount, book);
+        }
+        #endregion
+
+        #region Propriedate PublicationYear
+        [Fact]
+        public void Should_have_error_when_publicationYear_is_Invalid()
+        {
+            var book = _bookBuilder.CreateBookWithInvalidPublicationYear();
+            _bookValidator.ShouldHaveValidationErrorFor(x => x.PublicationYear, book);
+        }
+
+        [Fact]
+        public void Should_have_error_when_publicationYear_is_Invalid_Pattern()
+        {
+            var book = _bookBuilder.CreateBookWithInvalidPatternPublicationYear();
+            _bookValidator.ShouldHaveValidationErrorFor(x => x.PublicationYear, book);
+        }
+
+        [Fact]
+        public void Should_not_have_error_when_publicationYear_is_valid()
+        {
+            var book = _bookBuilder.CreateValidBook();
+            _bookValidator.ShouldNotHaveValidationErrorFor(x => x.PublicationYear, book);
         }
         #endregion
     }
