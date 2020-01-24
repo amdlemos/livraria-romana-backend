@@ -9,6 +9,7 @@ using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ using Xunit;
 
 namespace LivrariaRomana.API.Tests.Authorizations
 {
-    public class UserAuthorizationTest
+    public class UserAuthorizationTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;
         private readonly IUserRepository _userRepository;
@@ -34,7 +35,9 @@ namespace LivrariaRomana.API.Tests.Authorizations
             _userService = new UserService(_userRepository);
             _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _authentication = new Authentication();
-            
+
+            _dbContext.Database.BeginTransactionAsync();
+
             Client = _testServer.CreateClient();
         }
 
@@ -129,5 +132,9 @@ namespace LivrariaRomana.API.Tests.Authorizations
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Database.RollbackTransaction();
+        }
     }
 }

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace LivrariaRomana.Repositories.Tests
 {
-    public class BookRepositoryTest
+    public class BookRepositoryTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;
         private readonly IBookRepository _bookRepository;
@@ -22,6 +22,7 @@ namespace LivrariaRomana.Repositories.Tests
             _dbContext = new Connection().DatabaseConfiguration();
             _bookRepository = new BookRepository(_dbContext);
             _bookBuilder = new BookBuilder();
+            _dbContext.Database.BeginTransactionAsync();
         }
 
         [Fact]
@@ -68,14 +69,23 @@ namespace LivrariaRomana.Repositories.Tests
         [Fact]
         public async Task UpdateAscyncTest()
         {
-            var allBooks = await _bookRepository.GetAllAsync();
-            var entity = allBooks.FirstOrDefault();
-            var newTitle = $"Title Editado: + { DateTime.Now }";
-            entity.Title = newTitle;
+            var book = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
 
-            var result = await _bookRepository.UpdateAsync(entity);
-            Assert.Equal(newTitle, entity.Title);
+
+            var newTitle = $"Title Editado: + { DateTime.Now }";
+            book.Title = newTitle;
+
+            var result = await _bookRepository.UpdateAsync(book);
+
+            var bookEdited = await _bookRepository.GetByIdAsync(book.Id);
+
+            Assert.Equal(newTitle, bookEdited.Title);
             Assert.Equal(1, result);
+        }
+
+        public void Dispose()
+        {
+            _dbContext.Database.RollbackTransaction();
         }
     }
 }

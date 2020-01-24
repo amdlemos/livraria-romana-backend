@@ -88,7 +88,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
             return book;
         }
 
-        public Book CreateBookWithNonexistentId()
+        public Book CreateBookWithNonexistentId(int id)
         {
             book = new Book(
                 "TiTile from builder",
@@ -97,7 +97,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
                 "Publising Company from Builder",
                 "978-85-333-0227-3",
                 new DateTime(2005, 1, 1),
-                0,
+                id,
                 9999999);
             return book;
         }

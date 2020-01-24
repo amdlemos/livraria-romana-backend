@@ -9,7 +9,7 @@ using LivrariaRomana.TestingAssistent.DBConfiguration;
 
 namespace LivrariaRomana.Repositories.Tests
 {
-    public class UserRepositoryTest
+    public class UserRepositoryTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;        
         private readonly IUserRepository _userRepository;
@@ -22,6 +22,7 @@ namespace LivrariaRomana.Repositories.Tests
             _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
             _userBuilder = new UserBuilder();
+            _dbContext.Database.BeginTransactionAsync();
         }
 
         [Fact]
@@ -69,15 +70,22 @@ namespace LivrariaRomana.Repositories.Tests
         [Fact]
         public async Task UpdateAscyncTest()
         {
-            var allUsers = await _userRepository.GetAllAsync();
-            var entity = allUsers.FirstOrDefault();
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            
             var newUsername = $"Nome Editado: + { DateTime.Now }";
-            entity.Username = newUsername;
+            user.Username = newUsername;
 
-            var result = await _userRepository.UpdateAsync(entity);
-            Assert.Equal(newUsername, entity.Username);
+            var result = await _userRepository.UpdateAsync(user);
+
+            var userEdited = await _userRepository.GetByIdAsync(user.Id);            
+            
+            Assert.Equal(newUsername, userEdited.Username);
             Assert.Equal(1, result);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Database.RollbackTransaction();
+        }
     }
 }

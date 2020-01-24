@@ -10,180 +10,241 @@ using LivrariaRomana.Services;
 using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace LivrariaRomana.API.Tests.Integrations
 {
-    public class BookIntegrationTest
-    {
-        private readonly DatabaseContext _dbContext;
-        private readonly IBookRepository _bookRepository;        
-        private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
+    public class BookIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
+    {   
         private readonly BookBuilder _bookBuilder;
-        private readonly TestServer _testServer;
-        private readonly Authentication _authentication;
-        private HttpClient Client;
+        private readonly CustomWebApplicationFactory<Startup> _factory;
+        private HttpClient _client;        
 
-        public BookIntegrationTest()
+        public BookIntegrationTest(CustomWebApplicationFactory<Startup> factory)
         {
-            _dbContext = new Connection().DatabaseConfiguration();
-            _bookRepository = new BookRepository(_dbContext);
-            _userRepository = new UserRepository(_dbContext);
-            _userService = new UserService(_userRepository);            
+            _factory = factory;
+            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });  
                 
-            _bookBuilder = new BookBuilder();
-            _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());            
-            _authentication = new Authentication();
+            _bookBuilder = new BookBuilder();         
+        }
 
-            // Autentica um usuário admin para poder realizar os testes.
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            
-            Client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
+        protected async Task AuthenticateAsync()
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+        }
+
+        private async Task<string> GetJwtAsync()
+        {
+
+            var response = await _client.PostAsJsonAsync("/api/login", new LoginDTO
+            {
+                username = "test@integration.com",
+                password = "SomePass1234!"                
+
+            });
+
+            var registrationResponse = await response.Content.ReadAsAsync<UserDTO>();
+            return registrationResponse.token;          
+           
         }
 
         [Fact]       
         public async Task Book_GetAllAsync_Return_OK()
         {
-            var response = await Client.GetAsync("api/book");
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            await _client.PostAsync("api/book/", contentString);
+
+            // Act
+            var response = await _client.GetAsync("api/book");
+            
+            // Assert
             response.EnsureSuccessStatusCode();
-            response.StatusCode.Should().Be(HttpStatusCode.OK);           
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var returnedBooks = response.Content.ReadAsAsync<List<BookDTO>>();
+            returnedBooks.Result.Count.Should().BePositive();
         }
 
         [Fact]
         public async Task Book_GetByIdAsync_Return_OK()
         {
-            var result = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
-            var response = await Client.GetAsync($"api/book/{ result.Id }");
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var createdBook = await _client.PostAsync("api/book/", contentString);
+            var id = createdBook.Content.ReadAsAsync<BookDTO>().Result.id;
 
+            // Act
+            var response = await _client.GetAsync($"api/book/{ id }");
+
+            // Assert
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var returnedBook = await response.Content.ReadAsAsync<BookDTO>();
+            returnedBook.author.Should().Be("Author from Builder");
         }
 
         [Fact]
         public async Task Book_GetByIdAsync_With_InvalidParameter_Return_BadRequest()
-        {           
-            var response = await Client.GetAsync("api/book/dfd");
+        {     
+            // Act
+            var response = await _client.GetAsync("api/book/dfd");
             
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
-        public async Task Book_GetByIdAsync_Return_BadRequest()
+        public async Task Book_GetByIdAsync_WhenBookDoesntExist_Return_BadRequest()
         {
-            var response = await Client.GetAsync("api/book/9999999");
+            // Act
+            var response = await _client.GetAsync("api/book/9999999");
             
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task Book_UpdateAsync_With_Invalid_Parameters_Return_BadRequest()
-        {            
-            var book = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+        {
+            // Arrange
+            await AuthenticateAsync();
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var postResponse = await _client.PostAsync("api/book/", postContentString);
+            var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
 
-            var bookDTO = new BookDTO();
+            StringContent putContentString = JsonSerialize.GenerateStringContent(bookDTO);
 
-            bookDTO.id = book.Id;
-            bookDTO.isbn = book.ISBN;
-            bookDTO.originalTitle = book.OriginalTitle;
-            bookDTO.publicationYear = book.PublicationYear;
-            bookDTO.publishingCompany = book.PublishingCompany;
-            bookDTO.title = book.Title;
+            // Act
+            var response = await _client.PutAsync($"api/book/{ 9999 } /", putContentString);
 
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PutAsync($"api/book/{ 9999 } /", contentString);
-
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task Book_UpdateAsync_Return_OK()
         {
-            var book = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            // Arrange
+            await AuthenticateAsync();
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var postResponse = await _client.PostAsync("api/book/", postContentString);
+            var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
 
-            var bookDTO = new BookDTO();
+            bookDTO.title = "titulo editado";
+            StringContent putContentString = JsonSerialize.GenerateStringContent(bookDTO);
 
-            bookDTO.id = book.Id;
-            bookDTO.isbn = book.ISBN;
-            bookDTO.originalTitle = "new original title";
-            bookDTO.publicationYear = book.PublicationYear;
-            bookDTO.publishingCompany = book.PublishingCompany;
-            bookDTO.title = book.Title;
-            bookDTO.author = book.Author;
+            // Act
+            var response = await _client.PutAsync($"api/book/{ bookDTO.id }/", putContentString);
 
-            StringContent contentString = JsonSerialize.GenerateStringContent(bookDTO);
-
-            var response = await Client.PutAsync($"api/book/{ bookDTO.id }/", contentString);
-
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var returnedBook = await response.Content.ReadAsAsync<BookDTO>();
+            returnedBook.title.Should().Be("titulo editado");
         }
 
         [Fact]
         public async Task Book_UpdateAsync_Return_BadRequest()
         {
-            var book = _bookBuilder.CreateBookWithNonexistentId();
+            // Arrange
+            await AuthenticateAsync();
+            var id = 99999;
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateBookWithNonexistentId(id));
 
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
+            // Act
+            var response = await _client.PutAsync($"api/book/{ id }/", contentString);
 
-            var response = await Client.PutAsync("api/book/9999999/", contentString);
-
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task Book_AddAsync_Return_OK()
         {
-            var book = _bookBuilder.CreateValidBook();
+            // Arrange
+            await AuthenticateAsync();
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            
+            // Act
+            var postResponse = await _client.PostAsync("api/book/", postContentString);            
+            
+            // Assert
+            postResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            var createdBook = await postResponse.Content.ReadAsAsync<BookDTO>();
+            createdBook.author.Should().Be("Author from Builder");
 
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PostAsync("api/book/", contentString);
-
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
         }
 
         [Fact]
         public async Task Book_AddAsync_Return_BadRequest()
         {
-            var book = new Book();
+            // Arrange
+            await AuthenticateAsync();
+            var bookDTO = new BookDTO();            
+            StringContent contentString = JsonSerialize.GenerateStringContent(bookDTO);
             
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            
-            var response = await Client.PostAsync("api/book/", contentString);
+            // Act
+            var response = await _client.PostAsync("api/book/", contentString);
 
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task Book_AddAsync_With_Null_Parameters_Return_UnsupportedMediaType()
-        {            
-            var response = await Client.PostAsync("api/book/", null);
+        {
+            // Arrange
+            await AuthenticateAsync();
 
+            // Act
+            var response = await _client.PostAsync("api/book/", null);
+
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
 
         [Fact]
         public async Task Book_RemoveAsync_Return_Ok()
         {
-            var book  = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());            
-            
-            var bookToDelete = await _bookRepository.GetByIdAsync(book.Id);
-            
-            var response = await Client.DeleteAsync($"api/book/{ bookToDelete.Id }");
+            // Arrange
+            await AuthenticateAsync();
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var postResponse = await _client.PostAsync("api/book/", postContentString);
+            var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
 
+            // Act
+            var response = await _client.DeleteAsync($"api/book/{ bookDTO.id }");
+
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
         public async Task Book_RemoveAsync_Return_BadRequest()
-        {          
-            var response = await Client.DeleteAsync($"api/book/999999");
+        {
+            // Arrange
+            await AuthenticateAsync();
 
+            // Act
+            var response = await _client.DeleteAsync($"api/book/999999");
+
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
