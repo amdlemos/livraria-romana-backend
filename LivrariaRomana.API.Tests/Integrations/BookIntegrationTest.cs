@@ -104,8 +104,7 @@ namespace LivrariaRomana.API.Tests.Integrations
         public async Task Book_GetByIdAsync_With_InvalidParameter_Return_BadRequest()
         {     
             // Act
-            var response = await _client.GetAsync("api/book/dfd");
-            
+            var response = await _client.GetAsync("api/book/dfd");            
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
@@ -114,8 +113,7 @@ namespace LivrariaRomana.API.Tests.Integrations
         public async Task Book_GetByIdAsync_WhenBookDoesntExist_Return_BadRequest()
         {
             // Act
-            var response = await _client.GetAsync("api/book/9999999");
-            
+            var response = await _client.GetAsync("api/book/9999999");            
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
@@ -128,7 +126,6 @@ namespace LivrariaRomana.API.Tests.Integrations
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var postResponse = await _client.PostAsync("api/book/", postContentString);
             var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
-
             StringContent putContentString = JsonSerialize.GenerateStringContent(bookDTO);
 
             // Act
@@ -146,7 +143,6 @@ namespace LivrariaRomana.API.Tests.Integrations
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var postResponse = await _client.PostAsync("api/book/", postContentString);
             var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
-
             bookDTO.title = "titulo editado";
             StringContent putContentString = JsonSerialize.GenerateStringContent(bookDTO);
 
@@ -211,10 +207,8 @@ namespace LivrariaRomana.API.Tests.Integrations
         {
             // Arrange
             await AuthenticateAsync();
-
             // Act
             var response = await _client.PostAsync("api/book/", null);
-
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         }
@@ -240,10 +234,8 @@ namespace LivrariaRomana.API.Tests.Integrations
         {
             // Arrange
             await AuthenticateAsync();
-
             // Act
             var response = await _client.DeleteAsync($"api/book/999999");
-
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }

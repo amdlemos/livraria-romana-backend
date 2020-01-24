@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
+using FluentAssertions;
 
 namespace LivrariaRomana.Repositories.Tests
 {
@@ -13,9 +14,7 @@ namespace LivrariaRomana.Repositories.Tests
     {
         private readonly DatabaseContext _dbContext;        
         private readonly IUserRepository _userRepository;
-
         private readonly UserBuilder _userBuilder;
-
 
         public UserRepositoryTest()
         {
@@ -28,59 +27,60 @@ namespace LivrariaRomana.Repositories.Tests
         [Fact]
         public async Task AddUserAsyncTest()
         {
+            // Act
             var result = await _userRepository.AddAsync(_userBuilder.CreateUser());
-
-            Assert.NotEqual(0, result.Id);
+            // Assert
+            result.Id.Should().BePositive();
         }
 
         [Fact]
         public async Task GetByIdAsyncTest()
         {
+            // Arrange
             var entity = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            // Act            
             var result = await _userRepository.GetByIdAsync(entity.Id);
-
+            // Assert
             Assert.Equal(entity.Id, result.Id);
         }
 
         [Fact]
         public async Task GetAllAsyncTest()
         {
+            // Arrange
+            var entity = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            // Act
             var result = await _userRepository.GetAllAsync();
-
-            Assert.NotNull(result);
-
+            // Assert
+            result.Count().Should().BePositive();
         }
 
         [Fact]
         public async Task RemoveAsync()
         {
+            // Arrange            
             var entity = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            // Act
             var result = await _userRepository.RemoveAsync(entity.Id);
+            // Assert
             Assert.True(result);
-        }
-
-        [Fact]
-        public async Task RemoveAsyncObjTest()
-        {
-            var entity = await _userRepository.AddAsync(_userBuilder.CreateUser());
-            var result = await _userRepository.RemoveAsync(entity);
-            Assert.Equal(1, result);
-        }
+        }      
 
         [Fact]
         public async Task UpdateAscyncTest()
         {
-            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
-            
+            // Arrange
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());            
             var newUsername = $"Nome Editado: + { DateTime.Now }";
             user.Username = newUsername;
 
+            // Act
             var result = await _userRepository.UpdateAsync(user);
 
-            var userEdited = await _userRepository.GetByIdAsync(user.Id);            
-            
-            Assert.Equal(newUsername, userEdited.Username);
+            // Assert
             Assert.Equal(1, result);
+            var userEdited = await _userRepository.GetByIdAsync(user.Id);
+            Assert.Equal(newUsername, userEdited.Username);
         }
 
         public void Dispose()
