@@ -102,7 +102,7 @@ namespace LivrariaRomana.API.Controllers
                     await _userService.UpdateAsync(user);
                     
                     _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
-                    return Ok();
+                    return Ok(_mapper.Map<UserDTO>(user));
                 }
                 catch (Exception ex)
                 {

@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using LivrariaRomana.API.Tests;
+using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
@@ -8,45 +9,60 @@ using LivrariaRomana.Services;
 using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace LivrariaRomana.API.Tests.Authorizations
 {
-    public class BookAuthorizationTest : IDisposable
+    public class BookAuthorizationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
         private readonly BookBuilder _bookBuilder;
-        private readonly TestServer _testServer;
-        private readonly Authentication _authentication;
-        private HttpClient Client;
+        private readonly CustomWebApplicationFactory<Startup> _factory;
+        private HttpClient _client;
 
-        public BookAuthorizationTest()
+        public BookAuthorizationTest(CustomWebApplicationFactory<Startup> factory)
         {
+            _factory = factory;
+            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
             _bookBuilder = new BookBuilder();
-            _dbContext = new Connection().DatabaseConfiguration();
-            _userRepository = new UserRepository(_dbContext);
-            _userService = new UserService(_userRepository);
-            var webHOst = new WebHostBuilder().UseStartup<Startup>();
-            _testServer = new TestServer(webHOst);
-            _authentication = new Authentication();
+        }
 
-            _dbContext.Database.BeginTransactionAsync();
+        protected async Task AuthenticateAsync()
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+        }
 
-            Client = _testServer.CreateClient();
+        private async Task<string> GetJwtAsync()
+        {
+
+            var response = await _client.PostAsJsonAsync("/api/login", new LoginDTO
+            {
+                username = "test@integration.com",
+                password = "SomePass1234!"
+
+            });
+
+            var registrationResponse = await response.Content.ReadAsAsync<UserDTO>();
+            return registrationResponse.token;
+
         }
 
         [Fact]
         public async Task Book_GetAll_Without_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var response = await Client.GetAsync("api/book");
-
+            // Act
+            var response = await _client.GetAsync("api/book");
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -54,8 +70,9 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task Book_GetById_Without_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var response = await Client.GetAsync("api/book/1");
-
+            // Act
+            var response = await _client.GetAsync("api/book/1");
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -63,24 +80,25 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task Book_Update_Without_Authentication_Return_Unauthorized()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PutAsync("api/book/3/", contentString);
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            // Act
+            var response = await _client.PutAsync("api/book/3/", contentString);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task Book_Update_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PutAsync($"api/book/{ book.Id }/", contentString);
-
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+          
+            // Act
+            var response = await _client.PutAsync($"api/book/{ 1 }/", contentString);
+            
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -88,24 +106,23 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task Book_Post_Without_Authentication_Return_Unauthorized()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PostAsync("api/book/", contentString);
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            // Act
+            var response = await _client.PostAsync("api/book/", contentString);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task Book_Post_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PostAsync($"api/book/", contentString);
-
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            // Act 
+            var response = await _client.PostAsync($"api/book/", contentString);
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -113,31 +130,24 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task Book_Remove_Without_Authentication_Return_Unauthorized()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.DeleteAsync("api/book/0");
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            // Act
+            var response = await _client.DeleteAsync("api/book/0");
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task Book_Remove_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _bookBuilder.CreateValidBook();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.DeleteAsync($"api/book/");
-
+            // Arrange
+            await AuthenticateAsync();           
+            // Act
+            var response = await _client.DeleteAsync($"api/book/1");
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
-        }
-
-        public void Dispose()
-        {
-            _dbContext.Database.BeginTransactionAsync();
         }
     }
 }
