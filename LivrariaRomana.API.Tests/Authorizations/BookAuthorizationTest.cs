@@ -1,22 +1,23 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.API;
+using LivrariaRomana.API.Tests;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
 using LivrariaRomana.Repositories;
 using LivrariaRomana.Services;
-using LivrariaRomana.Test.DataBuilder;
-using LivrariaRomana.Test.DBConfiguration;
+using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.Test.AuthorizationsTest
+namespace LivrariaRomana.API.Tests.Authorizations
 {
-    public class BookAuthorizationTest
+    public class BookAuthorizationTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;
         private readonly IUserRepository _userRepository;
@@ -32,8 +33,11 @@ namespace LivrariaRomana.Test.AuthorizationsTest
             _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
             _userService = new UserService(_userRepository);
-            _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            var webHOst = new WebHostBuilder().UseStartup<Startup>();
+            _testServer = new TestServer(webHOst);
             _authentication = new Authentication();
+
+            _dbContext.Database.BeginTransactionAsync();
 
             Client = _testServer.CreateClient();
         }
@@ -131,5 +135,9 @@ namespace LivrariaRomana.Test.AuthorizationsTest
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Database.BeginTransactionAsync();
+        }
     }
 }

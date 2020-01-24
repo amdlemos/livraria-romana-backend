@@ -83,7 +83,7 @@ namespace LivrariaRomana.API.Controllers
         // PUT: api/Livro/5        
         [HttpPut("{id}")]
         [Authorize("admin")]
-        public async Task<IActionResult> PutLivro(int id, BookDTO bookDTO)
+        public async Task<ActionResult<BookDTO>> PutLivro(int id, BookDTO bookDTO)
         {
             if (id != bookDTO.id)
             {
@@ -102,7 +102,7 @@ namespace LivrariaRomana.API.Controllers
                     await _bookService.UpdateAsync(book);
 
                     _logger.LogInfo($"Livro: { book.Title }, ID: { book.Id } editado com sucesso.");
-                    return Ok();
+                    return Ok(_mapper.Map<BookDTO>(book));
                 }
                 catch (Exception ex)
                 {
@@ -135,7 +135,7 @@ namespace LivrariaRomana.API.Controllers
                     await _bookService.AddAsync(book);
 
                     _logger.LogInfo($"Livro { book.Title }, ID: { book.Id } adicionado com sucesso.");
-                    return CreatedAtAction("GetLivro", new { id = book.Id }, bookDTO);
+                    return CreatedAtAction("GetLivro", new { id = book.Id }, _mapper.Map<BookDTO>(book));
                 }
                 catch (Exception ex)
                 {

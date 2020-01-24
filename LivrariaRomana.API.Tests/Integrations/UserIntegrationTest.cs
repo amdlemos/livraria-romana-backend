@@ -1,22 +1,22 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.API;
+using LivrariaRomana.API.Tests;
+using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
 using LivrariaRomana.Repositories;
 using LivrariaRomana.Services;
-using LivrariaRomana.Test.DataBuilder;
-using LivrariaRomana.Test.DBConfiguration;
+using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.Test.Integrations
+namespace LivrariaRomana.API.Tests.Integrations
 {
     public class UserIntegrationTest
     {
@@ -47,6 +47,7 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_GetAllAsync_Return_OK()
         {
             var response = await Client.GetAsync("api/user");
+
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -54,7 +55,8 @@ namespace LivrariaRomana.Test.Integrations
         [Fact]
         public async Task User_GetByIdAsync_Return_OK()
         {
-            var response = await Client.GetAsync("api/user/1");
+            var result = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            var response = await Client.GetAsync($"api/user/{ result.Id }");
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
@@ -88,25 +90,33 @@ namespace LivrariaRomana.Test.Integrations
         }
 
         [Fact]
-        public async Task User_UpdateAsync_Return_InternalServerError()
+        public async Task User_UpdateAsync_With_Invalid_Parameters_Return_BadRequest()
         {
-            var user = _userBuilder.CreateUserWithNonexistentId();
+            var user = _userBuilder.CreateUser();
 
             StringContent contentString = JsonSerialize.GenerateStringContent(user);
             
-            var response = await Client.PutAsync("api/user/9999999/", contentString);
+            var response = await Client.PutAsync("api/user/1/", contentString);
 
-            response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Fact]
         public async Task User_UpdateAsync_Return_OK()
         {
-            var user = _userBuilder.CreateUserWithId();
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
 
-            StringContent contentString = JsonSerialize.GenerateStringContent(user);
+            var userDTO = new UserDTO();
+            
+            userDTO.id = user.Id;
+            userDTO.email = user.Email;
+            userDTO.username = user.Username;
+            userDTO.role = user.Role;
+            userDTO.password = user.Password;
 
-            var response = await Client.PutAsync("api/user/1/", contentString);
+            StringContent contentString = JsonSerialize.GenerateStringContent(userDTO);
+
+            var response = await Client.PutAsync($"api/user/{ userDTO.id }/", contentString);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }     
@@ -147,8 +157,9 @@ namespace LivrariaRomana.Test.Integrations
         public async Task User_RemoveAsync_Return_Ok()
         {
             var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
-            var allUser = await _userRepository.GetAllAsync();
-            var userToDelete = allUser.LastOrDefault();
+
+            var userToDelete = await _userRepository.GetByIdAsync(user.Id);
+
             var response = await Client.DeleteAsync($"api/user/{ userToDelete.Id }");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

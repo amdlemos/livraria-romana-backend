@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -7,22 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.0" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageReference Include="Utf8Json" Version="1.3.7" />    
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LivrariaRomana.API\LivrariaRomana.API.csproj" />
-    <ProjectReference Include="..\LivrariaRomana.Domain\LivrariaRomana.Domain.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Infrastructure\LivrariaRomana.Infrastructure.csproj" />
     <ProjectReference Include="..\LivrariaRomana.IRepositories\LivrariaRomana.IRepositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.Repositories\LivrariaRomana.Repositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.TestingAssistent.csproj" />
   </ItemGroup>
 
 </Project>

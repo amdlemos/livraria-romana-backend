@@ -1,16 +1,15 @@
-﻿using LivrariaRomana.Test.DataBuilder;
-using LivrariaRomana.Test.DBConfiguration;
-using LivrariaRomana.Infrastructure.DBConfiguration;
+﻿using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
-using LivrariaRomana.Repositories;
 using Xunit;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.TestingAssistent.DBConfiguration;
 
-namespace LivrariaRomana.Test.Repositories
+namespace LivrariaRomana.Repositories.Tests
 {
-    public class UserRepositoryTest
+    public class UserRepositoryTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;        
         private readonly IUserRepository _userRepository;
@@ -23,6 +22,7 @@ namespace LivrariaRomana.Test.Repositories
             _dbContext = new Connection().DatabaseConfiguration();
             _userRepository = new UserRepository(_dbContext);
             _userBuilder = new UserBuilder();
+            _dbContext.Database.BeginTransactionAsync();
         }
 
         [Fact]
@@ -70,15 +70,22 @@ namespace LivrariaRomana.Test.Repositories
         [Fact]
         public async Task UpdateAscyncTest()
         {
-            var allUsers = await _userRepository.GetAllAsync();
-            var entity = allUsers.FirstOrDefault();
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            
             var newUsername = $"Nome Editado: + { DateTime.Now }";
-            entity.Username = newUsername;
+            user.Username = newUsername;
 
-            var result = await _userRepository.UpdateAsync(entity);
-            Assert.Equal(newUsername, entity.Username);
+            var result = await _userRepository.UpdateAsync(user);
+
+            var userEdited = await _userRepository.GetByIdAsync(user.Id);            
+            
+            Assert.Equal(newUsername, userEdited.Username);
             Assert.Equal(1, result);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Database.RollbackTransaction();
+        }
     }
 }

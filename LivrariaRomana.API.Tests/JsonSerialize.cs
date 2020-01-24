@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using Utf8Json;
 
-namespace LivrariaRomana.Test
+namespace LivrariaRomana.API.Tests
 {
     public class JsonSerialize
     {

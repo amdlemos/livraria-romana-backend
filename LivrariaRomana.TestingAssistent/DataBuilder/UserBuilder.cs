@@ -1,8 +1,7 @@
 ﻿using LivrariaRomana.Domain.Entities;
-using System;
 using System.Collections.Generic;
 
-namespace LivrariaRomana.Test.DataBuilder
+namespace LivrariaRomana.TestingAssistent.DataBuilder
 {
     public class UserBuilder
     {

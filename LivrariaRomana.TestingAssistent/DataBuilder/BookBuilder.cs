@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LivrariaRomana.Test.DataBuilder
+namespace LivrariaRomana.TestingAssistent.DataBuilder
 {
     public class BookBuilder
     {
@@ -88,7 +88,7 @@ namespace LivrariaRomana.Test.DataBuilder
             return book;
         }
 
-        public Book CreateBookWithNonexistentId()
+        public Book CreateBookWithNonexistentId(int id)
         {
             book = new Book(
                 "TiTile from builder",
@@ -97,7 +97,7 @@ namespace LivrariaRomana.Test.DataBuilder
                 "Publising Company from Builder",
                 "978-85-333-0227-3",
                 new DateTime(2005, 1, 1),
-                0,
+                id,
                 9999999);
             return book;
         }

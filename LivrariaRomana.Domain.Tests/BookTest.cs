@@ -1,9 +1,9 @@
-﻿using Xunit;
-using FluentValidation.TestHelper;
-using LivrariaRomana.Test.DataBuilder;
+﻿using FluentValidation.TestHelper;
 using LivrariaRomana.Domain.Validators;
+using LivrariaRomana.TestingAssistent.DataBuilder;
+using Xunit;
 
-namespace LivrariaRomana.Test.Entities
+namespace LivrariaRomana.Domain.Tests
 {
     public class BookTest
     {
