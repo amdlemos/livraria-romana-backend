@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using System.Threading.Tasks;
 using LivrariaRomana.Domain.DTO;
-using LivrariaRomana.Infrastructure.Notifications;
 using AutoMapper;
 using LivrariaRomana.IServices;
+using LivrariaRomana.API.Notifications;
 
 namespace LivrariaRomana.API.Controllers
 {

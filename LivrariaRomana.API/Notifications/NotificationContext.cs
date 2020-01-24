@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentValidation.Results;
 
-namespace LivrariaRomana.Infrastructure.Notifications
+namespace LivrariaRomana.API.Notifications
 {
 	public class NotificationContext
     {
