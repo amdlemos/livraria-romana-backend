@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using LivrariaRomana.API.Tests;
+using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
@@ -8,76 +9,92 @@ using LivrariaRomana.Services;
 using LivrariaRomana.TestingAssistent.DataBuilder;
 using LivrariaRomana.TestingAssistent.DBConfiguration;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace LivrariaRomana.API.Tests.Authorizations
 {
-    public class UserAuthorizationTest : IDisposable
+    public class UserAuthorizationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
-        private readonly DatabaseContext _dbContext;
-        private readonly IUserRepository _userRepository;
-        private readonly IUserService _userService;
         private readonly UserBuilder _userBuilder;
-        private readonly TestServer _testServer;
-        private readonly Authentication _authentication;
-        private HttpClient Client;
+        private readonly CustomWebApplicationFactory<Startup> _factory;
+        private HttpClient _client;
 
-        public UserAuthorizationTest()
+        public UserAuthorizationTest(CustomWebApplicationFactory<Startup> factory)
         {
+            _factory = factory;
+            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false
+            });
+
             _userBuilder = new UserBuilder();
-            _dbContext = new Connection().DatabaseConfiguration();
-            _userRepository = new UserRepository(_dbContext);
-            _userService = new UserService(_userRepository);
-            _testServer = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _authentication = new Authentication();
+        }
 
-            _dbContext.Database.BeginTransactionAsync();
+        protected async Task AuthenticateAsync()
+        {
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+        }
 
-            Client = _testServer.CreateClient();
+        private async Task<string> GetJwtAsync()
+        {
+
+            var response = await _client.PostAsJsonAsync("/api/login", new LoginDTO
+            {
+                username = "test@integration.com",
+                password = "SomePass1234!"
+
+            });
+
+            var registrationResponse = await response.Content.ReadAsAsync<UserDTO>();
+            return registrationResponse.token;
+
         }
 
         [Fact]
         public async Task User_GetAll_Without_Authentication_Return_Unauthorized()
         {
-            var response = await Client.GetAsync("api/user");
-            
-            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+            // Act
+            var response = await _client.GetAsync("api/user");
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);            
         }
 
         [Fact]
         public async Task User_GetById_Without_Authentication_Return_Unauthorized()
         {
-            var response = await Client.GetAsync("api/user/1");
-
+            // Act
+            var response = await _client.GetAsync("api/user/1");
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task User_Update_Without_Authentication_Return_Unauthorized()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PutAsync("api/user/1/", contentString);
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            // Act
+            var response = await _client.PutAsync("api/user/1/", contentString);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task User_Update_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PutAsync($"api/user/{ book.Id }/", contentString);
-
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            // Act
+            var response = await _client.PutAsync($"api/user/{ 1 }/", contentString);
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -85,24 +102,23 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task User_Post_Without_Authentication_Return_Unauthorized()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.PostAsync("api/user/", contentString);
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            //Act
+            var response = await _client.PostAsync("api/user/", contentString);
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task User_Post_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.PostAsync($"api/user/", contentString);
-
+            // Arrange
+            await AuthenticateAsync();
+            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            // Act
+            var response = await _client.PostAsync($"api/user/", contentString);
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         }
@@ -110,31 +126,24 @@ namespace LivrariaRomana.API.Tests.Authorizations
         [Fact]
         public async Task User_Remove_Without_Authentication_Return_Unauthorized()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-
-            var response = await Client.DeleteAsync("api/user/0");
+            // Arrange
+            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            // Act
+            var response = await _client.DeleteAsync("api/user/0");
+            // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
         [Fact]
         public async Task User_Remove_With_Admin_Authentication_Not_Return_Unauthorized_or_Forbidden()
         {
-            var book = _userBuilder.CreateUser();
-
-            StringContent contentString = JsonSerialize.GenerateStringContent(book);
-            var userDTO = _authentication.LoginAsAdmin(_userService);
-            var client = _authentication.CreateLoggedHttpClient(userDTO, _testServer);
-            var response = await client.DeleteAsync($"api/user/0");
-
+            // Arrange
+            await AuthenticateAsync();
+            // Act
+            var response = await _client.DeleteAsync($"api/user/1");
+            // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
-        }
-
-        public void Dispose()
-        {
-            _dbContext.Database.RollbackTransaction();
         }
     }
 }
