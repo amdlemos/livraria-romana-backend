@@ -12,7 +12,7 @@ namespace LivrariaRomana.API.Tests
     public class BasicTest : IClassFixture<WebApplicationFactory<Startup>>
     {
         private readonly WebApplicationFactory<Startup> _factory;
-
+        private string urlAPI = "http://localhost:4726";
         public BasicTest(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
@@ -20,14 +20,14 @@ namespace LivrariaRomana.API.Tests
 
         [Theory]        
         [InlineData("/api/book")]        
-        public async Task Get_Endpoints_ReturnSuccess_And_ApplicationJson_ContentType(string url)
+        public async Task Get_Endpoints_ReturnSuccess_And_ApplicationJson_ContentType(string route)
         {
-            var urlApi = "http://localhost:4726" + url;
             // Arrange
+            var url = urlAPI + route;
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync(urlApi);
+            var response = await client.GetAsync(url);
 
             // Assert            
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -37,14 +37,14 @@ namespace LivrariaRomana.API.Tests
 
         [Theory]
         [InlineData("/")]        
-        public async Task Get_Endpoints_ReturnSuccess_And_TextHtml_ContentType(string url)
+        public async Task Get_Endpoints_ReturnSuccess_And_TextHtml_ContentType(string route)
         {
-            var urlApi = "http://localhost:4726" + url;
             // Arrange
+            var url = urlAPI + route;
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync(urlApi);
+            var response = await client.GetAsync(url);
 
             // Assert            
             response.EnsureSuccessStatusCode(); // Status Code 200-299
