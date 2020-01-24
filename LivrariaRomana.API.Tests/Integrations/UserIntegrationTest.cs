@@ -19,7 +19,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests.Integrations
+namespace LivrariaRomana.API.Tests
 {
     public class UserIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {       

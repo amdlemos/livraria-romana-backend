@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests.Integrations
+namespace LivrariaRomana.API.Tests
 {
     public class BasicTest : IClassFixture<WebApplicationFactory<Startup>>
     {

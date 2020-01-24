@@ -18,7 +18,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests.Authorizations
+namespace LivrariaRomana.API.Tests
 {
     public class UserAuthorizationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {
