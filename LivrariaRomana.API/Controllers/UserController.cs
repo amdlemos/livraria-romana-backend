@@ -8,9 +8,9 @@ using LivrariaRomana.Domain.Entities;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Infrastructure.Interfaces.Logger;
 using LivrariaRomana.Domain.DTO;
-using LivrariaRomana.Infrastructure.Notifications;
 using AutoMapper;
 using LivrariaRomana.IServices;
+using LivrariaRomana.API.Notifications;
 
 namespace LivrariaRomana.API.Controllers
 {
