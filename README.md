@@ -124,7 +124,7 @@ GO
 #### Configurar Connection String
 - Configure a Connection String em app.settings.json, não se esqueça de fazer a mesma configuração no projeto de testes de repositório. Os testes da API (integração e autorização) utilizam banco de dados na memória.
   
-```javascript
+```bash
 {  
   "AllowedHosts": "*",
   "ConnectionStrings": {
@@ -162,4 +162,4 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRoaWFnbyIsInN1YiI6IjE
 - Por algum conflito de namespace, o gerenciador de testes está criando um <Projeto Desconhecido> contendo 3 testes, favor ignora-los.
 - Por alguma razão misteriosa ao tentar executar todos os testes através de "Testes>Executar todos os teste"s ou pelo botão no gerenciador de testes, os testes não rodam. Estavam rodando mesmo tendo esse projeto desconhecido. Desta forma, para todar todos os testes de uma só vez, é necessário selecionar os demais projetos de testes (API, Domain e Repositories) e executa-los.
 - Implementei uma transaction nos testes de repositório para que o banco esteja sempre vazio antes dos testes. 
-_ Lembrando, os testes da API utilizam banco de dados na memória.
+- Lembrando, os testes da API utilizam banco de dados na memória.
