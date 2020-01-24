@@ -149,6 +149,7 @@ public Startup(IConfiguration configuration)
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/
 
 ## Utilizando a Aplicação
+- Definir LivrariaRomana.API como projeto de inicialzação.
 - Para criar o primeiro usuário faça um post em Login pelo Swagger com o usuário e senha desejados que o sistema ira criar um usuário "admin" para você. 
 - Na resposta vai ser lhe informado seu token conforme padrão abaixo:
 ```json
@@ -158,8 +159,7 @@ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRoaWFnbyIsInN1YiI6IjE
 - Usuários que não possuam Role "admin" terão as mesmas permissões de usuários não logados.
 - Agora você já pode utilizar as outras rotas da API.    
 
-## Observações sobre os testes
-- Por algum conflito de namespace, o gerenciador de testes está criando um <Projeto Desconhecido> contendo 3 testes, favor ignora-los.
-- Por alguma razão misteriosa ao tentar executar todos os testes através de "Testes>Executar todos os teste"s ou pelo botão no gerenciador de testes, os testes não rodam. Estavam rodando mesmo tendo esse projeto desconhecido. Desta forma, para todar todos os testes de uma só vez, é necessário selecionar os demais projetos de testes (API, Domain e Repositories) e executa-los.
+## Rodando os testes
+- Não se esquecer de copiar o arquivo "/nlog.config" para o projeto de testes da API.
 - Implementei uma transaction nos testes de repositório para que o banco esteja sempre vazio antes dos testes. 
 - Lembrando, os testes da API utilizam banco de dados na memória.
