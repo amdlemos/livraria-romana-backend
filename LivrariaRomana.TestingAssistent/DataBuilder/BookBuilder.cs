@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LivrariaRomana.TestingAssistent.DataBuilder
+namespace LivrariaRomana.Test.Helper
 {
     public class BookBuilder
     {

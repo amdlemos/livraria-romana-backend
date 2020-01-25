@@ -1,17 +1,7 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.API.Tests;
 using LivrariaRomana.Domain.DTO;
-using LivrariaRomana.Domain.Entities;
-using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.IRepositories;
-using LivrariaRomana.IServices;
-using LivrariaRomana.Repositories;
-using LivrariaRomana.Services;
-using LivrariaRomana.TestingAssistent.DataBuilder;
-using LivrariaRomana.TestingAssistent.DBConfiguration;
-using Microsoft.AspNetCore.Hosting;
+using LivrariaRomana.Test.Helper;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -24,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests
+namespace LivrariaRomana.API.Tests.Integrations
 {
     public class UserIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {       

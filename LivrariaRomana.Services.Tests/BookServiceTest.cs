@@ -5,8 +5,7 @@ using LivrariaRomana.IRepositories;
 using LivrariaRomana.IServices;
 using LivrariaRomana.Repositories;
 using LivrariaRomana.Infrastructure.DBConfiguration;
-using LivrariaRomana.TestingAssistent.DataBuilder;
-using LivrariaRomana.TestingAssistent.DBConfiguration;
+using LivrariaRomana.Test.Helper;
 using Xunit;
 using FluentAssertions;
 

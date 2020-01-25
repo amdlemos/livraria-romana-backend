@@ -1,6 +1,6 @@
 ﻿using FluentValidation.TestHelper;
 using LivrariaRomana.Domain.Validators;
-using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.Test.Helper;
 using Xunit;
 
 namespace LivrariaRomana.Domain.Tests

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using LivrariaRomana.TestingAssistent.DataBuilder;
+using LivrariaRomana.Test.Helper;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests
+namespace LivrariaRomana.API.Tests.Authorization
 {
     public class BookAuthorizationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {

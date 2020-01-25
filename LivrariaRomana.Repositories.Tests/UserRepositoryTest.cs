@@ -3,8 +3,7 @@ using System;
 using System.Linq;
 using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
-using LivrariaRomana.TestingAssistent.DataBuilder;
-using LivrariaRomana.TestingAssistent.DBConfiguration;
+using LivrariaRomana.Test.Helper;
 using Xunit;
 using FluentAssertions;
 

@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.Extensions.Configuration;
 
-namespace LivrariaRomana.TestingAssistent.DBConfiguration
+namespace LivrariaRomana.Test.Helper
 {
     public class Connection
     {
