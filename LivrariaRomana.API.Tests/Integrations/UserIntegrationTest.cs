@@ -93,7 +93,7 @@ namespace LivrariaRomana.API.Tests
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var returnedUsers = await response.Content.ReadAsAsync<UserDTO>();
-            returnedUsers.username.Should().Be("User from Builder");
+            returnedUsers.username.Should().Be("user");
         }
 
         [Fact]
@@ -184,7 +184,7 @@ namespace LivrariaRomana.API.Tests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var returnedUser = await response.Content.ReadAsAsync<UserDTO>();
-            returnedUser.username.Should().Be("User from Builder");
+            returnedUser.username.Should().Be("user");
         }
 
         [Fact]

@@ -46,8 +46,9 @@ namespace LivrariaRomana.API.Controllers
 
                     return BadRequest(_notification);
                 }
-
+                
                 var userDTO = _mapper.Map<UserDTO>(userLogado);
+                userDTO.token = _userService.GenerateToken(userLogado);
 
                 _logger.LogInfo($"USUÁRIO: { userDTO.username } logado.");
                 return userDTO;

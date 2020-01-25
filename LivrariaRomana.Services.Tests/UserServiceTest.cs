@@ -91,6 +91,46 @@ namespace LivrariaRomana.Services.Tests
             Assert.Equal(newUsername, userEdited.Username);
         }
 
+        [Fact]
+        public async Task AuthenticateAscyncTest()
+        {
+            // Arrange
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+
+            // Act
+            var userDTO = await _userService.Authenticate(user.Username, user.Password);
+
+            // Assert
+            userDTO.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task CheckUserExistByUsernameTest()
+        {
+            // Arrange
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+
+            // Act
+            var exist = await _userService.CheckUserExistByUsername("user");
+
+            // Assert
+            exist.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task CheckUserExistByEmailTest()
+        {
+            // Arrange
+            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+
+            // Act
+            var exist = await _userService.CheckUserExistByEmail("user@builder.com");
+
+            // Assert
+            exist.Should().BeTrue();
+
+        }
+
         public void Dispose()
         {
             _dbContext.Database.RollbackTransaction();

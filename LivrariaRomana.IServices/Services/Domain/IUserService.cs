@@ -6,6 +6,9 @@ namespace LivrariaRomana.IServices
 {
     public interface IUserService : IServiceBase<User>
     {
-        Task<UserDTO> Authenticate(string username, string password);
+        Task<User> Authenticate(string username, string password);
+        string GenerateToken(User user);
+        Task<bool> CheckUserExistByUsername(string username);
+        Task<bool> CheckUserExistByEmail(string email);
     }
 }

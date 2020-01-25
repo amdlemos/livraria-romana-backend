@@ -10,7 +10,7 @@ namespace LivrariaRomana.TestingAssistent.DataBuilder
 
         public User CreateUser()
         {
-            user = new User("User from Builder", "123", "user@builder.com");            
+            user = new User("user", "123", "user@builder.com");            
             return user;
         }
 
