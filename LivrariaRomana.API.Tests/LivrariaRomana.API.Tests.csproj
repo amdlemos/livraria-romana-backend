@@ -24,7 +24,7 @@
     <ProjectReference Include="..\LivrariaRomana.IServices\LivrariaRomana.IServices.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Repositories\LivrariaRomana.Repositories.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Services\LivrariaRomana.Services.csproj" />
-    <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.TestingAssistent.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.Test.Helper.csproj" />
   </ItemGroup>
 
 </Project>

@@ -37,9 +37,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivrariaRomana.API.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivrariaRomana.Domain.Tests", "LivrariaRomana.Domain.Tests\LivrariaRomana.Domain.Tests.csproj", "{DFCC4F15-AD01-4A6A-914F-16ACC2440925}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestingAssistent", "TestingAssistent", "{113DDD01-6217-498B-AD2C-DE9D3DDAF095}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test Helper", "Test Helper", "{113DDD01-6217-498B-AD2C-DE9D3DDAF095}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaRomana.TestingAssistent", "LivrariaRomana.TestingAssistent\LivrariaRomana.TestingAssistent.csproj", "{C67860D7-1A7F-4846-9361-4250B7B7485F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivrariaRomana.Test.Helper", "LivrariaRomana.TestingAssistent\LivrariaRomana.Test.Helper.csproj", "{C67860D7-1A7F-4846-9361-4250B7B7485F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LivrariaRomana.Services.Tests", "LivrariaRomana.Services.Tests\LivrariaRomana.Services.Tests.csproj", "{F8705193-F51C-4227-9E23-8BDF46F6BF06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -99,6 +101,10 @@ Global
 		{C67860D7-1A7F-4846-9361-4250B7B7485F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C67860D7-1A7F-4846-9361-4250B7B7485F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C67860D7-1A7F-4846-9361-4250B7B7485F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8705193-F51C-4227-9E23-8BDF46F6BF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8705193-F51C-4227-9E23-8BDF46F6BF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8705193-F51C-4227-9E23-8BDF46F6BF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8705193-F51C-4227-9E23-8BDF46F6BF06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,6 +123,7 @@ Global
 		{2563129D-A749-4749-981F-683BCF08DBAF} = {118685D9-8FA2-491E-9D84-810B349966C8}
 		{DFCC4F15-AD01-4A6A-914F-16ACC2440925} = {16CFB121-45F0-4FB5-BCD2-EDBFC05FAD45}
 		{C67860D7-1A7F-4846-9361-4250B7B7485F} = {113DDD01-6217-498B-AD2C-DE9D3DDAF095}
+		{F8705193-F51C-4227-9E23-8BDF46F6BF06} = {D1D69628-D040-464E-9E6F-BCB5AB7BCED4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B18E74AF-7FD4-4C9A-AF61-31FA8091A4AE}

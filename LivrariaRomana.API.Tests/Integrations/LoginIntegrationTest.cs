@@ -2,16 +2,13 @@
 using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.Testing;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests
+namespace LivrariaRomana.API.Tests.Integrations
 {
     public class LoginIntegrationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {        

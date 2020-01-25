@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace LivrariaRomana.API.Tests
+namespace LivrariaRomana.API.Tests.Authorization
 {
     public class LoginAuthorizationTest : IClassFixture<CustomWebApplicationFactory<Startup>>
     {

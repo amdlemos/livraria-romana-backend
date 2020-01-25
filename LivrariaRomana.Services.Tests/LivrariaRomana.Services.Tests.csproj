@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -17,7 +17,9 @@
   <ItemGroup>
     <ProjectReference Include="..\LivrariaRomana.Infrastructure\LivrariaRomana.Infrastructure.csproj" />
     <ProjectReference Include="..\LivrariaRomana.IRepositories\LivrariaRomana.IRepositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.IServices\LivrariaRomana.IServices.csproj" />
     <ProjectReference Include="..\LivrariaRomana.Repositories\LivrariaRomana.Repositories.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.Services\LivrariaRomana.Services.csproj" />
     <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.Test.Helper.csproj" />
   </ItemGroup>
 

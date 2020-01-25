@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace LivrariaRomana.TestingAssistent.DBConfiguration
+namespace LivrariaRomana.Test.Helper
 {
     public class DatabaseConnection
     {

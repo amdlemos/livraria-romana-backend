@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LivrariaRomana.Domain\LivrariaRomana.Domain.csproj" />
-    <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.TestingAssistent.csproj" />
+    <ProjectReference Include="..\LivrariaRomana.TestingAssistent\LivrariaRomana.Test.Helper.csproj" />
   </ItemGroup>
 
 </Project>

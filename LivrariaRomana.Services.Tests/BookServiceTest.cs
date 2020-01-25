@@ -1,25 +1,29 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.IRepositories;
+using LivrariaRomana.IServices;
+using LivrariaRomana.Repositories;
+using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Test.Helper;
 using Xunit;
 using FluentAssertions;
 
-namespace LivrariaRomana.Repositories.Tests
+namespace LivrariaRomana.Services.Tests
 {
-    public class BookRepositoryTest : IDisposable
+    public class BookServiceTest : IDisposable
     {
         private readonly DatabaseContext _dbContext;
         private readonly IBookRepository _bookRepository;
+        private readonly IBookService _bookService;
         private readonly BookBuilder _bookBuilder;
 
-        public BookRepositoryTest()
+        public BookServiceTest()
         {
             // Prepare Test
             _dbContext = new Connection().DatabaseConfiguration();
             _bookRepository = new BookRepository(_dbContext);
+            _bookService = new BookService(_bookRepository);
             _bookBuilder = new BookBuilder();
             
             // Start Transaction
@@ -30,9 +34,9 @@ namespace LivrariaRomana.Repositories.Tests
         public async Task AddBookAsyncTest()
         {
             // Act
-            var result = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            var result = await _bookService.AddAsync(_bookBuilder.CreateValidBook());
             // Assert
-            result.Id.Should().BePositive();            
+            result.Id.Should().BePositive();
         }
 
         [Fact]
@@ -41,7 +45,7 @@ namespace LivrariaRomana.Repositories.Tests
             // Arrange
             var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             // Act
-            var result = await _bookRepository.GetByIdAsync(entity.Id);
+            var result = await _bookService.GetByIdAsync(entity.Id);
             // Assert
             Assert.Equal(entity.Id, result.Id);
         }
@@ -52,7 +56,7 @@ namespace LivrariaRomana.Repositories.Tests
             // Arrange
             await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             // Act
-            var result = await _bookRepository.GetAllAsync();
+            var result = await _bookService.GetAllAsync();
             // Assert
             result.Count().Should().BePositive();
         }
@@ -61,9 +65,9 @@ namespace LivrariaRomana.Repositories.Tests
         public async Task RemoveAsync()
         {
             // Arrange
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());            
+            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
             // Act
-            var result = await _bookRepository.RemoveAsync(entity.Id);            
+            var result = await _bookService.RemoveAsync(entity.Id);
             // Asset
             Assert.True(result);
         }
@@ -77,14 +81,16 @@ namespace LivrariaRomana.Repositories.Tests
             book.Title = newTitle;
 
             // Acct
-            var result = await _bookRepository.UpdateAsync(book);
+            var result = await _bookService.UpdateAsync(book);
 
             // Assert
             Assert.Equal(1, result);
-            var bookEdited = await _bookRepository.GetByIdAsync(book.Id);
+            var bookEdited = await _bookService.GetByIdAsync(book.Id);
             Assert.Equal(newTitle, bookEdited.Title);
-            
+
         }
+
+
 
         public void Dispose()
         {
