@@ -43,31 +43,39 @@ namespace LivrariaRomana.API.Tests
             _bookBuilder = new BookBuilder();         
         }
 
-        protected async Task AuthenticateAsync()
+        protected void Authenticate()
         {
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", await GetJwtAsync());
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", GetJwt());
         }
 
-        private async Task<string> GetJwtAsync()
+        private string GetJwt()
         {
+            // Cria chave
+            var key = Encoding.ASCII.GetBytes(Settings.Secret);
 
-            var response = await _client.PostAsJsonAsync("/api/login", new LoginDTO
+            // Cria token descriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                username = "test@integration.com",
-                password = "SomePass1234!"                
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, "admin"),
+                    new Claim("bookStore", "admin")
+                }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
 
-            });
-
-            var registrationResponse = await response.Content.ReadAsAsync<UserDTO>();
-            return registrationResponse.token;          
-           
+            // Gera e retorna token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         [Fact]       
         public async Task Book_GetAllAsync_Return_OK()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             await _client.PostAsync("api/book/", contentString);
 
@@ -85,7 +93,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_GetByIdAsync_Return_OK()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var createdBook = await _client.PostAsync("api/book/", contentString);
             var id = createdBook.Content.ReadAsAsync<BookDTO>().Result.id;
@@ -122,7 +130,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_UpdateAsync_With_Invalid_Parameters_Return_BadRequest()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var postResponse = await _client.PostAsync("api/book/", postContentString);
             var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
@@ -139,7 +147,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_UpdateAsync_Return_OK()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var postResponse = await _client.PostAsync("api/book/", postContentString);
             var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
@@ -159,7 +167,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_UpdateAsync_Return_BadRequest()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             var id = 99999;
             StringContent contentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateBookWithNonexistentId(id));
 
@@ -174,7 +182,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_AddAsync_Return_OK()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             
             // Act
@@ -191,7 +199,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_AddAsync_Return_BadRequest()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             var bookDTO = new BookDTO();            
             StringContent contentString = JsonSerialize.GenerateStringContent(bookDTO);
             
@@ -206,7 +214,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_AddAsync_With_Null_Parameters_Return_UnsupportedMediaType()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             // Act
             var response = await _client.PostAsync("api/book/", null);
             // Assert
@@ -217,7 +225,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_RemoveAsync_Return_Ok()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
             var postResponse = await _client.PostAsync("api/book/", postContentString);
             var bookDTO = postResponse.Content.ReadAsAsync<BookDTO>().Result;
@@ -233,7 +241,7 @@ namespace LivrariaRomana.API.Tests
         public async Task Book_RemoveAsync_Return_BadRequest()
         {
             // Arrange
-            await AuthenticateAsync();
+            Authenticate();
             // Act
             var response = await _client.DeleteAsync($"api/book/999999");
             // Assert

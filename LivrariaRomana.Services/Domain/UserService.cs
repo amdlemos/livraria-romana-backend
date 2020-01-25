@@ -4,7 +4,6 @@ using System.Text;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using LivrariaRomana.Domain.DTO;
 using LivrariaRomana.IServices;
 using LivrariaRomana.IRepositories;
 using System.IdentityModel.Tokens.Jwt;
