@@ -33,7 +33,6 @@ namespace LivrariaRomana.API.Tests.Integrations
             _userBuilder = new UserBuilder();
         }
 
-
         protected void Authenticate()
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", GetJwt());
@@ -140,7 +139,6 @@ namespace LivrariaRomana.API.Tests.Integrations
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
-
 
         [Fact]
         public async Task User_UpdateAsync_Return_OK()

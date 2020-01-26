@@ -99,7 +99,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<IActionResult> PutUsuario(int id, UserDTO userDTO)
         {
             // mapeia
-            var user = _mapper.Map<User>(userDTO);
+            var user  = _mapper.Map<User>(userDTO);
 
             // valida
             var userExist = await _userService.CheckUserExistById(id);
@@ -107,15 +107,15 @@ namespace LivrariaRomana.API.Controllers
             {
                 try
                 {
+                    
                     // edita
                     _logger.LogInfo($"[USER][PUT]Editando usuário de ID: { id }.");
                     var response = await _userService.UpdateAsync(user);
 
-                    // mapeia 
-                    _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
-                    userDTO = _mapper.Map<UserDTO>(user);
-
                     // retorna
+                    _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
+                    userDTO.password = "p@ssword";
+
                     return Ok(userDTO);
                 }
                 catch (Exception ex)

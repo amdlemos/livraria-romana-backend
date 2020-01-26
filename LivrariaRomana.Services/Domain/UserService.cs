@@ -29,11 +29,6 @@ namespace LivrariaRomana.Services
             
             if (!existingEmail && !existingUsername)
             {
-                // Criptografa o password
-                //var key = EncryptPassword.GetHashKey();
-                //var passwordEncrypited = EncryptPassword.Encrypt(key, obj.Password);
-                //obj.Password = passwordEncrypited;
-
                 // Cria salt e salt e salva no objeto
                 var salt = EncryptPassword.CreateSaltArgon2();                
                 obj.Hash = Convert.ToBase64String(EncryptPassword.HashPasswordArgon2(obj.Password, salt));
@@ -52,6 +47,29 @@ namespace LivrariaRomana.Services
             }
 
             return null;
+        }
+
+        public override async Task<int> UpdateAsync(User obj)
+        {
+            // Obtem usuário para saber hash e salt
+            var user = await this.GetByIdAsync(obj.Id);
+            
+            // Verifica se password foi alterado
+            if(obj.Password == "p@ssword")
+            {
+                obj.Hash = user.Hash;
+                obj.Salt = user.Salt;
+            }
+            else
+            {
+                // Cria salt e salt e salva no objeto
+                var salt = EncryptPassword.CreateSaltArgon2();
+                obj.Hash = Convert.ToBase64String(EncryptPassword.HashPasswordArgon2(obj.Password, salt));
+                obj.Salt = Convert.ToBase64String(salt);
+                obj.Password = "p@ssword";
+            }
+
+            return await base.UpdateAsync(obj);
         }
 
         /// <summary>
@@ -142,15 +160,17 @@ namespace LivrariaRomana.Services
         {            
             // Cria chave
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
-           
+
             // Cria token descriptor
             var tokenDescriptor = new SecurityTokenDescriptor
             {
+                // Add role
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim("bookStore", user.Role)
                 }),
+                // Define tempo logado
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

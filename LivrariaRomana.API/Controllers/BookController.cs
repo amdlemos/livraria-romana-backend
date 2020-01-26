@@ -101,39 +101,50 @@ namespace LivrariaRomana.API.Controllers
             // obtem
             var book = await _bookService.GetByIdAsync(id);
 
-            // valida
+            // valida existência
             if (book != null)
             {
                 // mapeia
                 book = _mapper.Map<Book>(bookDTO);
 
-                try
+                // valida dados
+                if (book.Valid)
                 {
-                    // edita
-                    _logger.LogInfo($"[BOOK][PUT]Editando livro de ID: { id }");
+                    try
+                    {
+                        // edita
+                        _logger.LogInfo($"[BOOK][PUT]Editando livro de ID: { id }");
 
-                    await _bookService.UpdateAsync(book);
+                        await _bookService.UpdateAsync(book);
 
-                    // mapeia
-                    bookDTO = _mapper.Map<BookDTO>(book);
+                        // mapeia
+                        bookDTO = _mapper.Map<BookDTO>(book);
 
-                    // retorna
-                    _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
-                    
-                    return Ok(bookDTO);
+                        // retorna
+                        _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
+
+                        return Ok(bookDTO);
+                    }
+                    catch (Exception ex)
+                    {
+                        // erro
+                        _logger.LogError($"Erro: { ex.Message }.");
+                        _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+
+                        return StatusCode(500, _notification);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    // erro
-                    _logger.LogError($"Erro: { ex.Message }.");
-                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
-                    
-                    return StatusCode(500, _notification);
+                    // livro inexistente
+                    _notification.AddNotifications(book.ValidationResult);
+
+                    return BadRequest(_notification);
                 }
             }
             else
             {
-                // livro inválido ou inexistente
+                // livro inexistente
                 _notification.AddNotification("","Livro não existe.");
 
                 return BadRequest(_notification);                
@@ -213,7 +224,7 @@ namespace LivrariaRomana.API.Controllers
             {
                 // remove
                 _logger.LogInfo($"Deletando livro: { book.Title }, ID: { book.Id }.");
-                await _bookService.RemoveAsync(book);
+                await _bookService.RemoveAsync(book.Id);
 
                 // retorna
                 _logger.LogInfo($"Livro excluido com sucesso.");               
