@@ -209,11 +209,20 @@ namespace LivrariaRomana.API.Controllers
             {
                 // remove
                 _logger.LogInfo($"Deletando usuário: { user.Username }, ID: { user.Id }.");
-                await _userService.RemoveAsync(user);
+                var removed = await _userService.RemoveAsync(user.Id);
+
+                if (removed)
+                {
+                    // retorna ok
+                    _logger.LogInfo($"Usuário excluido com sucesso.");
+                    return Ok();
+                }
+                else
+                {
+                    _logger.LogError($"Não foi possível remover o usuário.");
+                    return BadRequest();
+                }
                 
-                // retorna
-                _logger.LogInfo($"Usuário excluido com sucesso.");
-                return Ok();
             }
             catch (Exception ex)
             {

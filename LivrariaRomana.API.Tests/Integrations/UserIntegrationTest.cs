@@ -85,7 +85,10 @@ namespace LivrariaRomana.API.Tests.Integrations
         {
             // Arrange
             Authenticate();
-            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            var user = _userBuilder.CreateUser();
+            user.Username = "teste_add_async";
+            user.Email = "tete_add_async@email.com";
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
             var createdUser = await _client.PostAsync("api/user/", contentString);
             var userDTO = await createdUser.Content.ReadAsAsync<UserDTO>();
             
@@ -96,7 +99,7 @@ namespace LivrariaRomana.API.Tests.Integrations
             response.EnsureSuccessStatusCode();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var returnedUsers = await response.Content.ReadAsAsync<UserDTO>();
-            returnedUsers.username.Should().Be("user");
+            returnedUsers.username.Should().Be("teste_add_async");
         }
 
         [Fact]
@@ -144,9 +147,12 @@ namespace LivrariaRomana.API.Tests.Integrations
         {
             // Arrange
             Authenticate();
-            StringContent postContentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            var newUser = _userBuilder.CreateUser();
+            newUser.Username = "teste_update";
+            newUser.Email = "teste_update@email.com";
+            StringContent postContentString = JsonSerialize.GenerateStringContent(newUser);
             var postResponse = await _client.PostAsync("api/user/", postContentString);
-            var user = postResponse.Content.ReadAsAsync<UserDTO>().Result;
+            var user = await postResponse.Content.ReadAsAsync<UserDTO>();
             user.username = "theos_sistemas";
             StringContent putContentString = JsonSerialize.GenerateStringContent(user);
 
@@ -218,9 +224,12 @@ namespace LivrariaRomana.API.Tests.Integrations
         {
             // Arrange
             Authenticate();
-            StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
+            var user = _userBuilder.CreateUser();
+            user.Username = "tete_remove";
+            user.Email = "tete_remove@email.com";
+            StringContent contentString = JsonSerialize.GenerateStringContent(user);
             var postResponse = await _client.PostAsync("api/user/", contentString);
-            var userDTO = postResponse.Content.ReadAsAsync<UserDTO>().Result;
+            var userDTO = await postResponse.Content.ReadAsAsync<UserDTO>();
             
             // Act
             var response = await _client.DeleteAsync($"api/user/{ userDTO.id }");

@@ -77,18 +77,15 @@ namespace LivrariaRomana.Services
                 var allUsers = await _userRepository.GetAllAsync();
                 user = allUsers.Where(x => x.Username == username).FirstOrDefault();
 
+                // Valida
                 if (user != null)
-                {
-                    // Descriptografa o password
-                    //var key = EncryptPassword.GetHashKey();
-                    //var decrypitedPassword = EncryptPassword.Decrypt(key, user.Password);
+                {        
+                    // gera hash
                     var salt = Convert.FromBase64String(user.Salt);
                     var hash = EncryptPassword.HashPasswordArgon2(password, salt);
 
-                    var valid = EncryptPassword.VerifyHash(password,  salt, hash);
-
-                    // Valida password
-                    if (valid)
+                    // Valida hash                    
+                    if (EncryptPassword.VerifyHash(password, salt, hash))
                         user = await _userRepository.GetByIdAsync(user.Id);
                     else
                         user = null;
@@ -124,7 +121,12 @@ namespace LivrariaRomana.Services
             var users = await _userRepository.GetAllAsync();
             return users.Where(x => x.Username == username).Count() > 0;
         }
-
+        
+        /// <summary>
+        /// Verifica se usuário existe.
+        /// </summary>
+        /// <param name="id">Id do usuário.</param>
+        /// <returns>Boolean</returns>
         public async Task<bool> CheckUserExistById(int id)
         {
             var users = await _userRepository.GetAllAsync();
@@ -160,7 +162,7 @@ namespace LivrariaRomana.Services
         }
 
         /// <summary>
-        /// Verifica se existe usuário no sistema.
+        /// Verifica se é o primeiro acesso.
         /// </summary>
         /// <returns>Boolean</returns>
         private bool FirstAccess()
