@@ -129,14 +129,7 @@ namespace LivrariaRomana.Services.Tests
             exist.Should().BeTrue();
 
         }
-
-        [Fact]
-        public async Task CheckHashGenerationTest()
-        {
-            //byte[] password;
-            //var hasher = new Argon2id(password);
-        }
-
+      
         public void Dispose()
         {
             _dbContext.Database.RollbackTransaction();
