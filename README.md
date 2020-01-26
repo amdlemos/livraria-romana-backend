@@ -85,7 +85,7 @@ GO
 - Configure o caminho onde o arquivo será criado em "/nlog.config" e carregue no construtor da classe Startup.
 - Adicione o arquivo nlog.config no seguinte caminho: "\LivrariaRomana.API.Tests\bin\Debug\netcoreapp2.2"
  
- ```C#
+ ```c#
 public Startup(IConfiguration configuration)
 {
     // Define onde os logs serão criados.
