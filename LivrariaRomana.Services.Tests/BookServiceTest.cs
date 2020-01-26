@@ -8,6 +8,7 @@ using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Test.Helper;
 using Xunit;
 using FluentAssertions;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.Services.Tests
 {
@@ -43,7 +44,7 @@ namespace LivrariaRomana.Services.Tests
         public async Task GetByIdAsyncTest()
         {
             // Arrange
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            var entity = await _bookService.AddAsync(_bookBuilder.CreateValidBook());
             // Act
             var result = await _bookService.GetByIdAsync(entity.Id);
             // Assert
@@ -54,7 +55,7 @@ namespace LivrariaRomana.Services.Tests
         public async Task GetAllAsyncTest()
         {
             // Arrange
-            await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            await _bookService.AddAsync(_bookBuilder.CreateValidBook());
             // Act
             var result = await _bookService.GetAllAsync();
             // Assert
@@ -65,7 +66,7 @@ namespace LivrariaRomana.Services.Tests
         public async Task RemoveAsync()
         {
             // Arrange
-            var entity = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            var entity = await _bookService.AddAsync(_bookBuilder.CreateValidBook());
             // Act
             var result = await _bookService.RemoveAsync(entity.Id);
             // Asset
@@ -73,10 +74,10 @@ namespace LivrariaRomana.Services.Tests
         }
 
         [Fact]
-        public async Task UpdateAscyncTest()
+        public async Task UpdateAsyncTest()
         {
             // Arrange
-            var book = await _bookRepository.AddAsync(_bookBuilder.CreateValidBook());
+            var book = await _bookService.AddAsync(_bookBuilder.CreateValidBook());
             var newTitle = $"Title Editado: + { DateTime.Now }";
             book.Title = newTitle;
 
@@ -88,6 +89,27 @@ namespace LivrariaRomana.Services.Tests
             var bookEdited = await _bookService.GetByIdAsync(book.Id);
             Assert.Equal(newTitle, bookEdited.Title);
 
+        }
+
+        [Fact]
+        public async Task UpdateBookAmountAsync()
+        {
+            // arrange
+            // Arrange
+            var book = await _bookService.AddAsync(_bookBuilder.CreateValidBook());
+            var bookAmount = new BookUpdateAmountDTO();
+            bookAmount.id = book.Id;
+            bookAmount.addToAmount = 15;
+            bookAmount.removeToAmount = 5;
+            
+            // act
+            var updated = await _bookService.UpdateAmountInStock(bookAmount);
+
+
+            // assert
+            Assert.Equal(1, updated);
+            var bookUpdated = await _bookService.GetByIdAsync(book.Id);
+            bookUpdated.Amount.Should().Be(10);
         }
 
 

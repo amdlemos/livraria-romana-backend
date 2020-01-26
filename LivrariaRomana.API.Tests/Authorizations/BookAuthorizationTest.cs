@@ -11,6 +11,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.IdentityModel.Tokens.Jwt;
 using Xunit;
+using LivrariaRomana.Domain.DTO;
 
 namespace LivrariaRomana.API.Tests.Authorization
 {
@@ -147,6 +148,39 @@ namespace LivrariaRomana.API.Tests.Authorization
             Authenticate();
             // Act
             var response = await _client.DeleteAsync($"api/book/1");
+            // Assert
+            response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+            response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        }
+
+        [Fact]
+        public async Task Book_Stock_Update_Without_Authentication_Return_Unauthorized()
+        {
+            // Arrange
+            var bookUpdateAmount = new BookUpdateAmountDTO();
+            bookUpdateAmount.id = 1;
+            bookUpdateAmount.addToAmount = 5;
+            bookUpdateAmount.removeToAmount = 1;
+            StringContent contentString = JsonSerialize.GenerateStringContent(bookUpdateAmount);
+            // Act
+            var response = await _client.PutAsync("api/bookstock/", contentString);
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task Book_Stock_Update_With_Authentication_Not_Return_Unauthorized_or_Forbidden()
+        {
+            // Arrange
+            Authenticate();
+            var bookUpdateAmount = new BookUpdateAmountDTO();
+            bookUpdateAmount.id = 1;
+            bookUpdateAmount.addToAmount = 5;
+            bookUpdateAmount.removeToAmount = 1;
+            StringContent contentString = JsonSerialize.GenerateStringContent(bookUpdateAmount);
+            // Act
+            var response = await _client.PutAsync("api/bookstock/", contentString);
+            // Assert
             // Assert
             response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
             response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);

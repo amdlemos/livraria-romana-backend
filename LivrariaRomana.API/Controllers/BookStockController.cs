@@ -44,21 +44,33 @@ namespace LivrariaRomana.API.Controllers
             {
                 try
                 {
-                    // edita
-                    var updated = await _bookService.UpdateAmountInStock(bookUpdateAmountDTO);
-                    if (updated == 1)
+                    if (bookUpdateAmountDTO.id > 0)
                     {
-                        // sucesso
-                        return Ok();
+                        // edita
+                        var updated = await _bookService.UpdateAmountInStock(bookUpdateAmountDTO);
+                        if (updated == 1)
+                        {
+                            // sucesso
+                            return Ok(true);
+                        }
+                        else
+                        {
+                            // falha
+                            _logger.LogError($"Não foi possível atualizar o estoque.");
+                            _notification.AddNotification("", "Algo deu errado, verifique se o livro já foi adicionado ao sistema.");
+
+                            return BadRequest(_notification);
+                        }
                     }
                     else
                     {
-                        // falha
-                        _logger.LogError($"Não foi possível atualizar o estoque.");
+                        // erro
+                        _logger.LogError($"Não foi possível atualizar o estoque, livro inexistente.");
                         _notification.AddNotification("", "Algo deu errado, verifique se o livro já foi adicionado ao sistema.");
 
-                        return BadRequest();
+                        return BadRequest(_notification);
                     }
+                    
                     
                 }
                 catch (Exception ex)

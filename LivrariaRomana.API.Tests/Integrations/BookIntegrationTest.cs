@@ -237,6 +237,50 @@ namespace LivrariaRomana.API.Tests.Integrations
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
+
+        [Fact]
+        public async Task Book_Store_Update_Amount_Return_OK()
+        {
+            // Arrange
+            Authenticate();            
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var postResponse = await _client.PostAsync("api/book/", postContentString);
+            var bookDTO = await postResponse.Content.ReadAsAsync<BookDTO>();
+
+            var bookUpdateAmount = new BookUpdateAmountDTO();
+            bookUpdateAmount.id = bookDTO.id;
+            bookUpdateAmount.addToAmount = 5;
+            bookUpdateAmount.removeToAmount = 1;
+            StringContent putContentString = JsonSerialize.GenerateStringContent(bookUpdateAmount);
+
+            // Act
+            var response = await _client.PutAsync("api/bookstock/", putContentString);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Fact]
+        public async Task Book_Store_Update_Amount_Return_BadRequest()
+        {
+            // Arrange
+            Authenticate();
+            StringContent postContentString = JsonSerialize.GenerateStringContent(_bookBuilder.CreateValidBook());
+            var postResponse = await _client.PostAsync("api/book/", postContentString);
+            var bookDTO = await postResponse.Content.ReadAsAsync<BookDTO>();
+
+            var bookUpdateAmount = new BookUpdateAmountDTO();
+            bookUpdateAmount.id = bookDTO.id;
+            bookUpdateAmount.addToAmount = -5;
+            bookUpdateAmount.removeToAmount = 1;
+            StringContent putContentString = JsonSerialize.GenerateStringContent(bookUpdateAmount);
+
+            // Act
+            var response = await _client.PutAsync("api/bookstock/", putContentString);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
     }
 }
 

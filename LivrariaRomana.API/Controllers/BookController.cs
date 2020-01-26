@@ -95,9 +95,14 @@ namespace LivrariaRomana.API.Controllers
         [Authorize("admin")]
         public async Task<ActionResult<BookDTO>> PutLivro(int id, BookDTO bookDTO)
         {
+            if (id != bookDTO.id)
+            {
+                _notification.AddNotification("", "Parâmetros inválidos.");
+                return BadRequest(_notification);
+            }
+
             // mapeia
-            var book = _mapper.Map<Book>(bookDTO);
-            
+            var book = _mapper.Map<Book>(bookDTO);            
 
             // valida 
             book.Validate();
@@ -124,7 +129,7 @@ namespace LivrariaRomana.API.Controllers
                         _logger.LogError($"Não foi possível atualizar o livro.");
                         _notification.AddNotification("", "Algo deu errado, verifique se o livro já foi adicionado ao sistema.");
 
-                        return BadRequest();
+                        return BadRequest(_notification);
                     }
                 }
                 catch (Exception ex)
@@ -235,7 +240,7 @@ namespace LivrariaRomana.API.Controllers
                 // retorna
                 _logger.LogInfo($"Livro excluido com sucesso.");
 
-                return Ok();
+                return Ok(true);
             }
             catch (Exception ex)
             {

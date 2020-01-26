@@ -124,7 +124,7 @@ namespace LivrariaRomana.API.Controllers
                         _logger.LogError($"Não foi possível atualizar o usuário.");
                         _notification.AddNotification("", "Algo deu errado, verifique se o usuário já foi adicionado ao sistema.");
 
-                        return BadRequest();
+                        return BadRequest(_notification);
                     }
                     
                 }
@@ -220,6 +220,7 @@ namespace LivrariaRomana.API.Controllers
                 _logger.LogError($"Usuário de ID: { id } não encontrado.");
                 _notification.AddNotification("", "Usuário não encontrado.");
                 // retorna
+                
                 return NotFound(_notification);
             }
 
@@ -233,12 +234,16 @@ namespace LivrariaRomana.API.Controllers
                 {
                     // retorna ok
                     _logger.LogInfo($"Usuário excluido com sucesso.");
+                    
                     return Ok();
                 }
                 else
-                {
+                {                    
+                    // erro
                     _logger.LogError($"Não foi possível remover o usuário.");
-                    return BadRequest();
+                    _notification.AddNotification("", "Não foi possível remover o usuário.");
+                    
+                    return BadRequest(_notification);
                 }
                 
             }
@@ -247,6 +252,7 @@ namespace LivrariaRomana.API.Controllers
                 // erro
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                
                 return StatusCode(500, _notification);
             }
         }
