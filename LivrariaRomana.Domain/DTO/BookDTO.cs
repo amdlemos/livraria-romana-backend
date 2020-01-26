@@ -13,6 +13,8 @@ namespace LivrariaRomana.Domain.DTO
         public string publishingCompany { get; set; }
         public string isbn { get; set; }
         public string publicationYear { get; set; }
-        public int amount { get; set; }
+        public int amount { get; set; }      
+        public int addToAmount { get; set; }        
+        public int removeToAmount { get; set; }
     }
 }

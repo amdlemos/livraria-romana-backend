@@ -69,13 +69,6 @@ namespace LivrariaRomana.Domain.Tests
 
         #region Propriedade Amount
         [Fact]
-        public void Should_have_error_when_amount_is_null_or_less_than_0()
-        {
-            var book = _bookBuilder.CreateBookWithSmallerAmount0();
-            _bookValidator.ShouldHaveValidationErrorFor(x => x.Amount, book);
-        }
-
-        [Fact]
         public void Should_not_have_error_when_amount_is_greater_than_or_equal_0()
         {
             var book = _bookBuilder.CreateValidBook();

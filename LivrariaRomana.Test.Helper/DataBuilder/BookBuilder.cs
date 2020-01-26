@@ -17,7 +17,7 @@ namespace LivrariaRomana.Test.Helper
                 "Original Title from Builder", 
                 "Publising Company from Builder",
                 "ISBN 978-85-333-0227-3", 
-                "2015", 
+                "2015",
                 0);
             return book;
         }
@@ -94,8 +94,7 @@ namespace LivrariaRomana.Test.Helper
                 "Original Title from Builder", 
                 "Publising Company from Builder", 
                 "", 
-                "2015", 
-                -1);
+                "2015", 0);
             return book;
         }
 
@@ -107,9 +106,7 @@ namespace LivrariaRomana.Test.Helper
                 "Original Title from Builder",
                 "Publising Company from Builder",
                 "ISBN 1-56389-668-0",
-                "2005",
-                0, 
-                4);
+                "2005");
             return book;
         }
 
@@ -122,8 +119,7 @@ namespace LivrariaRomana.Test.Helper
                 "Publising Company from Builder",
                 "978-85-333-0227-3",
                 "1998",
-                id,
-                9999999);
+                id);
             return book;
         }
 

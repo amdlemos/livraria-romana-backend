@@ -13,7 +13,7 @@ namespace LivrariaRomana.Domain.Entities
 
         public User()
         {
-            Validate(this, new UserValidator());
+            this.Validate();
         }
         public User(string username, string password, string email, string role = "", int id = 0)
         {
@@ -23,6 +23,11 @@ namespace LivrariaRomana.Domain.Entities
             Id = id;
             Role = role;
 
+            this.Validate();
+        }
+
+        public void Validate()
+        {
             Validate(this, new UserValidator());
         }
     }

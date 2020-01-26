@@ -1,5 +1,6 @@
 ﻿using LivrariaRomana.Domain.Validators;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LivrariaRomana.Domain.Entities
 {
@@ -11,22 +12,14 @@ namespace LivrariaRomana.Domain.Entities
         public string PublishingCompany { get; set; }
         public string ISBN { get; set; }
         public string PublicationYear { get; set; }
-        public int Amount { get; set; }
+        public int Amount { get; set; }      
 
         public Book()
         {
-            Validate(this, new BookValidator());
+            this.Validate();
         }
 
-        public Book(string title, string author)
-        {
-            Title = title;
-            Author = author;
-
-            Validate(this, new BookValidator());
-        }
-
-        public Book(string title, string author, string originalTitle, string publisingCompany, string isbn, string publicationYear = null, int amount = 0, int id = 0)
+        public Book(string title, string author, string originalTitle, string publisingCompany, string isbn, string publicationYear = null, int id = 0)
         {
             Id = id;
             Title = title;
@@ -35,8 +28,13 @@ namespace LivrariaRomana.Domain.Entities
             PublishingCompany = publisingCompany;
             PublicationYear = publicationYear;
             ISBN = isbn;
-            Amount = amount;
+            Amount = 0;
 
+            this.Validate();
+        }
+
+        public void Validate()
+        {
             Validate(this, new BookValidator());
         }
     }

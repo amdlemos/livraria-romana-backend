@@ -14,16 +14,14 @@ namespace LivrariaRomana.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class LoginController : ControllerBase
-    {
-        private readonly DatabaseContext _context;
+    {        
         private readonly ILoggerManager _logger;
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private NotificationContext _notification;
 
-        public LoginController(DatabaseContext context, ILoggerManager logger, IUserService userService, IMapper mapper)
-        {
-            _context = context;
+        public LoginController(ILoggerManager logger, IUserService userService, IMapper mapper)
+        {            
             _logger = logger;
             _userService = userService;
             _mapper = mapper;

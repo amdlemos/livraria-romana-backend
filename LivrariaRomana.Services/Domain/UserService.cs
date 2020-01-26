@@ -147,8 +147,9 @@ namespace LivrariaRomana.Services
         /// <returns>Boolean</returns>
         public async Task<bool> CheckUserExistById(int id)
         {
-            var users = await _userRepository.GetAllAsync();
-            return users.Where(x => x.Id == id).Count() > 0;
+            var user = await _userRepository.GetByIdAsync(id);
+
+            return user != null;
         }
 
         /// <summary>

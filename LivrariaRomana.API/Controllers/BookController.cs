@@ -16,18 +16,16 @@ namespace LivrariaRomana.API.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [ApiController]    
+    [ApiController]
     public class BookController : ControllerBase
-    {
-        private readonly DatabaseContext _context;        
+    {        
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;
         private ILoggerManager _logger;
         private NotificationContext _notification;
 
-        public BookController(DatabaseContext context, IBookService bookService, ILoggerManager logger, IMapper mapper)
-        {
-            _context = context;
+        public BookController(IBookService bookService, ILoggerManager logger, IMapper mapper)
+        {     
             _logger = logger;
             _bookService = bookService;
             _mapper = mapper;
@@ -48,10 +46,10 @@ namespace LivrariaRomana.API.Controllers
                 // ordena e mapeia               
                 var result = books.OrderBy(x => x.Title).ToList();
                 var bookDTOs = result.Select(_mapper.Map<Book, BookDTO>).ToList();
-                
+
                 // retorna
-                _logger.LogInfo($"Retornando { result.Count} livros.");                
-                
+                _logger.LogInfo($"Retornando { result.Count} livros.");
+
                 return bookDTOs;
             }
             catch (Exception ex)
@@ -59,7 +57,7 @@ namespace LivrariaRomana.API.Controllers
                 // erro
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
-                
+
                 return StatusCode(500, _notification);
             }
 
@@ -88,7 +86,7 @@ namespace LivrariaRomana.API.Controllers
 
             // retorna
             _logger.LogInfo($"Retornado livro: { book.Title }.");
-            
+
             return bookDTO;
         }
 
@@ -97,57 +95,57 @@ namespace LivrariaRomana.API.Controllers
         [Authorize("admin")]
         public async Task<ActionResult<BookDTO>> PutLivro(int id, BookDTO bookDTO)
         {
+            // mapeia
+            var book = _mapper.Map<Book>(bookDTO);
+            
 
-            // obtem
-            var book = await _bookService.GetByIdAsync(id);
-
-            // valida existência
-            if (book != null)
+            // valida 
+            book.Validate();
+            var bookExist = await _bookService.CheckBookExistById(id);
+            if (bookExist && book.Valid)
             {
-                // mapeia
-                book = _mapper.Map<Book>(bookDTO);
-
-                // valida dados
-                if (book.Valid)
+                try
                 {
-                    try
+                    // edita
+                    _logger.LogInfo($"[BOOK][PUT]Editando livro de ID: { id }");
+
+                    var updated = await _bookService.UpdateAsync(book);
+                    if (updated == 1)
                     {
-                        // edita
-                        _logger.LogInfo($"[BOOK][PUT]Editando livro de ID: { id }");
-
-                        await _bookService.UpdateAsync(book);
-
-                        // mapeia
-                        bookDTO = _mapper.Map<BookDTO>(book);
-
-                        // retorna
+                        // sucesso
+                        bookDTO = _mapper.Map<BookDTO>(book);                        
                         _logger.LogInfo($"Livro: { bookDTO.title }, ID: { bookDTO.id } editado com sucesso.");
 
                         return Ok(bookDTO);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // erro
-                        _logger.LogError($"Erro: { ex.Message }.");
-                        _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+                        // falha
+                        _logger.LogError($"Não foi possível atualizar o livro.");
+                        _notification.AddNotification("", "Algo deu errado, verifique se o livro já foi adicionado ao sistema.");
 
-                        return StatusCode(500, _notification);
+                        return BadRequest();
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // livro inexistente
-                    _notification.AddNotifications(book.ValidationResult);
+                    // erro
+                    _logger.LogError($"Erro: { ex.Message }.");
+                    _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
 
-                    return BadRequest(_notification);
+                    return StatusCode(500, _notification);
                 }
             }
             else
             {
-                // livro inexistente
-                _notification.AddNotification("","Livro não existe.");
+                if (!bookExist)
+                    // livro inexistente
+                    _notification.AddNotification("", "Livro não existe.");
+                else
+                    // livro inválido
+                    _notification.AddNotifications(book.ValidationResult);
 
-                return BadRequest(_notification);                
+                return BadRequest(_notification);
             }
         }
 
@@ -157,9 +155,16 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<BookDTO>> PostLivro(BookDTO bookDTO)
         {
             // cria
-            var book = new Book(bookDTO.title, bookDTO.author, bookDTO.originalTitle, bookDTO.publishingCompany, bookDTO.isbn, bookDTO.publicationYear, bookDTO.amount);
+            var book = new Book(
+                bookDTO.title,
+                bookDTO.author,
+                bookDTO.originalTitle,
+                bookDTO.publishingCompany,
+                bookDTO.isbn,
+                bookDTO.publicationYear);
 
             // valida
+            book.Validate();
             if (book.Valid)
             {
                 try
@@ -172,31 +177,32 @@ namespace LivrariaRomana.API.Controllers
                     {
                         // falha
                         _notification.AddNotification("", "Não foi possível incluir o livro.");
-                        
+
                         return BadRequest(_notification);
                     }
+                    else
+                    {
+                        // sucesso
+                        bookDTO = _mapper.Map<BookDTO>(book);
+                        _logger.LogInfo($"Livro { bookDTO.title }, ID: { bookDTO.id } adicionado com sucesso.");
 
-                    // mapeia
-                    bookDTO = _mapper.Map<BookDTO>(book);
+                        return CreatedAtAction("GetLivro", new { id = book.Id }, bookDTO);
+                    }
 
-                    // retorno
-                    _logger.LogInfo($"Livro { bookDTO.title }, ID: { bookDTO.id } adicionado com sucesso.");
-                    
-                    return CreatedAtAction("GetLivro", new { id = book.Id }, bookDTO);
                 }
                 catch (Exception ex)
                 {
                     // erro
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
                     _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
-                    
+
                     return StatusCode(500, _notification);
                 }
             }
             else
-            {     
+            {
                 // livro inválido
-                _notification.AddNotifications(book.ValidationResult);                            
+                _notification.AddNotifications(book.ValidationResult);
 
                 return BadRequest(_notification);
             }
@@ -208,7 +214,7 @@ namespace LivrariaRomana.API.Controllers
         public async Task<ActionResult<BookDTO>> DeleteLivro(int id)
         {
             // obtem
-            _logger.LogInfo($"[BOOK][DELETE]Buscando livro de ID: { id }.");            
+            _logger.LogInfo($"[BOOK][DELETE]Buscando livro de ID: { id }.");
             var book = await _bookService.GetByIdAsync(id);
 
             // valida
@@ -227,8 +233,8 @@ namespace LivrariaRomana.API.Controllers
                 await _bookService.RemoveAsync(book.Id);
 
                 // retorna
-                _logger.LogInfo($"Livro excluido com sucesso.");               
-                
+                _logger.LogInfo($"Livro excluido com sucesso.");
+
                 return Ok();
             }
             catch (Exception ex)
@@ -236,7 +242,7 @@ namespace LivrariaRomana.API.Controllers
                 // erro
                 _logger.LogError($"Algo deu errado: { ex.Message }.");
                 _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
-                
+
                 return StatusCode(500, _notification);
             }
         }

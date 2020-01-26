@@ -30,11 +30,14 @@ namespace LivrariaRomana.Infrastructure.IoC
             // AutoMapper
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<User, UserDTO>();
-                cfg.CreateMap<Book, BookDTO>();
+                // User - De/Para
+                cfg.CreateMap<User, UserDTO>();                
                 cfg.CreateMap<UserDTO, User>();
+                // Book - De/Para
                 cfg.CreateMap<BookDTO, Book>();
-                cfg.CreateMap<User, UserDTO>();
+                cfg.CreateMap<Book, BookDTO>();
+                cfg.CreateMap<BookDTO, BookUpdateAmountDTO>();
+
             });
             IMapper mapper = config.CreateMapper();
             services.AddSingleton(mapper);

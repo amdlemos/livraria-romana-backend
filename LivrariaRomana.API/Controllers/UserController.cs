@@ -18,18 +18,16 @@ namespace LivrariaRomana.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
-    {
-        private readonly DatabaseContext _context;
+    {        
         private readonly IUserService _userService;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
         private readonly NotificationContext _notification;
 
-        public UserController(DatabaseContext context, IUserService userService, ILoggerManager logger, IMapper mapper)
+        public UserController(IUserService userService, ILoggerManager logger, IMapper mapper)
         {
             _logger = logger;
-            _mapper = mapper;
-            _context = context;
+            _mapper = mapper;            
             _userService = userService;
             _notification = new NotificationContext();
 
@@ -102,6 +100,7 @@ namespace LivrariaRomana.API.Controllers
             var user  = _mapper.Map<User>(userDTO);
 
             // valida
+            user.Validate();
             var userExist = await _userService.CheckUserExistById(id);
             if (user.Valid && userExist)
             {
@@ -110,13 +109,24 @@ namespace LivrariaRomana.API.Controllers
                     
                     // edita
                     _logger.LogInfo($"[USER][PUT]Editando usuário de ID: { id }.");
-                    var response = await _userService.UpdateAsync(user);
+                    var updated = await _userService.UpdateAsync(user);
+                    if (updated == 1)
+                    {
+                        // sucesso
+                        _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
+                        userDTO.password = "p@ssword";
 
-                    // retorna
-                    _logger.LogInfo($"Usuário: { user.Username }, ID: { user.Id } editado com sucesso.");
-                    userDTO.password = "p@ssword";
+                        return Ok(userDTO);
+                    }
+                    else
+                    {
+                        // falha
+                        _logger.LogError($"Não foi possível atualizar o usuário.");
+                        _notification.AddNotification("", "Algo deu errado, verifique se o usuário já foi adicionado ao sistema.");
 
-                    return Ok(userDTO);
+                        return BadRequest();
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
@@ -129,8 +139,12 @@ namespace LivrariaRomana.API.Controllers
             }
             else
             {
-                // usuario inválido
-                _notification.AddNotifications(user.ValidationResult);
+                if (!userExist)
+                    // usuario inixistente
+                    _notification.AddNotification("", "Usuário não existe.");
+                else
+                    // usuario inválido
+                    _notification.AddNotifications(user.ValidationResult);
 
                 return BadRequest(_notification);
             }           
@@ -145,6 +159,7 @@ namespace LivrariaRomana.API.Controllers
             var user = new User(userDTO.username, userDTO.password, userDTO.email);
 
             // valida 
+            user.Validate();
             if (user.Valid)
             {
                 try
@@ -157,6 +172,7 @@ namespace LivrariaRomana.API.Controllers
                     {
                         // falha
                         _notification.AddNotification("", "Não foi possível incluir o usuário pois o email ou username já estão em uso.");
+
                         return BadRequest(_notification);
                     }
                     else
@@ -164,6 +180,7 @@ namespace LivrariaRomana.API.Controllers
                         // sucesso
                         userDTO = _mapper.Map<UserDTO>(user);
                         _logger.LogInfo($"Usuário { userDTO.username}, ID: { userDTO.id } adicionado com sucesso.");
+
                         return CreatedAtAction("GetUsuario", new { id = userDTO.id }, userDTO);
                     }
                     
@@ -173,6 +190,7 @@ namespace LivrariaRomana.API.Controllers
                     // error
                     _logger.LogError($"Algo deu errado: { ex.Message }.");
                     _notification.AddNotification("", "Algo deu errado, verifique o LOG para mais informações.");
+
                     return StatusCode(500, _notification);
                 }
             }

@@ -59,7 +59,7 @@ namespace LivrariaRomana.API
             // Adiciono dois níveis de permissão    
             services.AddAuthorization(authorizationOptions =>
             {
-                authorizationOptions.AddPolicy("admin", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore","admin"));                
+                authorizationOptions.AddPolicy("admin", authorizationPolicyBuilder => authorizationPolicyBuilder.RequireClaim("bookStore", "admin"));
             });
 
             var key = Encoding.ASCII.GetBytes(Settings.Secret);
@@ -81,7 +81,7 @@ namespace LivrariaRomana.API
                     ValidateAudience = false
                 };
             });
-           
+
 
             services.AddMvc(mvcOptions =>
             {
@@ -136,7 +136,7 @@ namespace LivrariaRomana.API
                             In = ParameterLocation.Header,
 
                         },
-        new List<string>()
+                        new List<string>()
                     }
                 });
                 });
@@ -167,7 +167,7 @@ namespace LivrariaRomana.API
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            
+
             app.UseAuthentication();
 
             app.UseHttpsRedirection();
