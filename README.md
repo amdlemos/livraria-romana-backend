@@ -25,7 +25,7 @@ Obs: O front-end está sendo desenvolvimento em Angular, no entanto preciso melh
 update-migration
 ```
 - SCRIPT-SQL: Rodar o script abaixo no banco desejado:
-```bash
+```sql
 IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
 BEGIN
     CREATE TABLE [__EFMigrationsHistory] (
@@ -74,6 +74,7 @@ GO
 - Configure a Connection String em app.settings.json, não se esqueça de fazer a mesma configuração no projeto de testes de repositório e serviços. Os testes da API (integração e autorização) utilizam banco de dados na memória.
   
 ```bash
+
 {  
   "AllowedHosts": "*",
   "ConnectionStrings": {
@@ -86,6 +87,7 @@ GO
 - Adicione o arquivo nlog.config no seguinte caminho: "\LivrariaRomana.API.Tests\bin\Debug\netcoreapp2.2"
  
  ```c#
+ 
 public Startup(IConfiguration configuration)
 {
     // Define onde os logs serão criados.
