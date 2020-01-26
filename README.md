@@ -1,6 +1,8 @@
 # Livraria Romana Backend (ASP.NET CORE 2.2)
 Este projeto foi desenvolvido para avaliação da Theos Sistemas quanto a vaga de programador back-end. 
 
+Obs: O frontend está em desenvolvimento, está sendo feito em Angular. Preciso melhorar a usabilidade do mesmo pois ele já consome a API no entando preciso melhorar a usabilidade, como enter submeter os dados, mensagem de carregando e tratar as mensagens de erro da API.
+
 ## Pacotes Utilizados
 - AutoMapper v9.0.0
 - FluentAssertion v5.10.0
