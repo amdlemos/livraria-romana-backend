@@ -10,5 +10,7 @@ namespace LivrariaRomana.IServices
         string GenerateToken(User user);
         Task<bool> CheckUserExistByUsername(string username);
         Task<bool> CheckUserExistByEmail(string email);
+        Task<bool> CheckUserExistById(int id);
+
     }
 }

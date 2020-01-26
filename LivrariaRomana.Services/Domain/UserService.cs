@@ -20,45 +20,122 @@ namespace LivrariaRomana.Services
             _userRepository = repository;
         }
 
-        public virtual async Task<User> Authenticate(string username, string password)
+        public override async Task<User> AddAsync(User obj)
         {
-            User user;
+            // Verifica se o usuário já existe
+            var existingEmail = await CheckUserExistByEmail(obj.Email);
+            var existingUsername = await CheckUserExistByEmail(obj.Username);
 
-            //var key = EncryptPassword.GetHashKey();
-            //var passwordEncrypited = EncryptPassword.Encrypt(key, password);
             
-            if (FirstAccess())
+            if (!existingEmail && !existingUsername)
             {
-                user = new User(username, password, "adicionar@email.com", "admin");
-                await _repository.AddAsync(user);
+                // Criptografa o password
+                //var key = EncryptPassword.GetHashKey();
+                //var passwordEncrypited = EncryptPassword.Encrypt(key, obj.Password);
+                //obj.Password = passwordEncrypited;
+
+                // Cria salt e salt e salva no objeto
+                var salt = EncryptPassword.CreateSaltArgon2();                
+                obj.Hash = Convert.ToBase64String(EncryptPassword.HashPasswordArgon2(obj.Password, salt));
+                obj.Salt = Convert.ToBase64String(salt);
+
+                // Adicona o usuário 
+                obj.Password = "p@ssword";
+                var user = await base.AddAsync(obj);
+                
+                // Escondo hash e salt
+                user.Hash = "";
+                user.Salt = "";
+
+                
+                return user;
             }
 
-            user = await _userRepository.GetByUsernamePassword(username, password);
+            return null;
+        }
+
+        /// <summary>
+        /// Autentica o usuário no sistema.
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <param name="password">Password</param>
+        /// <returns>Retorna um usuário caso ele exista, do contrário retorna null.</returns>
+        public virtual async Task<User> Authenticate(string username, string password)
+        {            
+            User user;
+
+            // Verifica se já existe usuário no sistema
+            if (FirstAccess())
+            {
+                // Cria usuário
+                user = new User(username, password, "adicionar@email.com", "admin");
+                await this.AddAsync(user);
+            }
+            else
+            {
+                // Busca usuário
+                var allUsers = await _userRepository.GetAllAsync();
+                user = allUsers.Where(x => x.Username == username).FirstOrDefault();
+
+                if (user != null)
+                {
+                    // Descriptografa o password
+                    //var key = EncryptPassword.GetHashKey();
+                    //var decrypitedPassword = EncryptPassword.Decrypt(key, user.Password);
+                    var salt = Convert.FromBase64String(user.Salt);
+                    var hash = EncryptPassword.HashPasswordArgon2(password, salt);
+
+                    var valid = EncryptPassword.VerifyHash(password,  salt, hash);
+
+                    // Valida password
+                    if (valid)
+                        user = await _userRepository.GetByIdAsync(user.Id);
+                    else
+                        user = null;
+                }                
+            }
                        
-            if (user == null)
-                return null;
+            // Esconde o password
+            if (user != null)
+                user.Password = null;
 
-            user.Password = "";
-
-            //var userDTO = new UserDTO();          
-            //userDTO.token = GenerateToken(user);
-          
-
+            // Retorna o usuário
             return user;
         }
 
+        /// <summary>
+        /// Verifica se o email já está em uso.
+        /// </summary>
+        /// <param name="email">Email</param>
+        /// <returns>Boolean</returns>
         public async Task<bool> CheckUserExistByEmail(string email)
         {
             var users= await _userRepository.GetAllAsync();
             return users.Where(x => x.Email == email).Count() > 0;
         }
 
+        /// <summary>
+        /// Verifica se o username já está em uso
+        /// </summary>
+        /// <param name="username">Username</param>
+        /// <returns>Boolean</returns>
         public async Task<bool> CheckUserExistByUsername(string username)
         {
             var users = await _userRepository.GetAllAsync();
             return users.Where(x => x.Username == username).Count() > 0;
         }
 
+        public async Task<bool> CheckUserExistById(int id)
+        {
+            var users = await _userRepository.GetAllAsync();
+            return users.Where(x => x.Id == id).Count() > 0;
+        }
+
+        /// <summary>
+        /// Gera token.
+        /// </summary>
+        /// <param name="user">User</param>
+        /// <returns>String contendo o token</returns>
         public string GenerateToken(User user)
         {            
             // Cria chave
@@ -82,6 +159,10 @@ namespace LivrariaRomana.Services
             return tokenHandler.WriteToken(token);
         }
 
+        /// <summary>
+        /// Verifica se existe usuário no sistema.
+        /// </summary>
+        /// <returns>Boolean</returns>
         private bool FirstAccess()
         {
             return _repository.GetAllAsync().Result.Count() == 0;

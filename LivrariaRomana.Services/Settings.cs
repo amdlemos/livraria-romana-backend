@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Konscious.Security.Cryptography;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -86,7 +87,31 @@ namespace LivrariaRomana.Services
             return Convert.ToBase64String(buff);
         }
 
+        public static byte[] CreateSaltArgon2()
+        {
+            var buffer = new byte[2];
+            var rng = new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
+            return buffer;
+        }
 
+        public static byte[] HashPasswordArgon2(string password, byte[] salt)
+        {
+            var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password));
+
+            argon2.Salt = salt;
+            argon2.DegreeOfParallelism = 1; // four cores
+            argon2.Iterations = 2;
+            argon2.MemorySize = 512 * 512; // 1 GB
+
+            return argon2.GetBytes(2);
+        }
+
+        public static bool VerifyHash(string password, byte[] salt, byte[] hash)
+        {
+            var newHash = HashPasswordArgon2(password, salt);
+            return hash.SequenceEqual(newHash);
+        }
     }
    
 }

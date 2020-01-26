@@ -87,10 +87,10 @@ namespace LivrariaRomana.API.Tests.Integrations
             Authenticate();
             StringContent contentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
             var createdUser = await _client.PostAsync("api/user/", contentString);
-            var id = createdUser.Content.ReadAsAsync<UserDTO>().Result.id;
+            var userDTO = await createdUser.Content.ReadAsAsync<UserDTO>();
             
             // Act
-            var response = await _client.GetAsync($"api/user/{ id }");
+            var response = await _client.GetAsync($"api/user/{ userDTO.id }");
             
             // Assert
             response.EnsureSuccessStatusCode();
@@ -132,7 +132,7 @@ namespace LivrariaRomana.API.Tests.Integrations
             StringContent putContentString = JsonSerialize.GenerateStringContent(userDTO);
 
             // Act
-            var response = await _client.PutAsync("api/user/1/", putContentString);
+            var response = await _client.PutAsync("api/user/999/", putContentString);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -146,12 +146,12 @@ namespace LivrariaRomana.API.Tests.Integrations
             Authenticate();
             StringContent postContentString = JsonSerialize.GenerateStringContent(_userBuilder.CreateUser());
             var postResponse = await _client.PostAsync("api/user/", postContentString);
-            var userDTO = postResponse.Content.ReadAsAsync<UserDTO>().Result;
-            userDTO.username = "theos_sistemas";
-            StringContent putContentString = JsonSerialize.GenerateStringContent(userDTO);
+            var user = postResponse.Content.ReadAsAsync<UserDTO>().Result;
+            user.username = "theos_sistemas";
+            StringContent putContentString = JsonSerialize.GenerateStringContent(user);
 
             // Act
-            var response = await _client.PutAsync($"api/user/{ userDTO.id }/", putContentString);
+            var response = await _client.PutAsync($"api/user/{ user.id }/", putContentString);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);

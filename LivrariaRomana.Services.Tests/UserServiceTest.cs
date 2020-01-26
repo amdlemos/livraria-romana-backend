@@ -8,7 +8,7 @@ using LivrariaRomana.Infrastructure.DBConfiguration;
 using LivrariaRomana.Test.Helper;
 using Xunit;
 using FluentAssertions;
-
+using Konscious.Security.Cryptography;
 
 namespace LivrariaRomana.Services.Tests
 {
@@ -94,7 +94,7 @@ namespace LivrariaRomana.Services.Tests
         public async Task AuthenticateAscyncTest()
         {
             // Arrange
-            var user = await _userRepository.AddAsync(_userBuilder.CreateUser());
+            var user = await _userService.AddAsync(_userBuilder.CreateUser());
 
             // Act
             var userDTO = await _userService.Authenticate(user.Username, user.Password);
@@ -128,6 +128,13 @@ namespace LivrariaRomana.Services.Tests
             // Assert
             exist.Should().BeTrue();
 
+        }
+
+        [Fact]
+        public async Task CheckHashGenerationTest()
+        {
+            //byte[] password;
+            //var hasher = new Argon2id(password);
         }
 
         public void Dispose()
