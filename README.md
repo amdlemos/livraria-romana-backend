@@ -1,7 +1,28 @@
 # Livraria Romana Backend (ASP.NET CORE 2.2)
-Este projeto foi desenvolvido para avaliação da Theos Sistemas quanto a vaga de programador back-end. 
+Este projeto foi desenvolvido para uma avaliação e estudos. 
 
-Obs: O front-end está sendo desenvolvimento em Angular, no entanto preciso melhorar a usabilidade do mesmo. O site já pode consumir a API porém eu ainda não tratei as respostas de erro e não validei as autorizações entre algumas outras coisas. 
+## Get Started
+- Clone o projeto:
+    ```bash
+        git clone
+    ```
+- TODO: concluir get startaed.
+
+## Swagger
+- O Swagger é inicializado na raiz da aplicação: http://localhost:4726/
+- TODO: explicar com mais detalhes como utilizar.
+
+## Utilizando a Aplicação
+- Definir LivrariaRomana.API como projeto de inicialzação.
+- Para criar o primeiro usuário faça um post em Login pelo Swagger com o usuário e senha desejados que o sistema ira criar um usuário "admin" para você. 
+- Na resposta vai ser lhe informado seu token.
+- Na parte direita do Swagger há um botão Authorize, click e adicione ao campo a palavra Bearer + token, desta forma você irá adicionar o token ao seu request.
+- Usuários que não possuam Role "admin" terão as mesmas permissões de usuários não logados.
+- Agora você já pode utilizar as outras rotas da API.   
+
+## Controlando o estoque
+- Primeiramente você deve adicionar um livro no banco.
+- Após ter sido feita a inclusão você irá usar o BookStockController para consumir o serviço que atualiza o estoque, não é possível alterar a quantidade de livros diretamente pela edição de livros. 
 
 ## Pacotes Utilizados
 - AutoMapper v9.0.0
@@ -96,25 +117,7 @@ public Startup(IConfiguration configuration)
 }
 ```
 
-### Swagger
-- O Swagger é inicializado na raiz da aplicação: http://localhost:4726/
 
-## Utilizando a Aplicação
-- Definir LivrariaRomana.API como projeto de inicialzação.
-- Para criar o primeiro usuário faça um post em Login pelo Swagger com o usuário e senha desejados que o sistema ira criar um usuário "admin" para você. 
-- Na resposta vai ser lhe informado seu token conforme padrão abaixo:
-
-```bash
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlRoaWFnbyIsInN1YiI6IjEzIiwianRpIjoiZDBlMGFkZDItOTlkMC00NWY1LThlYzEtY2FiYzIwZjkxMGYyIiwiaWF0IjoxNTAwMDMzMjE0LCJKd3RWYWxpZGF0aW9uIjoiVXN1YXJpbyIsIm5iZiI6MTUwMDAzMzIxMywiZXhwIjoxNTAwMDMzMjczLCJpc3MiOiJJc3N1ZXIiLCJhdWQiOiJBdWRpZW5jZSJ9.SmjuyXgloA2RUhIlAEetrQwfC0EhBmhu-xOMzyY3Y_Q
-```
-
-- Na parte direita do Swagger há um botão Authorize, click e adicione ao campo a palavra Bearer + token, desta forma você irá adicionar o token ao seu request.
-- Usuários que não possuam Role "admin" terão as mesmas permissões de usuários não logados.
-- Agora você já pode utilizar as outras rotas da API.   
-
-## Controlando o estoque
-- Primeiramente você deve adicionar um livro no banco.
-- Após ter sido feita a inclusão você irá usar o BookStockController para consumir o serviço que atualiza o estoque, não é possível alterar a quantidade de livros diretamente pela edição de livros. 
 
 
 ## Rodando os testes
