@@ -1,11 +1,12 @@
 # Livraria Romana Backend (ASP.NET CORE 3.1)
 Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo controlar o estoque de livros de uma determinada livraria. 
 
-## Iniciando
-- Clone o projeto:
+## Get Started
+Primeiramente você precisa clonar o repositório para a sua maquina: 
     ```bash
         git clone https://github.com/amdlemos/livraria-romana-backend.git
     ```
+  
 ### Visual Studio 2019
 - Abra o Visual Studio e vá em File > Open > Solution, e selecione a solução clonada.
 - Vá nas propriedades da solução e defina LivrariaRomana.API como projeto principal.
@@ -13,7 +14,7 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
 
 ### CLI
 - Para usar a CLI é necessário que você tenha o MSBuild instalado. Baixe a ferramenta de build em: https://visualstudio.microsoft.com/pt-br/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16
-- Execute o arquivo e selecione as ferramentas de Build necessárias.
+- Execute o arquivo de instação e selecione as ferramentas de Build necessárias.
     - Ferramentas de build de desenvolvimento Web.
     - Ferramentas de build de processamento e armazenamento de dados.
     - Ferramentas de build do .NET Core.
@@ -22,21 +23,27 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
 dotnet --version.
 ```
 Você deverá receber a versão instalada conforme abaixo: 
-<img src="images/dotnet_version.png" width="400">
-- Uma vez que o dotnet esteja instalado e o projeto baixado em seu computador, basta acessar a basta do projeto LivrariaRomana.API e digitar:
+<img src="images/dotnet_version.png">
+
+- Uma vez que o dotnet esteja instalado acesse a pasta raiz do projeto (livraria-romana-backend) e compile a aplicação:
 ```bash
 dotnet build
-dotnet run
 ```
-Se tudo estiver ok será informado a porta em que o sistema está rodando.
-<img src="images/dotnet_version_run.png" width="400">
+Você deverá receber que a compilação foi concluída com exíto.
+<img src="images/dotnet_build.png" >
+
+- Com a confirmação da compilação vá até a pasta da API, LivrariaRomana.API e rode a aplicação:
+```bash
+dotnet run
+``` 
+<img src="images/dotnet_version_run.png" >
 
 ## Swagger
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
 - Ao acessar o Swagger você terá as rotas disponíveis: 
-<img src="images/swagger_01.png" width="400">
+<img src="images/swagger_01.png">
 - Para ter acesso a todos os recursos da API você precisa estar logado, acesse a rota correspondente ao login em LOGIN > POST, cliem em Try it out, preencha os dados de login (usuário e senha) e então click em Execute. O Swagger irá fazer o Request para  a API e lhe apresentar a Resposta. 
-<img src="images/swagger_02.png" width="400">
+<img src="images/swagger_02.png">
 - Caso seja o seu primeiro acesso e esteja tudo OK a API irá criar um usuário para você com as informações passadas anteriormente e lhe fornecera um Token de acesso. 
 
 - TODO: explicar com mais detalhes como utilizar.
