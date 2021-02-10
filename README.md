@@ -17,7 +17,19 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
     - Ferramentas de build de desenvolvimento Web.
     - Ferramentas de build de processamento e armazenamento de dados.
     - Ferramentas de build do .NET Core.
-- Após as ferramentas serem instaladas verifique no CMD digitando msbuild:     
+- Após as ferramentas serem instaladas reinicie o computador e entre no PowerShell ou Prompt de Comando e digite: 
+```bash
+dotnet --version.
+```
+Você deverá receber a versão instalada conforme abaixo: 
+<img src="images/dotnet_version.png" width="400">
+- Uma vez que o dotnet esteja instalado e o projeto baixado em seu computador, basta acessar a basta do projeto LivrariaRomana.API e digitar:
+```bash
+dotnet build
+dotnet run
+```
+Se tudo estiver ok será informado a porta em que o sistema está rodando.
+<img src="images/dotnet_version_run.png" width="400">
 
 ## Swagger
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
