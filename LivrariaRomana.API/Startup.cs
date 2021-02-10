@@ -48,7 +48,8 @@ namespace LivrariaRomana.API
             {
                 var authorizationPolice = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolice));
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                mvcOptions.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             #endregion
 
             //
@@ -91,7 +92,7 @@ namespace LivrariaRomana.API
                 mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolicy));
                 mvcOptions.Filters.Add(new AuthorizeFilter(authorizationPolicy));
             })
-           .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+           .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             #endregion
 
             //
