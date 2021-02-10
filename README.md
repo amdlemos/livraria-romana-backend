@@ -13,7 +13,8 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
 
 ## Swagger
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
-- Ao acessar o Swagger você vai se deparar com essa tela: 
+- Ao acessar o Swagger você terá as rotas disponíveis: 
+<img src="images/swagger_01.png" width="200">
 
 - TODO: explicar com mais detalhes como utilizar.
 
