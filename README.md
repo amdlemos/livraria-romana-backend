@@ -25,8 +25,9 @@ dotnet --version.
 Você deverá receber a versão instalada conforme abaixo: 
 <img src="images/dotnet_version.png">
 
-- Uma vez que o dotnet esteja instalado acesse a pasta raiz do projeto (livraria-romana-backend) e compile a aplicação:
+- Uma vez que o dotnet esteja instalado acesse a pasta raiz do projeto (livraria-romana-backend) limpe e depois compile a aplicação:
 ```bash
+dotnet clean
 dotnet build
 ```
 Você deverá receber que a compilação foi concluída com exíto.
