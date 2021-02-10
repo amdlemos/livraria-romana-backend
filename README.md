@@ -14,7 +14,10 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
 ## Swagger
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
 - Ao acessar o Swagger você terá as rotas disponíveis: 
-<img src="images/swagger_01.png" width="200">
+<img src="images/swagger_01.png" width="400">
+- Para ter acesso a todos os recursos da API você precisa estar logado, acesse a rota correspondente ao login em LOGIN > POST, cliem em Try it out, preencha os dados de login (usuário e senha) e então click em Execute. O Swagger irá fazer o Request para  a API e lhe apresentar a Resposta. 
+<img src="images/swagger_02.png" width="400">
+- Caso seja o seu primeiro acesso e esteja tudo OK a API irá criar um usuário para você com as informações passadas anteriormente e lhe fornecera um Token de acesso. 
 
 - TODO: explicar com mais detalhes como utilizar.
 
