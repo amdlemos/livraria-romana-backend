@@ -1,19 +1,23 @@
-# Livraria Romana Backend (ASP.NET CORE 2.2)
-Este projeto foi desenvolvido para uma avaliação e estudos. 
+# Livraria Romana Backend (ASP.NET CORE 3.1)
+Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo controlar o estoque de livros de uma determinada livraria. 
 
-## Get Started
+## Iniciando
 - Clone o projeto:
     ```bash
-        git clone
+        git clone https://github.com/amdlemos/livraria-romana-backend.git
     ```
-- TODO: concluir get startaed.
+### Rodando no Visual Studio 2019
+- Abra o Visual Studio e vá em File > Open > Solution, e selecione a solução clonada.
+- Vá nas propriedades da solução e defina LivrariaRomana.API como projeto principal.
+- De um ´Build´sua solução e após isso é só rodar. 
 
 ## Swagger
-- O Swagger é inicializado na raiz da aplicação: http://localhost:4726/
+- O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
+- Ao acessar o Swagger você vai se deparar com essa tela: 
+
 - TODO: explicar com mais detalhes como utilizar.
 
 ## Utilizando a Aplicação
-- Definir LivrariaRomana.API como projeto de inicialzação.
 - Para criar o primeiro usuário faça um post em Login pelo Swagger com o usuário e senha desejados que o sistema ira criar um usuário "admin" para você. 
 - Na resposta vai ser lhe informado seu token.
 - Na parte direita do Swagger há um botão Authorize, click e adicione ao campo a palavra Bearer + token, desta forma você irá adicionar o token ao seu request.
@@ -104,22 +108,8 @@ GO
 ```
 
 ### Log
-- Configure o caminho onde o arquivo será criado em "/nlog.config" e carregue no construtor da classe Startup.
-- Adicione o arquivo nlog.config no seguinte caminho: "\LivrariaRomana.API.Tests\bin\Debug\netcoreapp2.2"
+- Configure o arquivo nlog.config no projeto LivrariaRomana.API, indicando o caminho onde será salvo o Log.  
  
- ```c#
- 
-public Startup(IConfiguration configuration)
-{
-    // Define onde os logs serão criados.
-    LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));            
-    _configuration = configuration;
-}
-```
-
-
-
-
 ## Rodando os testes
 - Não se esquecer de copiar o arquivo "/nlog.config" para o projeto de testes da API.
 - Implementei uma transaction nos testes de repositório e serviços para que o banco esteja sempre vazio antes dos testes. 
