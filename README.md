@@ -6,10 +6,30 @@ Este projeto foi desenvolvido para uma avaliação e estudos. Tem como objetivo 
     ```bash
         git clone https://github.com/amdlemos/livraria-romana-backend.git
     ```
-### Rodando no Visual Studio 2019
+### Visual Studio 2019
 - Abra o Visual Studio e vá em File > Open > Solution, e selecione a solução clonada.
 - Vá nas propriedades da solução e defina LivrariaRomana.API como projeto principal.
-- De um ´Build´sua solução e após isso é só rodar. 
+- De um Build (ctrl+shift+b)na solução e após isso é só rodar com ctrl+F5 ou somente F5 caso queira debugar o código.
+
+### CLI
+- Para usar a CLI é necessário que você tenha o MSBuild instalado. Baixe a ferramenta de build em: https://visualstudio.microsoft.com/pt-br/thank-you-downloading-visual-studio/?sku=BuildTools&rel=16
+- Execute o arquivo e selecione as ferramentas de Build necessárias.
+    - Ferramentas de build de desenvolvimento Web.
+    - Ferramentas de build de processamento e armazenamento de dados.
+    - Ferramentas de build do .NET Core.
+- Após as ferramentas serem instaladas reinicie o computador e entre no PowerShell ou Prompt de Comando e digite: 
+```bash
+dotnet --version.
+```
+Você deverá receber a versão instalada conforme abaixo: 
+<img src="images/dotnet_version.png" width="400">
+- Uma vez que o dotnet esteja instalado e o projeto baixado em seu computador, basta acessar a basta do projeto LivrariaRomana.API e digitar:
+```bash
+dotnet build
+dotnet run
+```
+Se tudo estiver ok será informado a porta em que o sistema está rodando.
+<img src="images/dotnet_version_run.png" width="400">
 
 ## Swagger
 - O Swagger é inicializado na raiz da aplicação: http://localhost:4726/. 
